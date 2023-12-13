@@ -107,7 +107,7 @@ class _MyHomePageState extends State<MyHomePage> {
           children: <Widget>[
             const Text(
               '''You have pushed the button this many times:
-              If you are able to read this text, I want you to add your UP number and submit a pull request to the main branch as a test
+              If you are able to read this text, I want you to add your UP number and commit to the main branch just so we can see everyone has got it working.
               UP2118496''',
             ),
             Text(
