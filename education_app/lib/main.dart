@@ -56,7 +56,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
-  List<String> upNumbers = ['UP2118496', '']; // Creates a list of strings with initial values
+  List<String> upNumbers = ['UP2118496', 'UP2109470 - Elise :)']; // Creates a list of strings with initial values
 
   void _incrementCounter() {
     setState(() {
