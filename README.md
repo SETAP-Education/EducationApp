@@ -25,6 +25,31 @@ flutter run -d chrome
 ```
 This will run the project in debug mode. 
 
+## Pulling Main to your branch
+
+```
+git checkout BRANCH_NAME
+```
+```
+git pull origin main
+```
+
+## Committing to your Branch
+
+This will create a commit and push it to the remote reposity. 
+
+This adds all the changed files to the commit. 
+```
+git add . 
+```
+```
+git commit -m "MESSAGE"
+```
+The commit has been committed locally. The next command will push it to the remote repo. 
+```
+git push
+```
+When you've made all your changes you go to github and create a pull request. 
 
 ## Credits
 
