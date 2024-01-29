@@ -1,5 +1,7 @@
 
 
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 enum QuestionType {
   none, 
   multipleChoice, 
@@ -27,6 +29,9 @@ class QuizQuestion {
 
 // This is a quiz 
 class Quiz { 
+
+  Quiz();
+
   // Name/Id of the Quiz
   String name = ""; 
 
@@ -104,6 +109,34 @@ class Quiz {
       "tags": tags,
       "questionIds": questionIds, 
     };
+  }
+
+  factory Quiz.fromFirestore(
+    DocumentSnapshot<Map<String, dynamic>> snapshot,
+    SnapshotOptions? options,
+  ) {
+    final data = snapshot.data();
+
+    Quiz quiz = Quiz(); 
+    if (data == null) {
+      return quiz; 
+    }
+
+    
+    quiz.name = data["name"];
+    
+    quiz.creator = data["creator"];
+    quiz.shareCode = data["sharecode"];
+
+    if (data.containsKey("tags")) {
+      quiz.tags = List.from(data["tags"]);
+    }
+
+    if (data.containsKey("questionIds"))  {
+      quiz.questionIds = List.from(data["questionIds"]);
+    }
+
+    return quiz; 
   }
 
 }
