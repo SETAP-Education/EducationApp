@@ -34,17 +34,41 @@ class Quiz {
   // Can be null
   String? creator;
 
+  // The share code 
+  // Can be null
+  String? shareCode;
+
+  // Quizzes can be tagged for specific topics
+  List<String> tags = List.empty(growable: true);
+
   // Store a List of Ids to questions
   // These questions will be stored outside of the quiz
   List<String> questionIds = List.empty(growable: true); 
+
+
+  // This is not stored in the database and is loaded later when the quiz starts 
+  List<QuizQuestion> loadedQuestions = List.empty(growable: true);
+
+  // Functions
+  // I recommend using the getters instead of accessing the variables directly
 
   // Get the difficulty
   int getQuizDifficulty() {
 
     // Returns the average difficulty of all questions as a quiz difficulty
-    // TODO: Implement this
 
-    return 0;
+    if (loadedQuestions.isEmpty) {
+      return 0;
+    }
+
+    int totalDifficulty = 0;
+    for (var i in loadedQuestions) {
+      totalDifficulty += i.difficulty;
+    }
+
+    totalDifficulty = totalDifficulty ~/ loadedQuestions.length;
+
+    return totalDifficulty;
   }
 
   // Get the number of questions in the quiz
@@ -58,9 +82,28 @@ class Quiz {
     return isQuizGenerated() ? "Auto-Generated" : creator!;
   }
 
-  // Functions
+  // This returns the sharecode if it exists 
+  // If it does not exist it returns an empty string 
+  String getShareCode() {
+    return shareCode != null ? shareCode! : "";
+  }
+
   // Get if the quiz is generated or is user created
   bool isQuizGenerated() {
     return creator == null ? true : false; 
   }
+
+
+  // Firestore functions
+  
+  Map<String, dynamic> toFirestore() {
+    return {
+      "name": name, 
+      "creator": creator, 
+      "sharecode": shareCode,
+      "tags": tags,
+      "questionIds": questionIds, 
+    };
+  }
+
 }
