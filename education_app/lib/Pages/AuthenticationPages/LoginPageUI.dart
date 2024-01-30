@@ -1,3 +1,4 @@
+import 'package:education_app/QuizPage.dart';
 import 'package:flutter/material.dart';
 import 'package:education_app/Pages/AuthenticationPages/LoginPageLogic.dart';
 import 'package:education_app/Pages/AuthenticationPages/RegistrationPageUI.dart';
@@ -66,6 +67,18 @@ class LoginPageUI extends StatelessWidget {
                 ),
               ],
             ),
+            Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => const QuizPage()));},
+                    child: const Text('PLACEHOLDER TO QUIZ PAGE'),
+                  )
+                ]
+            )
           ],
         ),
       ),
