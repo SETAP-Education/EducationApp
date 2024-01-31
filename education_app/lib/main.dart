@@ -5,7 +5,6 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:education_app/Firebase/firebase_options.dart';
 import 'package:education_app/Pages/AuthenticationPages/LoginPageUI.dart';
 
-
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   
