@@ -40,5 +40,23 @@ class QuizManager {
 
     return Future(() => null);
   }
+
+  // Returns an empty list if no questions that match are found
+  Future<List<QuizQuestion>> getQuizQuestions() async {
+
+    var db = FirebaseFirestore.instance;
+
+    var questionRef = await db.collection("questions")
+      .withConverter(fromFirestore: QuizQuestion.fromFirestore, toFirestore: (QuizQuestion q, _) => q.toFirestore())
+      .get();
+
+    List<QuizQuestion> questions = List.empty(growable: true); 
+
+    for (var i in questionRef.docs) {
+      questions.add(i.data());
+    }
+
+    return questions;
+  }
   
 }
