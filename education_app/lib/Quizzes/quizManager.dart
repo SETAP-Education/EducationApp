@@ -57,6 +57,7 @@ class QuizManager {
     return questionRef.data();
   }
 
+  // Returns a list of questions with tags matching the specified tags
   Future<List<QuizQuestion>> getQuizQuestionsByTags(List<String> tags) async {
     var db = FirebaseFirestore.instance;
 
