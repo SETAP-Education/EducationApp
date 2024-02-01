@@ -72,6 +72,9 @@ class QuizQuestion {
   // Stores the difficulty of the question 
   int difficulty = 0; 
 
+  // List of tags/topics for sorting
+  List<String> tags = List.empty(growable: true);
+
   QuestionAnswer answer = QuestionAnswer();
 
 
@@ -80,7 +83,8 @@ class QuizQuestion {
       "questionText": questionText, 
       "type": type.index,
       "difficulty": difficulty, 
-      "answer": answer 
+      "answer": answer.toFirestore(),
+      "tags": tags, 
     };
   }
 
@@ -101,6 +105,7 @@ class QuizQuestion {
     question.questionText = data["questionText"];
     question.type = QuestionType.values[data["type"]];
     question.difficulty = data.containsKey("difficulty") ? data["difficulty"] : 0;
+    question.tags = data["tags"] is Iterable ? List.from(data["tags"]) : List.empty();
 
     if (question.type == QuestionType.multipleChoice) {
       question.answer = QuestionMultipleChoice.fromMap(data["answer"]);
@@ -111,6 +116,7 @@ class QuizQuestion {
 
   void debugPrint() {
     print("Question: $questionText \n${type.toString()}\n$difficulty");
+    print("Tags: ${tags.toString()}");
     answer.debugPrint();
   }
 }

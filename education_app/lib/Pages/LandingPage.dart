@@ -40,11 +40,15 @@ class LandingPage extends StatelessWidget {
               onPressed: () {
                 // Add your landing page functionality here
 
-                Future<List<QuizQuestion>> questions = quizManager.getQuizQuestions();
+                Future<List<QuizQuestion>> questions = quizManager.getQuizQuestionsByTags([ "tag1" ]);
+
+               
 
                 questions.then((value) {
+                  print("Found ${value.length} questions\n---------");
                   for (var i in value) {
                     i.debugPrint();
+                    print("---------");
                   }
                 });
 

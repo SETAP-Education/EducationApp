@@ -41,7 +41,37 @@ class QuizManager {
     return Future(() => null);
   }
 
+  // Returns the question with a specific ID
+  // Returns null if the question doesn't exist
+  Future<QuizQuestion?> getQuizQuestionById(String id) async {
+    var db = FirebaseFirestore.instance;
+
+    var questionRef = await db.collection("questions").doc(id)
+      .withConverter(fromFirestore: QuizQuestion.fromFirestore, toFirestore: (QuizQuestion q, _) => q.toFirestore())
+      .get();
+
+    if (!questionRef.exists) {
+      return null; 
+    }
+
+    return questionRef.data();
+  }
+
+  Future<List<QuizQuestion>> getQuizQuestionsByTags(List<String> tags) async {
+    var db = FirebaseFirestore.instance;
+
+    var questionRef = await db.collection("questions").where("tags", arrayContainsAny: tags)
+      .withConverter(fromFirestore: QuizQuestion.fromFirestore, toFirestore: (QuizQuestion q, _) => q.toFirestore())
+      .get();
+
+    
+    return List.generate(questionRef.docs.length, (index) => questionRef.docs[index].data());
+  }
+
   // Returns an empty list if no questions that match are found
+  // Warning: Don't use this unless you absolutely must
+  // This returns all quiz questions in the database
+  // AND IS SLOW
   Future<List<QuizQuestion>> getQuizQuestions() async {
 
     var db = FirebaseFirestore.instance;
