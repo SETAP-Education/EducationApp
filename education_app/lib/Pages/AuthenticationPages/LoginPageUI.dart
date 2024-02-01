@@ -54,7 +54,6 @@ class LoginPageUI extends StatelessWidget {
               ),
             ),
             ),
-            // box to add space between 2 textfields
             SizedBox(height: 20.0),
             // password textfield
             Container(
@@ -90,7 +89,7 @@ class LoginPageUI extends StatelessWidget {
               style: ElevatedButton.styleFrom(
                 padding: EdgeInsets.symmetric(horizontal: 30, vertical: 15),
               ),
-              child: Text('Log in',style: GoogleFonts.nunito(color: Colors.black, fontSize: 17)
+              child: Text('Log in', style: GoogleFonts.nunito(color: Colors.black, fontSize: 17)
               ),
             ),
             SizedBox(height: 20.0),
