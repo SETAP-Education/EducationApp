@@ -3,7 +3,7 @@ import 'package:firebase_core/firebase_core.dart';
 // import 'package:cloud_firestore/cloud_firestore.dart';
 // import 'package:firebase_auth/firebase_auth.dart';
 import 'package:education_app/Firebase/firebase_options.dart';
-import 'package:education_app/Pages/AuthenticationPages/LoginPageUI.dart';
+import 'package:education_app/Pages/AuthenticationPages/LoginPage.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -26,7 +26,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         useMaterial3: true,
       ),
-      home: LoginPageUI(),
+      home: LoginPage(),
     );
   }
 }
