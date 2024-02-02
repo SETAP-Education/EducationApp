@@ -18,6 +18,7 @@ class RegistrationPageUI extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         toolbarHeight: 135.0,
         title: Padding(
           padding: EdgeInsets.only(top: 80.0),

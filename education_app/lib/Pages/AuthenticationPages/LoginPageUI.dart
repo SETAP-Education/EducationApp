@@ -16,6 +16,7 @@ class LoginPageUI extends StatelessWidget {
     return Scaffold(
       // title
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         toolbarHeight: 135.0,
         title: Padding(
         padding: EdgeInsets.only(top: 80.0),
