@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:education_app/Pages/AuthenticationPages/LoginPageLogic.dart';
 import 'package:education_app/Pages/AuthenticationPages/RegistrationPageUI.dart';
+// import 'package:education_app/Pages/LandingPage.dart';
 
 class LoginPageUI extends StatelessWidget {
   final TextEditingController _emailController = TextEditingController();
@@ -37,6 +38,21 @@ class LoginPageUI extends StatelessWidget {
                 );
               },
               child: Text('Login'),
+            ),
+            SizedBox(height: 16.0),
+            // ElevatedButton(
+            //   onPressed: () {
+            //     LoginPageLogic().bypass(context);
+            //   },
+            //   child: Text('Bypass'),
+            // ),
+            // SizedBox(height: 16.0),
+            ElevatedButton(
+              onPressed: () {
+                // Call bypass logic method from LoginPageLogic.dart
+                LoginPageLogic().test();
+              },
+              child: Text('test'),
             ),
             SizedBox(height: 16.0),
             Row(
