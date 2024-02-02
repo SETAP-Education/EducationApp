@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:education_app/Pages/AuthenticationPages/LoginPageLogic.dart';
 import 'package:education_app/Pages/AuthenticationPages/RegistrationPageUI.dart';
-// import 'package:education_app/Pages/LandingPage.dart';
+import 'package:google_fonts/google_fonts.dart';
+
+// basic colour scheme - will come up with one on friday with max
+Color primaryColour = Colors.grey;
+Color secondaryColour = Colors.grey;
 
 class LoginPageUI extends StatelessWidget {
   final TextEditingController _emailController = TextEditingController();
@@ -10,25 +14,71 @@ class LoginPageUI extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      // title
       appBar: AppBar(
-        title: Text('Login Page'),
+        automaticallyImplyLeading: false,
+        toolbarHeight: 135.0,
+        title: Padding(
+        padding: EdgeInsets.only(top: 80.0),
+          child: Text(
+            'User Login',
+            style: GoogleFonts.nunito(
+              fontSize: 50.0,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
+        centerTitle: true,
       ),
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(10.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            TextField(
+            // email textfield
+            Container(
+            width: 600, // Set the desired width
+            child: TextField(
               controller: _emailController,
-              decoration: InputDecoration(labelText: 'Email'),
+              decoration: InputDecoration(labelText: 'Email',
+                contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+                focusedBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: primaryColour),
+                  borderRadius: BorderRadius.circular(30.0),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: primaryColour),
+                  borderRadius: BorderRadius.circular(30.0),
+                ),),
+              style: GoogleFonts.nunito(
+                fontSize: 20.0,
+              ),
             ),
-            SizedBox(height: 16.0),
-            TextField(
-              controller: _passwordController,
-              obscureText: true,
-              decoration: InputDecoration(labelText: 'Password'),
             ),
-            SizedBox(height: 24.0),
+            SizedBox(height: 20.0),
+            // password textfield
+            Container(
+              width: 600, // Set the desired width
+              child: TextField(
+                controller: _passwordController,
+                obscureText: true,
+                decoration: InputDecoration(labelText: 'Password',
+                  contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: primaryColour), // Set focused border color
+                    borderRadius: BorderRadius.circular(30.0),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: primaryColour), // Set enabled border color
+                    borderRadius: BorderRadius.circular(30.0),
+                  ),),
+                style: GoogleFonts.nunito(
+                  fontSize: 20.0,
+                ),
+              ),
+            ),
+            SizedBox(height: 20.0),
+            // login button
             ElevatedButton(
               onPressed: () {
                 LoginPageLogic().login(
@@ -37,7 +87,11 @@ class LoginPageUI extends StatelessWidget {
                   _passwordController.text,
                 );
               },
-              child: Text('Login'),
+              style: ElevatedButton.styleFrom(
+                padding: EdgeInsets.symmetric(horizontal: 30, vertical: 15),
+              ),
+              child: Text('Log in', style: GoogleFonts.nunito(color: Colors.black, fontSize: 17)
+              ),
             ),
             SizedBox(height: 16.0),
             // ElevatedButton(
@@ -54,29 +108,35 @@ class LoginPageUI extends StatelessWidget {
               },
               child: Text('test'),
             ),
-            SizedBox(height: 16.0),
+            SizedBox(height: 20.0),
+            // sign up text and button
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
                   'Don\'t have an account? ',
-                  style: TextStyle(color: Colors.black),
+                  style: GoogleFonts.nunito(color: Colors.black, fontSize: 17.0),
                 ),
-                GestureDetector(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => RegistrationPageUI(
-                          emailFromLogin: _emailController.text,
+                // when user hovers over the sign up text, cursor changes
+                MouseRegion(
+                  cursor: SystemMouseCursors.click,
+                  child: GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => RegistrationPageUI(
+                            emailFromLogin: _emailController.text,
+                          ),
                         ),
+                      );
+                    },
+                    child: Text(
+                      'Sign up',
+                      style: GoogleFonts.nunito(
+                        color: Color(0xFF19c37d),
+                        fontSize: 17.0,
                       ),
-                    );
-                  },
-                  child: Text(
-                    'Sign up',
-                    style: TextStyle(
-                      color: Color(0xFF19c37d),
                     ),
                   ),
                 ),
