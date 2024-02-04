@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:education_app/Pages/AuthenticationPages/LoginPage.dart';
-import 'package:education_app/Quizzes/quiz.dart';
+import 'package:education_app/Pages/QuizPages/QuizPage.dart';
 import 'package:education_app/Quizzes/quizManager.dart';
 
 class LandingPage extends StatefulWidget {
@@ -59,10 +59,10 @@ class _LandingPageState extends State<LandingPage> {
             ElevatedButton(
               onPressed: () {
                 // Navigate to the quiz page when the button is pressed
-                // Navigator.push(
-                //   context,
-                //   MaterialPageRoute(builder: (context) => QuizPage()), // Replace QuizPage with your actual quiz page
-                // );
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => QuizPage(quizId: "c4cR8V5EXgyBGCC1ZaWJ", userUid: "hbfmksyxungVZZ9OSsCR")), // Replace QuizPage with your actual quiz page
+                );
               },
               child: Text('Take Quiz'),
             ),
