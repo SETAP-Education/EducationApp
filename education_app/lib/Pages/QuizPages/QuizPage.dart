@@ -1,239 +1,59 @@
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:education_app/Quizzes/quiz.dart';
+import 'package:education_app/Quizzes/quizManager.dart';
 
 class QuizPage extends StatefulWidget {
-  final String quizId;
-  final String userUid;
-
-  QuizPage({required this.quizId, required this.userUid});
-
   @override
   _QuizPageState createState() => _QuizPageState();
 }
 
 class _QuizPageState extends State<QuizPage> {
-  List<String> questionIds = [];
-  List<String> userAnswers = [];
+  late QuizManager quizManager;
+  late Quiz quiz;
+  late List<QuizQuestion> loadedQuestions = []; // Initialize with an empty list
   int currentQuestionIndex = 0;
   bool quizCompleted = false;
 
   @override
   void initState() {
     super.initState();
-    fetchQuestionIds();
+    quizManager = QuizManager();
+    // Replace 'your_quiz_id' with the actual ID of the quiz you want to load
+    loadQuiz('yKExulogYwk65MqHrFMN');
   }
 
-  void fetchQuestionIds() async {
-    DocumentReference quizRef = FirebaseFirestore.instance
-        .collection('users')
-        .doc(widget.userUid)
-        .collection('quizzes')
-        .doc(widget.quizId);
+  Future<void> loadQuiz(String quizId) async {
+    print("Loading quiz with ID: $quizId");
 
-    DocumentSnapshot quizDoc = await quizRef.get();
+    Quiz? loadedQuiz = await quizManager.getQuizWithId(quizId);
 
-    if (!quizDoc.exists) {
-      print("Error: Quiz document does not exist.");
-      return;
-    }
+    if (loadedQuiz != null) {
+      setState(() {
+        quiz = loadedQuiz;
+        loadedQuestions = quiz.loadedQuestions;
+      });
 
-    Map<String, dynamic> quizData = quizDoc.data() as Map<String, dynamic>;
+      // Print quiz details
+      print("Loaded quiz: ${quiz.name}");
+      print("Question IDs: ${quiz.questionIds}");
 
-    quizData.forEach((fieldName, fieldValue) {
-      if (fieldName.startsWith("question")) {
-        questionIds.add(fieldValue);
-      }
-    });
+      print("Current Question Index: $currentQuestionIndex...");
+      print("loadedQuestions: $loadedQuestions");
 
-    displayQuestion(currentQuestionIndex);
-  }
+      // ISSUE IN WHICH LOADEDQUESTIONS IS NOT BEING FILLED...
 
-  Future<DocumentSnapshot> getQuestionDocument(String questionId) async {
-    return await FirebaseFirestore.instance
-        .collection('questions')
-        .doc(questionId)
-        .get();
-  }
-
-  void onOptionSelected(String option) {
-    setState(() {
-      userAnswers.add(option);
-    });
-  }
-
-  Future<void> displayQuestion(int index) async {
-    if (index < questionIds.length) {
-      String questionId = questionIds[index];
-
-      DocumentSnapshot questionDoc = await getQuestionDocument(questionId);
-
-      if (questionDoc.exists) {
-        setState(() {
-          currentQuestionIndex = index;
-        });
+      if (currentQuestionIndex < loadedQuestions.length) {
+        print("Current Question ID: ${loadedQuestions[currentQuestionIndex]}");
       } else {
-        print("Error: Question document does not exist for $questionId");
+        print("Error: Index out of range - Current Question Index: $currentQuestionIndex");
       }
+
+      displayQuestion(currentQuestionIndex);
     } else {
-      print("Quiz completed!");
+      // Handle the case where the quiz is not found
+      // You may want to show an error message or navigate back
+      print("Quiz not found with ID: $quizId");
     }
-  }
-
-  Widget buildQuizPage(DocumentSnapshot questionDoc) {
-    if (questionDoc != null) {
-      switch (questionDoc['type']) {
-        case 1:
-          return MultipleChoiceQuestion(questionDoc);
-        case 2:
-          return DragAndDropQuestion(questionDoc);
-        case 3:
-          return FillInTheBlankQuestion(questionDoc);
-        default:
-          return Container();
-      }
-    } else {
-      return Container(); // Handle the case when questionDoc is null
-    }
-  }
-
-  Widget MultipleChoiceQuestion(DocumentSnapshot questionDoc) {
-    Map<String, dynamic> answerMap = questionDoc['answer'] ?? {};
-    List<dynamic> options = answerMap['options'] ?? [];
-
-    // Ensure a minimum of 2 and a maximum of 6 buttons
-    int buttonCount = options.length.clamp(2, 6);
-
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Text(
-          "Question Type: Multiple Choice",
-          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-        ),
-        SizedBox(height: 16),
-        Container(
-          width: double.infinity,
-          padding: EdgeInsets.symmetric(horizontal: 16),
-          child: Text(
-            "Question Text: ${questionDoc['questionText']}",
-            style: TextStyle(fontSize: 18),
-            textAlign: TextAlign.center,
-          ),
-        ),
-        SizedBox(height: 16),
-        Column(
-          children: List.generate(buttonCount, (index) {
-            String option = options[index].toString();
-            return Padding(
-              padding: const EdgeInsets.symmetric(vertical: 8.0),
-              child: ElevatedButton(
-                onPressed: () {
-                  // // Handle button press
-                  // onOptionSelected(option);
-                  setState(() {
-                    checkMultipleChoiceAnswer(option);
-                  });
-                },
-                style: ElevatedButton.styleFrom(
-                  padding: EdgeInsets.all(16),
-                  minimumSize: Size(double.infinity, 60),
-                ),
-                child: Text(
-                  option,
-                  style: TextStyle(fontSize: 18),
-                  textAlign: TextAlign.center,
-                ),
-              ),
-            );
-          }),
-        ),
-        SizedBox(height: 16),
-      ],
-    );
-  }
-
-  void checkMultipleChoiceAnswer(String selectedOption) async {
-    DocumentSnapshot questionDoc = await getQuestionDocument(questionIds[currentQuestionIndex]);
-    Map<String, dynamic> answerMap = questionDoc['answer'] ?? {};
-    List<dynamic> correctAnswers = (answerMap['correctAnswers'] ?? []).map<String>((answer) => answer.toString()).toList();
-
-    bool isCorrect = correctAnswers.contains(selectedOption);
-
-    if (userAnswers.length > currentQuestionIndex) {
-      // If the user has answered this question before, update the answer
-      userAnswers[currentQuestionIndex] = selectedOption;
-    } else {
-      // Otherwise, add the answer to the list
-      userAnswers.add(selectedOption);
-    }
-
-    print("$getCorrectAnswer(correctAnswers, options)");
-    print("User Answer for Question $currentQuestionIndex: $selectedOption");
-    print("Correct Answers List: $correctAnswers");
-    print("Result: ${isCorrect ? 'Correct' : 'Incorrect'}");
-  }
-
-
-  String getCorrectAnswer(List<dynamic> correctAnswers, List<dynamic> options) {
-    List<String> correctAnswerList = correctAnswers.map<String>((index) {
-      if (index is int && index >= 0 && index < options.length) {
-        return options[index];
-      } else {
-        return "Invalid Correct Answer";
-      }
-    }).toList();
-
-    return correctAnswerList.join(', ');
-  }
-
-  Widget DragAndDropQuestion(DocumentSnapshot questionDoc) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          "Question Type: Drag and Drop",
-          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-        ),
-        SizedBox(height: 16),
-        Text(
-          "Question Text: ${questionDoc['questionText']}",
-          style: TextStyle(fontSize: 18),
-        ),
-        Text(
-          "Difficulty: ${questionDoc['difficulty']}",
-          style: TextStyle(fontSize: 16),
-        ),
-        Text(
-          "Tags: ${questionDoc['tags']}",
-          style: TextStyle(fontSize: 16),
-        ),
-      ],
-    );
-  }
-
-  Widget FillInTheBlankQuestion(DocumentSnapshot questionDoc) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          "Question Type: Fill in the Blank",
-          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-        ),
-        SizedBox(height: 16),
-        Text(
-          "Question Text: ${questionDoc['questionText']}",
-          style: TextStyle(fontSize: 18),
-        ),
-        Text(
-          "Difficulty: ${questionDoc['difficulty']}",
-          style: TextStyle(fontSize: 16),
-        ),
-        Text(
-          "Tags: ${questionDoc['tags']}",
-          style: TextStyle(fontSize: 16),
-        ),
-      ],
-    );
   }
 
   @override
@@ -251,7 +71,7 @@ class _QuizPageState extends State<QuizPage> {
                 width: 1600,
                 height: 800,
                 decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(12), // Set border radius
+                  borderRadius: BorderRadius.circular(12),
                   boxShadow: [
                     BoxShadow(
                       color: Colors.grey.withOpacity(0.1),
@@ -259,22 +79,13 @@ class _QuizPageState extends State<QuizPage> {
                       blurRadius: 0,
                       offset: Offset(0, 3),
                     ),
-                  ], // Add shadow
+                  ],
                 ),
                 child: Padding(
                   padding: const EdgeInsets.all(16.0),
-                  child: FutureBuilder<DocumentSnapshot>(
-                    future: questionIds.isNotEmpty
-                        ? getQuestionDocument(questionIds[currentQuestionIndex])
-                        : null,
-                    builder: (context, snapshot) {
-                      if (snapshot.hasData) {
-                        return buildQuizPage(snapshot.data!);
-                      } else {
-                        return Container(); // You can customize the loading/error state
-                      }
-                    },
-                  ),
+                  child: loadedQuestions.isNotEmpty
+                      ? buildQuizPage(loadedQuestions[currentQuestionIndex])
+                      : Container(),
                 ),
               ),
             ),
@@ -304,7 +115,7 @@ class _QuizPageState extends State<QuizPage> {
                         onPressed: () async {
                           print("Current Question Index: $currentQuestionIndex");
                           currentQuestionIndex++;
-                          if (currentQuestionIndex < questionIds.length - 1) {
+                          if (currentQuestionIndex < loadedQuestions.length - 1) {
                             print("Question Index inside if: $currentQuestionIndex");
                             await displayQuestion(currentQuestionIndex);
                           } else {
@@ -321,15 +132,17 @@ class _QuizPageState extends State<QuizPage> {
                       ElevatedButton(
                         onPressed: () {
                           // Navigate to QuizSummary when the quiz is completed
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => QuizSummary(
-                                questionIds: questionIds,
-                                userAnswers: userAnswers,
-                              ),
-                            ),
-                          );
+                          // Navigator.push(
+                          //   context,
+                          //   MaterialPageRoute(
+                          //     builder: (context) => QuizSummary(
+                          //       questionIds: loadedQuestions.map((question) => question.questionText).toList(),
+                          //       userAnswers: userAnswers,
+                          //     ),
+                          //   ),
+                          // );
+                          // WILL PUSH TO THE QUIZ SUMMARY
+                          print("Quiz Summary: Not implemented yet");
                         },
                         child: Text('Submit Questions'),
                       ),
@@ -338,8 +151,8 @@ class _QuizPageState extends State<QuizPage> {
                 SizedBox(height: 16),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
-                  children: questionIds.map((id) {
-                    int index = questionIds.indexOf(id);
+                  children: loadedQuestions.map((id) {
+                    int index = loadedQuestions.indexOf(id);
                     return Container(
                       margin: EdgeInsets.symmetric(horizontal: 5),
                       width: 10,
@@ -360,129 +173,63 @@ class _QuizPageState extends State<QuizPage> {
       ),
     );
   }
-}
 
-class QuizSummary extends StatelessWidget {
-  final List<String> questionIds;
-  final List<String> userAnswers;
-
-  QuizSummary({
-    required this.questionIds,
-    required this.userAnswers,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text("Quiz Summary"),
-      ),
-      body: ListView.builder(
-        itemCount: questionIds.length,
-        itemBuilder: (context, index) {
-          String questionId = questionIds[index];
-          String userAnswer = userAnswers[index];
-
-          return FutureBuilder<DocumentSnapshot>(
-            future: FirebaseFirestore.instance.collection('questions').doc(questionId).get(),
-            builder: (context, snapshot) {
-              if (snapshot.hasData) {
-                DocumentSnapshot questionDoc = snapshot.data!;
-                Map<String, dynamic> answerMap = questionDoc['answer'] ?? {};
-                List<dynamic> correctAnswers = answerMap['correctAnswers'] ?? [];
-                bool isCorrect = correctAnswers.contains(userAnswer);
-
-                return ListTile(
-                  title: Text(questionDoc['questionText']),
-                  subtitle: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text("Your Answer: $userAnswer"),
-                      Text("Correct Answer: ${correctAnswers.join(', ')}"),
-                      Text("Result: ${isCorrect ? 'Correct' : 'Incorrect'}"),
-                    ],
-                  ),
-                );
-              } else {
-                return CircularProgressIndicator();
-              }
-            },
-          );
-        },
-      ),
+  Widget buildQuizPage(QuizQuestion question) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          question.questionText,
+          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+        ),
+        SizedBox(height: 20),
+        if (question.type == QuestionType.multipleChoice)
+          buildMultipleChoiceOptions(question.answer as QuestionMultipleChoice),
+        // Add other cases for different question types if needed
+      ],
     );
+  }
+
+  Widget buildMultipleChoiceOptions(QuestionMultipleChoice question) {
+    return Column(
+      children: question.options.map((option) {
+        return ListTile(
+          title: Text(option),
+          onTap: () {
+            // Handle user selection here
+          },
+        );
+      }).toList(),
+    );
+  }
+
+  Future<void> displayQuestion(int index) async {
+  if (loadedQuestions.isNotEmpty && index < loadedQuestions.length) {
+    QuizQuestion currentQuestion = loadedQuestions[index];
+
+    // Print question details
+    print("Question ${index + 1}:");
+    print("Text: ${currentQuestion.questionText}");
+    print("Type: ${currentQuestion.type}");
+    print("Difficulty: ${currentQuestion.difficulty}");
+    print("Tags: ${currentQuestion.tags}");
+    if (currentQuestion.type == QuestionType.multipleChoice) {
+      QuestionMultipleChoice multipleChoiceAnswer = currentQuestion.answer as QuestionMultipleChoice;
+      print("Options: ${multipleChoiceAnswer.options}");
+      print("Correct Answers: ${multipleChoiceAnswer.correctAnswers}");
+    }
+
+    // Implement logic to update the UI with the current question
+    // For example, you can set the question text in a Text widget.
+
+    // setState(() {
+    //   currentQuestionText = currentQuestion.questionText;
+    // });
+  } else {
+    print("Error: loadedQuestions is empty or index is out of range.");
   }
 }
 
 
+}
 
-
-
-
-  // void displayMultipleChoiceQuestion(DocumentSnapshot questionDoc) {
-  //   // Display details for the current question
-  //   print("Details for Multiple Choice Question:");
-  //   print("Question Text: ${questionDoc['questionText']}");
-  //   print("Difficulty: ${questionDoc['difficulty']}");
-  //   print("Tags: ${questionDoc['tags']}");
-
-  //   Map<String, dynamic> answerMap = questionDoc['answer'] ?? {};
-  //   List<dynamic> options = answerMap['options'] ?? [];
-  //   List<dynamic> correctAnswers = answerMap['correctAnswers'] ?? [];
-
-  //   print("Options: ${options.join(', ')}");
-
-  //   print("Correct Answers List: $correctAnswers");
-
-  //   List<String> correctAnswerList = correctAnswers.map<String>((index) {
-  //     if (index is int && index >= 0 && index < options.length) {
-  //       return options[index];
-  //     } else {
-  //       return "Invalid Correct Answer";
-  //     }
-  //   }).toList();
-
-  //   print("Correct Answers: ${correctAnswerList.join(', ')}");
-
-  //   // Build Quiz Page UI
-  //   buildQuizPageUI(
-  //     questionType: "Multiple Choice",
-  //     questionText: questionDoc['questionText'],
-  //     difficulty: questionDoc['difficulty'],
-  //     tags: questionDoc['tags'],
-  //     options: options,
-  //     correctAnswers: correctAnswerList,
-  //   );
-  // }
-
-  // void displayDragAndDropQuestion(DocumentSnapshot questionDoc) {
-  //   // Display details for the current question
-  //   print("Details for Drag and Drop Question:");
-  //   print("Question Text: ${questionDoc['questionText']}");
-  //   print("Difficulty: ${questionDoc['difficulty']}");
-  //   print("Tags: ${questionDoc['tags']}");
-
-  //   // Build Quiz Page UI
-  //   buildQuizPageUI(
-  //     questionType: "Drag and Drop",
-  //     questionText: questionDoc['questionText'],
-  //     difficulty: questionDoc['difficulty'],
-  //     tags: questionDoc['tags'],
-  //   );
-  // }
-
-  // void displayFillInTheBlankQuestion(DocumentSnapshot questionDoc) {
-  //   // Display details for the current question
-  //   print("Details for Fill in the Blank Question:");
-  //   print("Question Text: ${questionDoc['questionText']}");
-  //   print("Difficulty: ${questionDoc['difficulty']}");
-  //   print("Tags: ${questionDoc['tags']}");
-
-  //   // Build Quiz Page UI
-  //   buildQuizPageUI(
-  //     questionType: "Fill in the Blank",
-  //     questionText: questionDoc['questionText'],
-  //     difficulty: questionDoc['difficulty'],
-  //     tags: questionDoc['tags'],
-  //   );
-  // }
