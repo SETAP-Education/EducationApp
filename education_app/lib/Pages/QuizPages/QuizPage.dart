@@ -3,7 +3,6 @@ import 'package:education_app/Quizzes/quiz.dart';
 import 'package:education_app/Quizzes/quizManager.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-
 class QuizPage extends StatefulWidget {
   @override
   _QuizPageState createState() => _QuizPageState();
@@ -24,6 +23,72 @@ class _QuizPageState extends State<QuizPage> {
     loadQuiz('yKExulogYwk65MqHrFMN');
   }
 
+  // Future<void> loadQuiz(String quizId) async {
+  //   print("Loading quiz with ID: $quizId");
+
+  //   Quiz? loadedQuiz = await quizManager.getQuizWithId(quizId);
+
+  //   if (loadedQuiz != null) {
+  //     setState(() {
+  //       quiz = loadedQuiz;
+  //       loadedQuestions = quiz.loadedQuestions;
+  //     });
+
+  //     // Print quiz details
+  //     print("Loaded quiz: ${quiz.name}");
+  //     print("Question IDs: ${quiz.questionIds}");
+
+  //     // Fetch questions and populate loadedQuestions
+  //     await fetchQuestionsForQuiz(quiz.questionIds);
+
+  //     print("Current Question Index: $currentQuestionIndex...");
+  //     print("loadedQuestions: $loadedQuestions");
+
+  //     if (currentQuestionIndex < loadedQuestions.length) {
+  //       print("Current Question ID: ${loadedQuestions[currentQuestionIndex].questionText}");
+  //     } else {
+  //       print("Error: Index out of range - Current Question Index: $currentQuestionIndex");
+  //     }
+
+  //     displayQuestion(currentQuestionIndex);
+  //   } else {
+  //     // Handle the case where the quiz is not found
+  //     // You may want to show an error message or navigate back
+  //     print("Quiz not found with ID: $quizId");
+  //   }
+  // }
+
+  // Future<void> fetchQuestionsForQuiz(List<String> questionIds) async {
+  //   List<QuizQuestion> questions = [];
+
+  //   for (String questionId in questionIds) {
+  //     print("1 Fetching Question: $questionId, list length: ${questions.length}");
+
+  //     // Fetch the question document directly from Firestore using QuizManager
+  //     QuizQuestion? question = await QuizManager().getQuizQuestionById(questionId);
+
+  //     print("Middle of the fetch function...");
+
+  //     if (question != null) {
+  //       questions.add(question);
+
+  //       // Print question type
+  //       print("Question Text: ${question.questionText}");
+  //       print("Question Type: ${question.type}");
+
+  //       print("Added question, list length: ${questions.length}");
+  //     } else {
+  //       // Handle case where question doesn't exist
+  //     }
+
+  //     print("2 Fetching Question: $questionId, list length: ${questions.length}");
+  //   }
+
+  //   setState(() {
+  //     loadedQuestions = questions;
+  //   });
+  // }
+
   Future<void> loadQuiz(String quizId) async {
     print("Loading quiz with ID: $quizId");
 
@@ -32,23 +97,52 @@ class _QuizPageState extends State<QuizPage> {
     if (loadedQuiz != null) {
       setState(() {
         quiz = loadedQuiz;
-        loadedQuestions = quiz.loadedQuestions;
       });
 
       // Print quiz details
       print("Loaded quiz: ${quiz.name}");
       print("Question IDs: ${quiz.questionIds}");
 
-      // Fetch questions and populate loadedQuestions
-      await fetchQuestionsForQuiz(quiz.questionIds);
+      List<QuizQuestion> questions = [];
+      for (String questionId in quiz.questionIds) {
+        print(
+            "1 Fetching Question: $questionId, list length: ${questions.length}");
+
+        // Fetch the question document directly from Firestore using QuizManager
+        QuizQuestion? question =
+            await QuizManager().getQuizQuestionById(questionId);
+
+        print("Middle of the fetch function...");
+
+        if (question != null) {
+          questions.add(question);
+
+          // Print question type
+          print("Question Text: ${question.questionText}");
+          print("Question Type: ${question.type}");
+
+          print("Added question, list length: ${questions.length}");
+        } else {
+          // Handle case where question doesn't exist
+        }
+
+        print(
+            "2 Fetching Question: $questionId, list length: ${questions.length}");
+      }
+
+      setState(() {
+        loadedQuestions = questions;
+      });
 
       print("Current Question Index: $currentQuestionIndex...");
       print("loadedQuestions: $loadedQuestions");
 
       if (currentQuestionIndex < loadedQuestions.length) {
-        print("Current Question ID: ${loadedQuestions[currentQuestionIndex].questionText}");
+        print(
+            "Current Question ID: ${loadedQuestions[currentQuestionIndex].questionText}");
       } else {
-        print("Error: Index out of range - Current Question Index: $currentQuestionIndex");
+        print(
+            "Error: Index out of range - Current Question Index: $currentQuestionIndex");
       }
 
       displayQuestion(currentQuestionIndex);
@@ -57,39 +151,6 @@ class _QuizPageState extends State<QuizPage> {
       // You may want to show an error message or navigate back
       print("Quiz not found with ID: $quizId");
     }
-  }
-
-  Future<void> fetchQuestionsForQuiz(List<String> questionIds) async {
-    List<QuizQuestion> questions = [];
-
-    for (String questionId in questionIds) {
-      print("1 Fetching Question: $questionId, list length: ${questions.length}");
-
-      // Fetch the question document directly from Firestore because im not sure how else to do it...if there is a better way to do it, feel free to do it.
-      DocumentSnapshot<Map<String, dynamic>> questionSnapshot =
-          await FirebaseFirestore.instance.collection('questions').doc(questionId).get();
-
-      print("Middle of the fetch function...");
-
-      if (questionSnapshot.exists) {
-        QuizQuestion question = QuizQuestion.fromFirestore(questionSnapshot, null);
-        questions.add(question);
-
-        // Print question type
-        print("Question Text: ${question.questionText}");
-        print("Question Type: ${question.type}");
-        
-        print("Added question, list length: ${questions.length}");
-      } else {
-        // to handle case where question doesn't exist
-      }
-
-      print("2 Fetching Question: $questionId, list length: ${questions.length}");
-    }
-
-    setState(() {
-      loadedQuestions = questions;
-    });
   }
 
   @override
@@ -149,14 +210,19 @@ class _QuizPageState extends State<QuizPage> {
                     if (!quizCompleted)
                       ElevatedButton(
                         onPressed: () async {
-                          print("Options selected: ${(loadedQuestions[currentQuestionIndex].answer as QuestionMultipleChoice).selectedOptions}");
-                          print("Current Question Index: $currentQuestionIndex");
+                          print(
+                              "Options selected: ${(loadedQuestions[currentQuestionIndex].answer as QuestionMultipleChoice).selectedOptions}");
+                          print(
+                              "Current Question Index: $currentQuestionIndex");
                           currentQuestionIndex++;
-                          if (currentQuestionIndex < loadedQuestions.length - 1) {
-                            print("Question Index inside if: $currentQuestionIndex");
+                          if (currentQuestionIndex <
+                              loadedQuestions.length - 1) {
+                            print(
+                                "Question Index inside if: $currentQuestionIndex");
                             await displayQuestion(currentQuestionIndex);
                           } else {
-                            print("Question Index inside else: $currentQuestionIndex");
+                            print(
+                                "Question Index inside else: $currentQuestionIndex");
                             setState(() {
                               quizCompleted = true;
                             });
@@ -222,7 +288,7 @@ class _QuizPageState extends State<QuizPage> {
         ),
         SizedBox(height: 20),
         //This is where the question will be asked / written to the page. The question format for posing the question is universal for all question types thus doesn't need to be type specific.
-        
+
         //This is where the response format will change depending on the question type. Multiple Choice will have selectable thingys. Drag and Drop something else...
         if (question.type == QuestionType.multipleChoice)
           buildMultipleChoiceOptions(question.answer as QuestionMultipleChoice),
@@ -275,33 +341,31 @@ class _QuizPageState extends State<QuizPage> {
   }
 
   Future<void> displayQuestion(int index) async {
-  if (loadedQuestions.isNotEmpty && index < loadedQuestions.length) {
-    QuizQuestion currentQuestion = loadedQuestions[index];
+    if (loadedQuestions.isNotEmpty && index < loadedQuestions.length) {
+      QuizQuestion currentQuestion = loadedQuestions[index];
 
-    // Print question details
-    print("Question ${index + 1}:");
-    print("Text: ${currentQuestion.questionText}");
-    print("Type: ${currentQuestion.type}");
-    print("Difficulty: ${currentQuestion.difficulty}");
-    print("Tags: ${currentQuestion.tags}");
-    if (currentQuestion.type == QuestionType.multipleChoice) {
-      QuestionMultipleChoice multipleChoiceAnswer = currentQuestion.answer as QuestionMultipleChoice;
-      print("Options: ${multipleChoiceAnswer.options}");
-      print("Correct Answers: ${multipleChoiceAnswer.correctAnswers}");
-    // elseif (currentQuestion.type == QuestionType.dragAndDrop) {
+      // Print question details
+      print("Question ${index + 1}:");
+      print("Text: ${currentQuestion.questionText}");
+      print("Type: ${currentQuestion.type}");
+      print("Difficulty: ${currentQuestion.difficulty}");
+      print("Tags: ${currentQuestion.tags}");
+      if (currentQuestion.type == QuestionType.multipleChoice) {
+        QuestionMultipleChoice multipleChoiceAnswer =
+            currentQuestion.answer as QuestionMultipleChoice;
+        print("Options: ${multipleChoiceAnswer.options}");
+        print("Correct Answers: ${multipleChoiceAnswer.correctAnswers}");
+        // elseif (currentQuestion.type == QuestionType.dragAndDrop) {
+      }
+
+      // Implement logic to update the UI with the current question
+      // For example, you can set the question text in a Text widget.
+
+      // setState(() {
+      //   currentQuestionText = currentQuestion.questionText;
+      // });
+    } else {
+      print("Error: loadedQuestions is empty or index is out of range.");
     }
-
-    // Implement logic to update the UI with the current question
-    // For example, you can set the question text in a Text widget.
-
-    // setState(() {
-    //   currentQuestionText = currentQuestion.questionText;
-    // });
-  } else {
-    print("Error: loadedQuestions is empty or index is out of range.");
   }
 }
-
-
-}
-
