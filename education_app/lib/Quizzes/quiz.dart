@@ -1,5 +1,3 @@
-
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 enum QuestionType {
@@ -25,7 +23,8 @@ class QuestionMultipleChoice extends QuestionAnswer {
   // and also a list of correct answers in case 1 or more is correct
   // Probably should detect if there is 1 or more and display UI accordingly
   List<String> options;
-  List<int> correctAnswers; 
+  List<int> correctAnswers;
+  List<int> selectedOptions = [];
 
   @override
   void debugPrint() {
@@ -99,9 +98,7 @@ class QuizQuestion {
     if (data == null) {
       return question; 
     }
-
-
-    
+  
     question.questionText = data["questionText"];
     question.type = QuestionType.values[data["type"]];
     question.difficulty = data.containsKey("difficulty") ? data["difficulty"] : 0;
@@ -120,8 +117,6 @@ class QuizQuestion {
     answer.debugPrint();
   }
 }
-
-
 
 // This is a quiz 
 class Quiz { 
@@ -194,9 +189,7 @@ class Quiz {
     return creator == null ? true : false; 
   }
 
-
   // Firestore functions
-  
   Map<String, dynamic> toFirestore() {
     return {
       "name": name, 
@@ -218,7 +211,6 @@ class Quiz {
       return quiz; 
     }
 
-    
     quiz.name = data["name"];
     
     quiz.creator = data["creator"];
