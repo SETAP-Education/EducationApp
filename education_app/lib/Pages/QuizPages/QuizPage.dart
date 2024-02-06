@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:education_app/Quizzes/quiz.dart';
 import 'package:education_app/Quizzes/quizManager.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 
 class QuizPage extends StatefulWidget {
   @override
@@ -10,7 +12,7 @@ class QuizPage extends StatefulWidget {
 class _QuizPageState extends State<QuizPage> {
   late QuizManager quizManager;
   late Quiz quiz;
-  late List<QuizQuestion> loadedQuestions = []; // Initialize with an empty list
+  late List<QuizQuestion> loadedQuestions = [];
   int currentQuestionIndex = 0;
   bool quizCompleted = false;
 
@@ -18,7 +20,7 @@ class _QuizPageState extends State<QuizPage> {
   void initState() {
     super.initState();
     quizManager = QuizManager();
-    // Replace 'your_quiz_id' with the actual ID of the quiz you want to load
+    // Replace 'your_quiz_id' with the actual ID of the quiz you want to load, it is static for testing purposes.
     loadQuiz('yKExulogYwk65MqHrFMN');
   }
 
@@ -37,13 +39,14 @@ class _QuizPageState extends State<QuizPage> {
       print("Loaded quiz: ${quiz.name}");
       print("Question IDs: ${quiz.questionIds}");
 
+      // Fetch questions and populate loadedQuestions
+      await fetchQuestionsForQuiz(quiz.questionIds);
+
       print("Current Question Index: $currentQuestionIndex...");
       print("loadedQuestions: $loadedQuestions");
 
-      // ISSUE IN WHICH LOADEDQUESTIONS IS NOT BEING FILLED...
-
       if (currentQuestionIndex < loadedQuestions.length) {
-        print("Current Question ID: ${loadedQuestions[currentQuestionIndex]}");
+        print("Current Question ID: ${loadedQuestions[currentQuestionIndex].questionText}");
       } else {
         print("Error: Index out of range - Current Question Index: $currentQuestionIndex");
       }
@@ -54,6 +57,39 @@ class _QuizPageState extends State<QuizPage> {
       // You may want to show an error message or navigate back
       print("Quiz not found with ID: $quizId");
     }
+  }
+
+  Future<void> fetchQuestionsForQuiz(List<String> questionIds) async {
+    List<QuizQuestion> questions = [];
+
+    for (String questionId in questionIds) {
+      print("1 Fetching Question: $questionId, list length: ${questions.length}");
+
+      // Fetch the question document directly from Firestore because im not sure how else to do it...if there is a better way to do it, feel free to do it.
+      DocumentSnapshot<Map<String, dynamic>> questionSnapshot =
+          await FirebaseFirestore.instance.collection('questions').doc(questionId).get();
+
+      print("Middle of the fetch function...");
+
+      if (questionSnapshot.exists) {
+        QuizQuestion question = QuizQuestion.fromFirestore(questionSnapshot, null);
+        questions.add(question);
+
+        // Print question type
+        print("Question Text: ${question.questionText}");
+        print("Question Type: ${question.type}");
+        
+        print("Added question, list length: ${questions.length}");
+      } else {
+        // to handle case where question doesn't exist
+      }
+
+      print("2 Fetching Question: $questionId, list length: ${questions.length}");
+    }
+
+    setState(() {
+      loadedQuestions = questions;
+    });
   }
 
   @override
@@ -113,6 +149,7 @@ class _QuizPageState extends State<QuizPage> {
                     if (!quizCompleted)
                       ElevatedButton(
                         onPressed: () async {
+                          print("Options selected: ${(loadedQuestions[currentQuestionIndex].answer as QuestionMultipleChoice).selectedOptions}");
                           print("Current Question Index: $currentQuestionIndex");
                           currentQuestionIndex++;
                           if (currentQuestionIndex < loadedQuestions.length - 1) {
@@ -176,30 +213,64 @@ class _QuizPageState extends State<QuizPage> {
 
   Widget buildQuizPage(QuizQuestion question) {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
+        SizedBox(height: 10),
         Text(
           question.questionText,
           style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
         ),
         SizedBox(height: 20),
+        //This is where the question will be asked / written to the page. The question format for posing the question is universal for all question types thus doesn't need to be type specific.
+        
+        //This is where the response format will change depending on the question type. Multiple Choice will have selectable thingys. Drag and Drop something else...
         if (question.type == QuestionType.multipleChoice)
           buildMultipleChoiceOptions(question.answer as QuestionMultipleChoice),
-        // Add other cases for different question types if needed
+        // Add other cases for different question types when needed.
       ],
     );
   }
 
   Widget buildMultipleChoiceOptions(QuestionMultipleChoice question) {
-    return Column(
-      children: question.options.map((option) {
-        return ListTile(
-          title: Text(option),
+    return ListView.builder(
+      shrinkWrap: true,
+      physics: NeverScrollableScrollPhysics(),
+      itemCount: question.options.length,
+      itemBuilder: (context, index) {
+        String option = question.options[index];
+        bool isSelected = question.selectedOptions.contains(index);
+
+        return InkWell(
           onTap: () {
             // Handle user selection here
+            setState(() {
+              if (isSelected) {
+                question.selectedOptions.remove(index);
+              } else {
+                question.selectedOptions.add(index);
+              }
+            });
           },
+          child: Container(
+            padding: EdgeInsets.all(10),
+            margin: EdgeInsets.symmetric(vertical: 5),
+            decoration: BoxDecoration(
+              color: isSelected ? Colors.blue : Colors.white,
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(
+                color: Colors.blue,
+                width: 1,
+              ),
+            ),
+            child: Text(
+              option,
+              style: TextStyle(
+                color: isSelected ? Colors.white : Colors.black,
+              ),
+            ),
+          ),
         );
-      }).toList(),
+      },
     );
   }
 
@@ -217,6 +288,7 @@ class _QuizPageState extends State<QuizPage> {
       QuestionMultipleChoice multipleChoiceAnswer = currentQuestion.answer as QuestionMultipleChoice;
       print("Options: ${multipleChoiceAnswer.options}");
       print("Correct Answers: ${multipleChoiceAnswer.correctAnswers}");
+    // elseif (currentQuestion.type == QuestionType.dragAndDrop) {
     }
 
     // Implement logic to update the UI with the current question
