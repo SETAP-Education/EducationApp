@@ -2,7 +2,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 enum QuestionType {
   none, 
-  multipleChoice, 
+  multipleChoice,
+  fillInTheBlank,
 }
 
 // Base class for questions
@@ -58,6 +59,37 @@ class QuestionMultipleChoice extends QuestionAnswer {
   }
 }
 
+// Question specific values for Fill in the Blank Question Type
+class QuestionFillInTheBlank extends QuestionAnswer {
+  QuestionFillInTheBlank({required this.correctAnswers, this.userResponse = ""});
+
+  List<String> correctAnswers;
+  String userResponse;
+
+  @override
+  void debugPrint() {
+    print("Correct Answers:");
+    for (String answer in correctAnswers) {
+      print(answer);
+    }
+  }
+
+  @override
+  Map<String, dynamic> toFirestore() {
+    return {
+      "correctAnswers": correctAnswers,
+      "userResponse": userResponse,
+    };
+  }
+
+  factory QuestionFillInTheBlank.fromMap(Map<String, dynamic> map) {
+    return QuestionFillInTheBlank(
+      correctAnswers: map["correctAnswers"] is Iterable ? List.from(map["correctAnswers"]) : List.empty(),
+      userResponse: map["userResponse"] ?? "",
+    );
+  }
+}
+
 class QuizQuestion {
 
   QuizQuestion();
@@ -106,6 +138,8 @@ class QuizQuestion {
 
     if (question.type == QuestionType.multipleChoice) {
       question.answer = QuestionMultipleChoice.fromMap(data["answer"]);
+    } else if (question.type == QuestionType.fillInTheBlank) {
+      question.answer = QuestionFillInTheBlank.fromMap(data["answer"]);
     }
 
     return question; 
@@ -226,5 +260,4 @@ class Quiz {
 
     return quiz; 
   }
-
 }
