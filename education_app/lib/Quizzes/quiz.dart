@@ -61,7 +61,7 @@ class QuestionMultipleChoice extends QuestionAnswer {
 
 // Question specific values for Fill in the Blank Question Type
 class QuestionFillInTheBlank extends QuestionAnswer {
-  QuestionFillInTheBlank({required this.correctAnswers, this.userResponse = ""});
+  QuestionFillInTheBlank({ required this.correctAnswers, this.userResponse = "" });
 
   List<String> correctAnswers;
   String userResponse;

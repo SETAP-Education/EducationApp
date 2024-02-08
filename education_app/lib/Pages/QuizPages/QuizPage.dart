@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:education_app/Quizzes/quiz.dart';
 import 'package:education_app/Quizzes/quizManager.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 
 class QuizPage extends StatefulWidget {
   @override
@@ -9,6 +8,7 @@ class QuizPage extends StatefulWidget {
 }
 
 class _QuizPageState extends State<QuizPage> {
+  late TextEditingController fillInTheBlankController;
   late QuizManager quizManager;
   late Quiz quiz;
   late List<QuizQuestion> loadedQuestions = [];
@@ -21,6 +21,13 @@ class _QuizPageState extends State<QuizPage> {
     quizManager = QuizManager();
     // Replace 'your_quiz_id' with the actual ID of the quiz you want to load, it is static for testing purposes.
     loadQuiz('yKExulogYwk65MqHrFMN');
+    fillInTheBlankController = TextEditingController();
+  }
+
+  @override
+  void dispose() {
+    fillInTheBlankController.dispose();
+    super.dispose();
   }
 
   // Future<void> loadQuiz(String quizId) async {
@@ -108,11 +115,9 @@ class _QuizPageState extends State<QuizPage> {
         print(
             "1 Fetching Question: $questionId, list length: ${questions.length}");
 
-        // Fetch the question document directly from Firestore using QuizManager
+        // Fetch the question document directly from Firestore using QuizManager instead
         QuizQuestion? question =
             await QuizManager().getQuizQuestionById(questionId);
-
-        print("Middle of the fetch function...");
 
         if (question != null) {
           questions.add(question);
@@ -148,7 +153,7 @@ class _QuizPageState extends State<QuizPage> {
       displayQuestion(currentQuestionIndex);
     } else {
       // Handle the case where the quiz is not found
-      // You may want to show an error message or navigate back
+      // may want to show an error message or navigate back
       print("Quiz not found with ID: $quizId");
     }
   }
@@ -290,9 +295,16 @@ class _QuizPageState extends State<QuizPage> {
         //This is where the question will be asked / written to the page. The question format for posing the question is universal for all question types thus doesn't need to be type specific.
 
         //This is where the response format will change depending on the question type. Multiple Choice will have selectable thingys. Drag and Drop something else...
+        // if (question.type == QuestionType.multipleChoice) {
+        //   buildMultipleChoiceOptions(question.answer as QuestionMultipleChoice),
+        // } else if (question.type == QuestionType.fillInTheBlank) {
+        //   buildFillInTheBlankOptions(question.answer as QuestionFillInTheBlank),
+        // } //FOR SOME REASON THIS IF STATEMENT WONT WORK SO I DECIDED TO USE A SWITCH STATEMENT...
+
         if (question.type == QuestionType.multipleChoice)
           buildMultipleChoiceOptions(question.answer as QuestionMultipleChoice),
-        // Add other cases for different question types when needed.
+        if (question.type == QuestionType.fillInTheBlank)
+          buildMultipleChoiceOptions(question.answer as QuestionMultipleChoice),
       ],
     );
   }
@@ -340,6 +352,21 @@ class _QuizPageState extends State<QuizPage> {
     );
   }
 
+  Widget buildFillInTheBlankInput(QuestionFillInTheBlank question) {
+    return TextField(
+      onChanged: (text) {
+        // Handle user input here
+        setState(() {
+          question.userResponse = text;
+        });
+      },
+      decoration: InputDecoration(
+        hintText: "Type your answer here...",
+        // You can customize the input decoration based on your design
+      ),
+    );
+  }
+
   Future<void> displayQuestion(int index) async {
     if (loadedQuestions.isNotEmpty && index < loadedQuestions.length) {
       QuizQuestion currentQuestion = loadedQuestions[index];
@@ -358,8 +385,18 @@ class _QuizPageState extends State<QuizPage> {
         // elseif (currentQuestion.type == QuestionType.dragAndDrop) {
       }
 
+    
       // Implement logic to update the UI with the current question
       // For example, you can set the question text in a Text widget.
+
+      if (currentQuestion.type == QuestionType.fillInTheBlank) {
+        QuestionFillInTheBlank fillInTheBlankAnswer = currentQuestion.answer as QuestionFillInTheBlank;
+        setState(() {
+          fillInTheBlankController.text = fillInTheBlankAnswer.userResponse;
+        });
+        print("fillInTheBlankAnswer: ${fillInTheBlankController.text}");
+        print("Correct Answers: ${fillInTheBlankAnswer.correctAnswers}");
+      }
 
       // setState(() {
       //   currentQuestionText = currentQuestion.questionText;
