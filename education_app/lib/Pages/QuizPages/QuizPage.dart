@@ -304,7 +304,7 @@ class _QuizPageState extends State<QuizPage> {
         if (question.type == QuestionType.multipleChoice)
           buildMultipleChoiceOptions(question.answer as QuestionMultipleChoice),
         if (question.type == QuestionType.fillInTheBlank)
-          buildMultipleChoiceOptions(question.answer as QuestionMultipleChoice),
+          buildFillInTheBlank(question.answer as QuestionFillInTheBlank),
       ],
     );
   }
@@ -352,7 +352,7 @@ class _QuizPageState extends State<QuizPage> {
     );
   }
 
-  Widget buildFillInTheBlankInput(QuestionFillInTheBlank question) {
+  Widget buildFillInTheBlank(QuestionFillInTheBlank question) {
     return TextField(
       onChanged: (text) {
         // Handle user input here
