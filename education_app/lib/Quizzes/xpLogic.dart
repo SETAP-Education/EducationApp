@@ -17,23 +17,31 @@ void setXp(int quizXp){
 
   // check if level has changed
   if(checkIfLeveledUp() == true){
+    // only need to set level and rank if user has leveled up, otherwise just wasting time
+    level = setLevel();
+    rank = setRank();
     if(reachedMaxLevel == true){
-      // print 'congrats! you have leveled up as far as possible' message
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text('Congratulations you have reached the maximum level! You are now at level ${level} and rank ${rank}'),
+        ),
+      ),
     }
     else{
-      // print 'congrats! you leveled up' message
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text('Congratulations you leveled up! You are now at level ${level} and rank ${rank}'),
+        ),
+      ),
     }
   }
 
-  level = setLevel();
-  rank = setRank();
-
-  // need to add a function that sets xp to users db - needs to happen everytime the user completes a quiz
+  // need to add a function that updates xp to users db - needs to happen everytime the user completes a quiz
 }
 
 // sets the level variable based on users xp
 // setLevel() used in leveledUp() & leveledUp() used whenever xp is altered - means that only xp is altered when a user completes a quiz, makes everything simpler.
-int setLevel(){
+int getLevel(){
   List<int> levels = [100,300,500,1000,1500,2250,3000,4000,5000,7000];
   int currentLevel = 0;
   for(int i=0;i<=9;i++){
@@ -63,7 +71,7 @@ bool checkIfLeveledUp(){
 }
 
 // returns the rank based on users level
-String setRank(){
+String getRank(){
   List<String> rankList = ['Copper', 'Silver', 'Gold', 'Pearl', 'Jade', 'Ruby', 'Sapphire', 'Emerald', 'Opal', 'Diamond'];
   String rank = '';
   for(int i=0;i<=9;i++){
@@ -72,4 +80,15 @@ String setRank(){
     }
   }
   return rank;
+}
+
+// function to calculate xp gained from completing a quiz
+void xpGained(){
+  int xpGained = 0;
+
+  // get total number of questions answered correctly
+  // add up difficulty for each question answered correctly
+  // divide this by the average difficulty of the quiz - xpGained = this value
+
+  setXp(xpGained);
 }
