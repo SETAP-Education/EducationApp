@@ -4,6 +4,7 @@ enum QuestionType {
   none, 
   multipleChoice,
   fillInTheBlank,
+  // dragAndDrop,
 }
 
 // Base class for questions
@@ -90,6 +91,38 @@ class QuestionFillInTheBlank extends QuestionAnswer {
   }
 }
 
+// class DragAndDropQuestion extends QuestionAnswer {
+//   List<String> definitions;
+//   List<String> correctOrder;
+
+//   DragAndDropQuestion({
+//     required String questionText,
+//     required this.definitions,
+//     required this.correctOrder,
+//   }) : super(
+//           questionText: questionText,
+//           type: QuestionType.dragAndDrop,
+//         );
+
+//   @override
+//   Map<String, dynamic> toFirestore() {
+//     Map<String, dynamic> superData = super.toFirestore();
+//     superData.addAll({
+//       'definitions': definitions,
+//       'correctOrder': correctOrder,
+//     });
+//     return superData;
+//   }
+
+//   factory DragAndDropQuestion.fromMap(Map<String, dynamic> map) {
+//     return DragAndDropQuestion(
+//       questionText: map["questionText"],
+//       definitions: map["definitions"] is Iterable ? List.from(map["definitions"]) : List.empty(),
+//       correctOrder: map["correctOrder"] is Iterable ? List.from(map["correctOrder"]) : List.empty(),
+//     );
+//   }
+// }
+
 class QuizQuestion {
 
   QuizQuestion();
@@ -140,6 +173,8 @@ class QuizQuestion {
       question.answer = QuestionMultipleChoice.fromMap(data["answer"]);
     } else if (question.type == QuestionType.fillInTheBlank) {
       question.answer = QuestionFillInTheBlank.fromMap(data["answer"]);
+    // } else if (question.type == QuestionType.dragAndDrop) {
+    //   question.answer = DragAndDropQuestion.fromMap(data["answer"]);
     }
 
     return question; 
