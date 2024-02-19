@@ -1,29 +1,80 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
+import 'Themes/themelistener.dart';
+import 'Themes/themedefinition.dart';
 import 'quizhistory.dart';
 
 void main() async {
+  runApp(Listener());
+}
+ThemeManager _themeManager = ThemeManager();
 
-  runApp (
-    const MaterialApp(
-      home: Home(),
-    ),
-  );
+class Listener extends StatefulWidget {
+
+  // This widget is the root of your application.
+  @override
+  _ListenerState createState() => _ListenerState();
 }
 
-class Home extends StatelessWidget {
-  const Home({Key? key}) : super(key: key);
+class _ListenerState extends State<Listener> {
+
+  @override
+  void dispose() {
+    _themeManager.removeListener(themeListener);
+    super.dispose();
+  }
+
+  @override
+  void initState() {
+    _themeManager.addListener(themeListener);
+    super.initState();
+  }
+
+  themeListener(){
+    if(mounted){
+      setState(() {
+
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      theme: lightTheme,
+      darkTheme: darkTheme,
+      themeMode: _themeManager.themeMode,
+      home: Home(),
+    );
+  }
+}
+
+class Home extends StatefulWidget {
+  const Home({Key? key}) : super(key: key);
+
+  @override
+  _MyHomeScreenState createState() => _MyHomeScreenState();
+}
+
+class _MyHomeScreenState extends State<Home> {
+  @override
+  Widget build(BuildContext context) {
+    TextTheme _textTheme = Theme.of(context).textTheme;
+    bool isDark = Theme.of(context).brightness == Brightness.dark;
     return Scaffold(
-      backgroundColor: Color(0xff9323ba),
+      appBar: AppBar(
+        actions: [Switch(value: _themeManager.themeMode == ThemeMode.dark, onChanged: (newValue) {
+          _themeManager.toggleTheme(newValue);
+        })],
+      ),
       body: SingleChildScrollView(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.max,
           children: [
-            const Row(
+            Row(
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisSize: MainAxisSize.max,
@@ -54,22 +105,21 @@ class Home extends StatelessWidget {
                           "Hello,",
                           textAlign: TextAlign.start,
                           overflow: TextOverflow.clip,
-                          style: TextStyle(
+                          style:
+                          TextStyle(
                             fontWeight: FontWeight.w400,
                             fontStyle: FontStyle.normal,
                             fontSize: 14,
-                            color: Color(0xff8c8989),
+                            color: isDark?Colors.white: Colors.black,
                           ),
                         ),
                         Text(
                           "USER",
-                          textAlign: TextAlign.start,
+                          textAlign:
+                          TextAlign.start,
                           overflow: TextOverflow.clip,
-                          style: TextStyle(
-                            fontWeight: FontWeight.w700,
-                            fontStyle: FontStyle.normal,
-                            fontSize: 16,
-                            color: Color(0xff000000),
+                          style: _textTheme.headlineMedium?.copyWith(
+                              color:isDark?Colors.white: Colors.black,fontWeight: FontWeight.bold
                           ),
                         ),
                       ],
@@ -97,17 +147,17 @@ class Home extends StatelessWidget {
                 ],
               ),
             ),
-            const Padding(
+            Padding(
               padding: EdgeInsets.all(16),
               child: Text(
                 "What topic do you need to cover?",
                 textAlign: TextAlign.start,
                 overflow: TextOverflow.clip,
-                style: TextStyle(
+                style: TextStyle (
                   fontWeight: FontWeight.w700,
                   fontStyle: FontStyle.normal,
                   fontSize: 16,
-                  color: Color(0xff000000),
+                  color: isDark?Colors.white: Colors.black,
                 ),
               ),
             ),
@@ -118,11 +168,11 @@ class Home extends StatelessWidget {
                 obscureText: false,
                 textAlign: TextAlign.start,
                 maxLines: 1,
-                style: const TextStyle(
+                style: TextStyle(
                   fontWeight: FontWeight.w400,
                   fontStyle: FontStyle.normal,
                   fontSize: 14,
-                  color: Color(0xff000000),
+                  color: isDark?Colors.white: Colors.black,
                 ),
                 decoration: InputDecoration(
                   disabledBorder: UnderlineInputBorder(
@@ -315,7 +365,7 @@ class Home extends StatelessWidget {
                       fontWeight: FontWeight.w700,
                       fontStyle: FontStyle.normal,
                       fontSize: 18,
-                      color: Color(0xff000000),
+                      color: isDark?Colors.white: Colors.black,
                     ),
                   ),
                   Container(
@@ -345,6 +395,63 @@ class Home extends StatelessWidget {
           ],
         ),
       ),
+      bottomNavigationBar: //paste this to make it visible; just above the scaffold
+      const _DemoBottomAppBar(isElevated: true, isVisible: true,),
     );
   }
 }
+
+// Paste this at the bottom of the page to build a navigation bar
+class _DemoBottomAppBar extends StatelessWidget {
+  const _DemoBottomAppBar({
+    required this.isElevated,
+    required this.isVisible,
+  });
+
+  final bool isElevated;
+  final bool isVisible;
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 200),
+      height: isVisible ? 80.0 : 0,
+      child: BottomAppBar(
+        elevation: isElevated ? null : 0.0,
+        child: Row(
+          children: <Widget>[
+            IconButton(
+              tooltip: 'Open popup menu',
+              icon: const Icon(Icons.more_vert),
+              onPressed: () {
+                final SnackBar snackBar = SnackBar(
+                  content: const Text('Yay! A SnackBar!'),
+                  action: SnackBarAction(
+                    label: 'Undo',
+                    onPressed: () {},
+                  ),
+                );
+
+                // Find the ScaffoldMessenger in the widget tree
+                // and use it to show a SnackBar.
+                ScaffoldMessenger.of(context).showSnackBar(snackBar);
+              },
+            ),
+            IconButton(
+              tooltip: 'Search',
+              icon: const Icon(Icons.search),
+              onPressed: () {},
+            ),
+            IconButton(
+              tooltip: 'Favorite',
+              icon: const Icon(Icons.favorite),
+              onPressed: () {},
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+
