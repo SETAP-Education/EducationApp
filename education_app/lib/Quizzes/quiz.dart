@@ -90,14 +90,15 @@ class QuestionFillInTheBlank extends QuestionAnswer {
   }
 }
 
-
 class DragAndDropQuestion extends QuestionAnswer {
   List<String> options;
-  List<int> correctAnswers;
+  List<String> optionsText;
+  List<String> correctOrder;
 
   DragAndDropQuestion({
     required this.options,
-    required this.correctAnswers,
+    required this.optionsText,
+    required this.correctOrder,
   });
 
   @override
@@ -105,21 +106,44 @@ class DragAndDropQuestion extends QuestionAnswer {
     return {
       "answer": {
         "options": options,
-        "correctAnswers": correctAnswers,
+        "optionsText": optionsText,
+        "correctOrder": correctOrder,
       },
       ...super.toFirestore(),
     };
   }
 
   factory DragAndDropQuestion.fromMap(Map<String, dynamic> map) {
-    final options = (map["options"] as List<dynamic>?)?.map((e) => e.toString()).toList() ?? [];
-    final correctAnswers = (map["correctAnswers"] as List<dynamic>?)?.map((e) => e as int).toList() ?? [];
-    return DragAndDropQuestion(
-      options: options,
-      correctAnswers: correctAnswers,
-    );
+    final answer = map["answer"] as Map<String, dynamic>?;
+
+    if (answer != null) {
+      final options = (answer["options"] as List<dynamic>?)?.cast<String>() ?? [];
+      final optionsText = (answer["optionsText"] as List<dynamic>?)?.cast<String>() ?? [];
+      final correctOrder = (answer["correctOrder"] as List<dynamic>?)?.cast<String>() ?? [];
+
+      return DragAndDropQuestion(
+        options: options,
+        optionsText: optionsText,
+        correctOrder: correctOrder,
+      );
+    } else {
+      // If the structure is different, try to extract directly
+      final options = (map["options"] as List<dynamic>?)?.cast<String>() ?? [];
+      final optionsText = (map["optionsText"] as List<dynamic>?)?.cast<String>() ?? [];
+      final correctOrder = (map["correctOrder"] as List<dynamic>?)?.cast<String>() ?? [];
+
+      return DragAndDropQuestion(
+        options: options,
+        optionsText: optionsText,
+        correctOrder: correctOrder,
+      );
+    }
   }
 }
+
+
+
+
 
 Map<String, dynamic> checkUserAnswers(List<QuizQuestion> loadedQuestions) {
   Map<String, dynamic> summary = {};

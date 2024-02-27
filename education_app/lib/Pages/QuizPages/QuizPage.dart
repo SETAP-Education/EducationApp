@@ -403,77 +403,79 @@ class _QuizPageState extends State<QuizPage> {
     print("Result: ${isCorrect ? 'Correct' : 'Incorrect'}");
   }
 
-
-
-
   Widget buildDragAndDrop(DragAndDropQuestion question) {
-    // Implement your UI for Drag and Drop question type here.
-    // You can use draggable and drag target widgets to create draggable cards.
-    // Here's a simple example:
+  // Implement your UI for Drag and Drop question type here.
+  // You can use draggable and drag target widgets to create draggable cards.
+  // Here's an updated example:
 
-    return Column(
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            // Draggable cards
-            for (String option in question.options)
-              Draggable<String>(
-                data: option,
-                child: Card(
-                  elevation: 3,
-                  child: Container(
-                    width: 100,
-                    height: 50,
-                    alignment: Alignment.center,
-                    child: Text(option),
-                  ),
-                ),
-                feedback: Card(
-                  elevation: 5,
-                  child: Container(
-                    width: 100,
-                    height: 50,
-                    alignment: Alignment.center,
-                    child: Text(option),
-                  ),
-                ),
-                childWhenDragging: Container(),
+  return Column(
+    children: [
+      // Drag targets
+      for (int i = 0; i < question.options.length; i++)
+        DragTarget<String>(
+          builder: (context, candidateData, rejectedData) {
+            return Card(
+              elevation: 3,
+              child: Container(
+                width: 100,
+                height: 50,
+                alignment: Alignment.center,
+                child: Text(question.options[i]),
               ),
-          ],
+            );
+          },
+          onWillAccept: (data) {
+            // Add your logic to determine if the dragged item is correct.
+            // Return true if it's correct, false otherwise.
+            return data == question.optionsText[i];
+          },
+          onAccept: (data) {
+            // Handle the accepted item (optional).
+            print("Accepted: $data");
+          },
+          onLeave: (data) {
+            // Handle when a draggable item leaves the target area (optional).
+            print("Left: $data");
+          },
         ),
-        SizedBox(height: 20),
-        // Drag targets
-        for (int i = 0; i < question.options.length; i++)
-          DragTarget<String>(
-            builder: (context, candidateData, rejectedData) {
-              return Card(
+      SizedBox(height: 20),
+      // Draggable cards
+      Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+          // Draggable cards
+          for (int i = 0; i < question.options.length; i++)
+            Draggable<String>(
+              data: question.optionsText[i],
+              child: Card(
                 elevation: 3,
                 child: Container(
                   width: 100,
                   height: 50,
                   alignment: Alignment.center,
-                  child: Text("Drop here"),
+                  child: Text(question.optionsText[i]),
                 ),
-              );
-            },
-            onWillAccept: (data) {
-              // Add your logic to determine if the dragged item is correct.
-              // Return true if it's correct, false otherwise.
-              return true;
-            },
-            onAccept: (data) {
-              // Handle the accepted item (optional).
-              print("Accepted: $data");
-            },
-            onLeave: (data) {
-              // Handle when a draggable item leaves the target area (optional).
-              print("Left: $data");
-            },
-          ),
-      ],
-    );
-  }
+              ),
+              feedback: Card(
+                elevation: 5,
+                child: Container(
+                  width: 100,
+                  height: 50,
+                  alignment: Alignment.center,
+                  child: Text(question.optionsText[i]),
+                ),
+              ),
+              childWhenDragging: Container(),
+            ),
+        ],
+      ),
+    ],
+  );
+}
+
+
+
+
 
   Future<void> displayQuestion(int index) async {
     if (loadedQuestions.isNotEmpty && index < loadedQuestions.length) {
