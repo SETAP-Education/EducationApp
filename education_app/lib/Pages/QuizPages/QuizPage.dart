@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:education_app/Quizzes/quiz.dart';
 import 'package:education_app/Quizzes/quizManager.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:education_app/Pages/QuizPages/QuizSummaryPage.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class QuizPage extends StatefulWidget {
   @override
@@ -14,13 +17,16 @@ class _QuizPageState extends State<QuizPage> {
   late List<QuizQuestion> loadedQuestions = [];
   int currentQuestionIndex = 0;
   bool quizCompleted = false;
+  Map<String, dynamic> userSummary = {};
+  bool quizSubmitted = false;
+  // Replace the quizId being passed in, it is static for testing purposes.
+  String quizId = 'yKExulogYwk65MqHrFMN';
 
   @override
   void initState() {
     super.initState();
     quizManager = QuizManager();
-    // Replace 'your_quiz_id' with the actual ID of the quiz you want to load, it is static for testing purposes.
-    loadQuiz('yKExulogYwk65MqHrFMN');
+    loadQuiz(quizId);
     fillInTheBlankController = TextEditingController();
   }
 
@@ -92,6 +98,43 @@ class _QuizPageState extends State<QuizPage> {
     }
   }
 
+  Future<void> moveToNextOrSubmit() async {
+    // Check correctness of the selected options for multiple-choice question
+    if (loadedQuestions[currentQuestionIndex].type ==
+        QuestionType.multipleChoice) {
+      checkMultipleChoiceAnswer(
+          loadedQuestions[currentQuestionIndex].answer as QuestionMultipleChoice);
+    }
+
+    print("Options selected: ${(loadedQuestions[currentQuestionIndex].answer as QuestionMultipleChoice).selectedOptions}");
+    print("Current Question Index: $currentQuestionIndex");
+
+    if (currentQuestionIndex < loadedQuestions.length - 1) {
+      // Move to the next question
+      currentQuestionIndex++;
+      await displayQuestion(currentQuestionIndex);
+    } else {
+      // Last question, submit the quiz
+      setState(() {
+        quizCompleted = true;
+      });
+
+      // Store user answers in Firebase
+      await storeUserAnswersInFirebase();
+
+      // Navigate to QuizSummaryPage with quizSummary
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => QuizSummaryPage(quizSummary: userSummary),
+        ),
+      );
+    }
+
+    print("Question Index: $currentQuestionIndex");
+  }
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -146,27 +189,39 @@ class _QuizPageState extends State<QuizPage> {
                         },
                         child: Text('Previous Question'),
                       ),
-                    if (!quizCompleted)
+                      // ElevatedButton(
+                      //   onPressed: () async {
+                      //     await moveToNextOrSubmit();
+                      //   },
+                      //   child: Text(
+                      //     currentQuestionIndex < loadedQuestions.length - 1
+                      //         ? 'Next Question'
+                      //         : 'Submit Quiz',
+                      //   ),
+                      // ),
+                      //  IDEALLY WOULD USE THE ABOVE BUTTON BUT UNTIL THAT FUNCTIONALITY WORKS, THE OLD ONE STAYS.
+                      if (!quizCompleted)
                       ElevatedButton(
                         onPressed: () async {
-                          print(
-                              "Options selected: ${(loadedQuestions[currentQuestionIndex].answer as QuestionMultipleChoice).selectedOptions}");
-                          print(
-                              "Current Question Index: $currentQuestionIndex");
-                          currentQuestionIndex++;
-                          if (currentQuestionIndex <
-                              loadedQuestions.length - 1) {
-                            print(
-                                "Question Index inside if: $currentQuestionIndex");
-                            await displayQuestion(currentQuestionIndex);
-                          } else {
-                            print(
-                                "Question Index inside else: $currentQuestionIndex");
-                            setState(() {
-                              quizCompleted = true;
-                            });
-                          }
-                          print("Question Index: $currentQuestionIndex");
+                          // print(
+                          //     "Options selected: ${(loadedQuestions[currentQuestionIndex].answer as QuestionMultipleChoice).selectedOptions}");
+                          // print(
+                          //     "Current Question Index: $currentQuestionIndex");
+                          // currentQuestionIndex++;
+                          // if (currentQuestionIndex <
+                          //     loadedQuestions.length - 1) {
+                          //   print(
+                          //       "Question Index inside if: $currentQuestionIndex");
+                          //   await displayQuestion(currentQuestionIndex);
+                          // } else {
+                          //   print(
+                          //       "Question Index inside else: $currentQuestionIndex");
+                          //   setState(() {
+                          //     quizCompleted = true;
+                          //   });
+                          // }
+                          // print("Question Index: $currentQuestionIndex");
+                          moveToNextOrSubmit();
                         },
                         child: const Text('Next Question'),
                       ),
@@ -184,7 +239,7 @@ class _QuizPageState extends State<QuizPage> {
                           //   ),
                           // );
                           // WILL PUSH TO THE QUIZ SUMMARY
-                          print("Quiz Summary: Not implemented yet");
+                          moveToNextOrSubmit();
                         },
                         child: Text('Submit Questions'),
                       ),
@@ -240,7 +295,7 @@ class _QuizPageState extends State<QuizPage> {
         if (question.type == QuestionType.fillInTheBlank)
           buildFillInTheBlank(question.answer as QuestionFillInTheBlank),
         if (question.type == QuestionType.dragAndDrop) 
-        buildDragAndDrop(question.answer as DragAndDropQuestion),
+          buildDragAndDrop(question.answer as DragAndDropQuestion),
       ],
     );
   }
@@ -287,6 +342,51 @@ class _QuizPageState extends State<QuizPage> {
       },
     );
   }
+
+  // Function to check correctness of selected options for multiple-choice question
+  void checkMultipleChoiceAnswer(QuestionMultipleChoice question) {
+    // Get the correct answers for the question
+    List<int> correctAnswers = question.correctAnswers;
+
+    // Get the user's selected options
+    List<int> selectedOptions = question.selectedOptions;
+
+    // Sort both lists to compare them easily
+    correctAnswers.sort();
+    selectedOptions.sort();
+
+    // Check if the selected options match the correct answers
+    if (areListsEqual(correctAnswers, selectedOptions)) {
+      // The user's answer is correct
+      print("Correct! User selected the right options.");
+      userSummary[loadedQuestions[currentQuestionIndex].questionText] = {
+        'correctIncorrect': 'Correct',
+        'userResponse': question.selectedOptions,
+      };
+    } else {
+      // The user's answer is incorrect
+      print("Incorrect! User selected the wrong options.");
+      userSummary[loadedQuestions[currentQuestionIndex].questionText] = {
+        'correctIncorrect': 'Incorrect',
+        'userResponse': question.selectedOptions,
+      };
+    }
+  }
+
+  bool areListsEqual(List<dynamic> list1, List<dynamic> list2) {
+    if (list1.length != list2.length) {
+      return false;
+    }
+
+    for (int i = 0; i < list1.length; i++) {
+      if (list1[i] != list2[i]) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
 
   Widget buildFillInTheBlank(QuestionFillInTheBlank question) {
     return TextField(
@@ -382,32 +482,135 @@ class _QuizPageState extends State<QuizPage> {
       print("Type: ${currentQuestion.type}");
       print("Difficulty: ${currentQuestion.difficulty}");
       print("Tags: ${currentQuestion.tags}");
+
+      print("1");
       if (currentQuestion.type == QuestionType.multipleChoice) {
+        print("Multiple Choice Start");
         QuestionMultipleChoice multipleChoiceAnswer =
             currentQuestion.answer as QuestionMultipleChoice;
         print("Options: ${multipleChoiceAnswer.options}");
         print("Correct Answers: ${multipleChoiceAnswer.correctAnswers}");
-        // elseif (currentQuestion.type == QuestionType.dragAndDrop) {
-      }
-
-    
-      // Implement logic to update the UI with the current question
-      // For example, you can set the question text in a Text widget.
-
-      if (currentQuestion.type == QuestionType.fillInTheBlank) {
-        QuestionFillInTheBlank fillInTheBlankAnswer = currentQuestion.answer as QuestionFillInTheBlank;
+        userSummary[loadedQuestions[currentQuestionIndex].questionText] = {
+          'correctIncorrect': 'Not Answered',
+          'userResponse': [],
+        };
+        print("Multiple Choice End");
+      } else if (currentQuestion.type == QuestionType.fillInTheBlank) {
+        QuestionFillInTheBlank fillInTheBlankAnswer =
+            currentQuestion.answer as QuestionFillInTheBlank;
         setState(() {
           fillInTheBlankController.text = fillInTheBlankAnswer.userResponse;
         });
         print("fillInTheBlankAnswer: ${fillInTheBlankController.text}");
         print("Correct Answers: ${fillInTheBlankAnswer.correctAnswers}");
+        userSummary[loadedQuestions[currentQuestionIndex].questionText] = {
+          'correctIncorrect': 'Not Answered',
+          'userResponse': fillInTheBlankAnswer.userResponse,
+        };
       }
-
-      // setState(() {
-      //   currentQuestionText = currentQuestion.questionText;
-      // });
     } else {
       print("Error: loadedQuestions is empty or index is out of range.");
     }
+  }
+
+  Future<void> storeUserAnswersInFirebase() async {
+    try {
+      // Assuming you have the currently logged-in user
+      User? user = FirebaseAuth.instance.currentUser;
+      if (user == null) {
+        // Handle the case where the user is not logged in
+        print("User not logged in.");
+        return;
+      }
+
+      // Get the user's ID
+      String userId = user.uid;
+
+      // Create a reference to the users collection
+      CollectionReference usersCollection = FirebaseFirestore.instance.collection('users');
+
+      // Create a reference to the user's document
+      DocumentReference userDocument = usersCollection.doc(userId);
+
+      // Create a reference to the quiz history subcollection for the current quiz
+      CollectionReference quizHistoryCollection = userDocument.collection('quizHistory').doc(quizId).collection('attempts');
+
+      // Generate a unique ID for this quiz attempt (using timestamp)
+      String quizAttemptId = DateTime.now().toUtc().toIso8601String();
+
+      // Create a reference to the quiz attempt document
+      DocumentReference quizAttemptDocument = quizHistoryCollection.doc(quizAttemptId);
+
+      // Check user answers and get the summary
+      Map<String, dynamic> userSummary = checkUserAnswers(loadedQuestions);
+
+      // Prepare data to store in Firebase
+      Map<String, dynamic> quizAttemptData = {
+        'timestamp': FieldValue.serverTimestamp(), // Store timestamp
+        'userResults': {
+          'quizTotal': 20, // widget.quiz.getQuizDifficulty(), // Update this with the actual maximum points
+          'userTotal': 4, // calculateUserTotal(userSummary),
+        },
+        'userSummary': userSummary,
+      };
+
+      // Store data in Firebase
+      await quizAttemptDocument.set(quizAttemptData);
+
+      // Print success message
+      print("User answers and summary stored successfully!");
+    } catch (error) {
+      // Handle errors, e.g., display an error message
+      print("Error storing user answers: $error");
+    }
+  }
+
+
+
+  // Function to get correct answers for a specific question
+  List<dynamic> getCorrectAnswersForQuestion(QuizQuestion question) {
+    if (question.type == QuestionType.multipleChoice) {
+      return (question.answer as QuestionMultipleChoice).correctAnswers;
+    } else if (question.type == QuestionType.fillInTheBlank) {
+      return (question.answer as QuestionFillInTheBlank).correctAnswers;
+    } else {
+      // Handle other question types if needed
+      return [];
+    }
+  }
+
+
+
+// Helper function to get correct answers from loaded questions
+Map<String, dynamic> getCorrectAnswers(List<QuizQuestion> questions) {
+  Map<String, dynamic> correctAnswers = {};
+  questions.forEach((question) {
+    if (question.type == QuestionType.multipleChoice) {
+      QuestionMultipleChoice mcQuestion = question.answer as QuestionMultipleChoice;
+      correctAnswers[question.questionText] = mcQuestion.correctAnswers;
+    } else if (question.type == QuestionType.fillInTheBlank) {
+      QuestionFillInTheBlank fitbQuestion = question.answer as QuestionFillInTheBlank;
+      correctAnswers[question.questionText] = fitbQuestion.correctAnswers;
+    } else {
+      // Handle other question types if needed
+    }
+  });
+  return correctAnswers;
+}
+
+
+  // Calculate user total based on the summary
+  int calculateUserTotal(Map<String, dynamic> userSummary) {
+    int userTotal = 0;
+
+    userSummary.forEach((questionId, details) {
+      if (details['correctIncorrect'] == 'Correct') {
+        // Assign points based on your scoring logic
+        // For example, you might have different point values for different question difficulties
+        userTotal += 1;
+      }
+    });
+
+    return userTotal;
   }
 }

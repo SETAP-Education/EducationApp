@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:education_app/Pages/LandingPage.dart';
 import 'package:education_app/Pages/AuthenticationPages/LoginPage.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -174,7 +175,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
       User? user = userCredential.user;
 
       if (user != null) {
-        await _createDatabase();
+        await _createDatabase(user.uid, _emailController.text, "a"); // REPLACE "a" WITH displayName once that page has been has been implemented
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => LandingPage()),
@@ -191,7 +192,45 @@ class _RegistrationPageState extends State<RegistrationPage> {
     }
   }
 
-  Future<void> _createDatabase() async {
-    // Database creation logic...
+  Future<void> _createDatabase(String uid, String email, String displayName) async {
+    try {
+      // Reference to the "users" collection
+      CollectionReference usersCollection = FirebaseFirestore.instance.collection('users');
+
+      // Reference to the user document under "users" collection
+      DocumentReference userDocument = usersCollection.doc(uid);
+
+      // Add user information to the user document
+      await userDocument.set({
+        'uid': uid,
+        'email': email,
+        'displayName': displayName,
+      });
+
+      // Create subcollections
+      await _createSubcollections(userDocument);
+
+      print('Database creation successful');
+    } catch (e) {
+      print('Database creation failed: $e');
+      // Handle the error accordingly
+    }
+  }
+
+  Future<void> _createSubcollections(DocumentReference userDocument) async {
+    try {
+      // Add a subcollection under the user document for quizzes
+      // CollectionReference quizzesCollection = userDocument.collection('quizzes');
+
+      // Add a subcollection under the user document for quiz history
+      // CollectionReference quizHistoryCollection = userDocument.collection('quizHistory');
+
+      // You can add more subcollections or additional logic as needed
+
+      print('Subcollections creation successful');
+    } catch (e) {
+      print('Subcollections creation failed: $e');
+      // Handle the error accordingly
+    }
   }
 }

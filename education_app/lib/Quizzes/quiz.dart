@@ -98,22 +98,7 @@ class DragAndDropQuestion extends QuestionAnswer {
   DragAndDropQuestion({
     required this.options,
     required this.correctAnswers,
-    String questionText = "Match the corresponding text to its draggable square.",
   });
-
-  @override
-  void debugPrint() {
-    print("Options:");
-    for (var option in options) {
-      print(option);
-    }
-
-    String correctAnswersStr = "Correct Answers: ";
-    for (var answer in correctAnswers) {
-      correctAnswersStr += "$answer, ";
-    }
-    print(correctAnswersStr);
-  }
 
   @override
   Map<String, dynamic> toFirestore() {
@@ -122,20 +107,53 @@ class DragAndDropQuestion extends QuestionAnswer {
         "options": options,
         "correctAnswers": correctAnswers,
       },
+      ...super.toFirestore(),
     };
   }
 
   factory DragAndDropQuestion.fromMap(Map<String, dynamic> map) {
+    final options = (map["options"] as List<dynamic>?)?.map((e) => e.toString()).toList() ?? [];
+    final correctAnswers = (map["correctAnswers"] as List<dynamic>?)?.map((e) => e as int).toList() ?? [];
     return DragAndDropQuestion(
-      questionText: map["questionText"] ?? "Match the corresponding text to its draggable square.",
-      options: map["answer"]["options"] is Iterable ? List.from(map["answer"]["options"]) : List.empty(),
-      correctAnswers: map["answer"]["correctAnswers"] is Iterable
-          ? List.from(map["answer"]["correctAnswers"])
-          : List.empty(),
+      options: options,
+      correctAnswers: correctAnswers,
     );
   }
 }
 
+Map<String, dynamic> checkUserAnswers(List<QuizQuestion> loadedQuestions) {
+  Map<String, dynamic> summary = {};
+
+  for (var question in loadedQuestions) {
+    String questionId = question.questionText;
+    String correctIncorrect = "";
+    String userResponse = "";
+
+    // Check user response based on question type
+    if (question.type == QuestionType.multipleChoice) {
+      QuestionMultipleChoice multipleChoiceAnswer = question.answer as QuestionMultipleChoice;
+      correctIncorrect = multipleChoiceAnswer.correctAnswers.every((option) => multipleChoiceAnswer.selectedOptions.contains(option))
+        ? "Correct"
+        : "Incorrect";
+      userResponse = multipleChoiceAnswer.selectedOptions.join(", ");
+    } else if (question.type == QuestionType.fillInTheBlank) {
+      QuestionFillInTheBlank fillInTheBlankAnswer = question.answer as QuestionFillInTheBlank;
+      correctIncorrect = fillInTheBlankAnswer.correctAnswers.contains(fillInTheBlankAnswer.userResponse)
+          ? "Correct"
+          : "Incorrect";
+      userResponse = fillInTheBlankAnswer.userResponse;
+    } else if (question.type == QuestionType.dragAndDrop) {
+      // Add logic for drag and drop questions if needed
+    }
+
+    summary[questionId] = {
+      'correctIncorrect': correctIncorrect,
+      'userResponse': userResponse,
+    };
+  }
+
+  return summary;
+}
 
 class QuizQuestion {
 
@@ -187,8 +205,8 @@ class QuizQuestion {
       question.answer = QuestionMultipleChoice.fromMap(data["answer"]);
     } else if (question.type == QuestionType.fillInTheBlank) {
       question.answer = QuestionFillInTheBlank.fromMap(data["answer"]);
-    // } else if (question.type == QuestionType.dragAndDrop) {
-    //   question.answer = DragAndDropQuestion.fromMap(data["answer"]);
+    } else if (question.type == QuestionType.dragAndDrop) {
+      question.answer = DragAndDropQuestion.fromMap(data["answer"]);
     }
 
     return question; 
