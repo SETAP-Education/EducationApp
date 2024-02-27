@@ -60,9 +60,8 @@ class QuestionMultipleChoice extends QuestionAnswer {
   }
 }
 
-// Question specific values for Fill in the Blank Question Type
 class QuestionFillInTheBlank extends QuestionAnswer {
-  QuestionFillInTheBlank({ required this.correctAnswers, this.userResponse = "" });
+  QuestionFillInTheBlank({required this.correctAnswers, this.userResponse = ""});
 
   List<String> correctAnswers;
   String userResponse;
@@ -90,6 +89,7 @@ class QuestionFillInTheBlank extends QuestionAnswer {
     );
   }
 }
+
 
 class DragAndDropQuestion extends QuestionAnswer {
   List<String> options;
@@ -136,13 +136,17 @@ Map<String, dynamic> checkUserAnswers(List<QuizQuestion> loadedQuestions) {
         ? "Correct"
         : "Incorrect";
       userResponse = multipleChoiceAnswer.selectedOptions.join(", ");
-    } else if (question.type == QuestionType.fillInTheBlank) {
+    }
+    
+    if (question.type == QuestionType.fillInTheBlank) {
       QuestionFillInTheBlank fillInTheBlankAnswer = question.answer as QuestionFillInTheBlank;
       correctIncorrect = fillInTheBlankAnswer.correctAnswers.contains(fillInTheBlankAnswer.userResponse)
           ? "Correct"
           : "Incorrect";
       userResponse = fillInTheBlankAnswer.userResponse;
-    } else if (question.type == QuestionType.dragAndDrop) {
+    } 
+    
+    if (question.type == QuestionType.dragAndDrop) {
       // Add logic for drag and drop questions if needed
     }
 

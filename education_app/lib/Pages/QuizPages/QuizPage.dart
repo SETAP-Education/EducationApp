@@ -99,19 +99,40 @@ class _QuizPageState extends State<QuizPage> {
   }
 
   Future<void> moveToNextOrSubmit() async {
-    // Check correctness of the selected options for multiple-choice question
-    if (loadedQuestions[currentQuestionIndex].type ==
-        QuestionType.multipleChoice) {
-      checkMultipleChoiceAnswer(
-          loadedQuestions[currentQuestionIndex].answer as QuestionMultipleChoice);
+    if (currentQuestionIndex >= loadedQuestions.length) {
+      // Prevents accessing an index that out of bounds
+      return;
     }
 
-    print("Options selected: ${(loadedQuestions[currentQuestionIndex].answer as QuestionMultipleChoice).selectedOptions}");
+    QuizQuestion currentQuestion = loadedQuestions[currentQuestionIndex];
+
+    if (currentQuestion.type == QuestionType.multipleChoice) {
+      if (currentQuestion.answer is QuestionMultipleChoice) {
+        checkMultipleChoiceAnswer(currentQuestion.answer as QuestionMultipleChoice);
+        print("Options selected: ${(currentQuestion.answer as QuestionMultipleChoice).selectedOptions}");
+      } else {
+        print("Error: Incorrect question type for multiple-choice question.");
+        return;
+      }
+    } else if (currentQuestion.type == QuestionType.fillInTheBlank) {
+      if (currentQuestion.answer is QuestionFillInTheBlank) {
+        checkFillInTheBlankAnswer(currentQuestion.answer as QuestionFillInTheBlank);
+      } else {
+        print("Error: Incorrect question type for fill-in-the-blank question.");
+        return;
+      }
+    } else {
+      // Add other question types if needed
+    }
+
     print("Current Question Index: $currentQuestionIndex");
 
     if (currentQuestionIndex < loadedQuestions.length - 1) {
       // Move to the next question
-      currentQuestionIndex++;
+      setState(() {
+        currentQuestionIndex++;
+        quizCompleted = false;
+      });
       await displayQuestion(currentQuestionIndex);
     } else {
       // Last question, submit the quiz
@@ -189,59 +210,15 @@ class _QuizPageState extends State<QuizPage> {
                         },
                         child: Text('Previous Question'),
                       ),
-                      // ElevatedButton(
-                      //   onPressed: () async {
-                      //     await moveToNextOrSubmit();
-                      //   },
-                      //   child: Text(
-                      //     currentQuestionIndex < loadedQuestions.length - 1
-                      //         ? 'Next Question'
-                      //         : 'Submit Quiz',
-                      //   ),
-                      // ),
-                      //  IDEALLY WOULD USE THE ABOVE BUTTON BUT UNTIL THAT FUNCTIONALITY WORKS, THE OLD ONE STAYS.
-                      if (!quizCompleted)
                       ElevatedButton(
                         onPressed: () async {
-                          // print(
-                          //     "Options selected: ${(loadedQuestions[currentQuestionIndex].answer as QuestionMultipleChoice).selectedOptions}");
-                          // print(
-                          //     "Current Question Index: $currentQuestionIndex");
-                          // currentQuestionIndex++;
-                          // if (currentQuestionIndex <
-                          //     loadedQuestions.length - 1) {
-                          //   print(
-                          //       "Question Index inside if: $currentQuestionIndex");
-                          //   await displayQuestion(currentQuestionIndex);
-                          // } else {
-                          //   print(
-                          //       "Question Index inside else: $currentQuestionIndex");
-                          //   setState(() {
-                          //     quizCompleted = true;
-                          //   });
-                          // }
-                          // print("Question Index: $currentQuestionIndex");
-                          moveToNextOrSubmit();
+                          await moveToNextOrSubmit();
                         },
-                        child: const Text('Next Question'),
-                      ),
-                    if (quizCompleted)
-                      ElevatedButton(
-                        onPressed: () {
-                          // Navigate to QuizSummary when the quiz is completed
-                          // Navigator.push(
-                          //   context,
-                          //   MaterialPageRoute(
-                          //     builder: (context) => QuizSummary(
-                          //       questionIds: loadedQuestions.map((question) => question.questionText).toList(),
-                          //       userAnswers: userAnswers,
-                          //     ),
-                          //   ),
-                          // );
-                          // WILL PUSH TO THE QUIZ SUMMARY
-                          moveToNextOrSubmit();
-                        },
-                        child: Text('Submit Questions'),
+                        child: Text(
+                          currentQuestionIndex < loadedQuestions.length - 1
+                              ? 'Next Question'
+                              : 'Submit Quiz',
+                        ),
                       ),
                   ],
                 ),
@@ -403,6 +380,32 @@ class _QuizPageState extends State<QuizPage> {
     );
   }
 
+  void checkFillInTheBlankAnswer(QuestionFillInTheBlank question) {
+    // Get the correct answers for the question
+    List<String> correctAnswers = question.correctAnswers.map((answer) => answer.toLowerCase()).toList();
+
+    // Get the user's response
+    String userResponse = question.userResponse.toLowerCase();
+
+    // Check if the user's response matches any of the correct answers
+    bool isCorrect = correctAnswers.contains(userResponse);
+
+    // Update the user summary
+    userSummary[loadedQuestions[currentQuestionIndex].questionText] = {
+      'correctIncorrect': isCorrect ? 'Correct' : 'Incorrect',
+      'userResponse': userResponse,
+    };
+
+    // Print the result (you can remove this in the final version)
+    print("Question: ${loadedQuestions[currentQuestionIndex].questionText}");
+    print("Correct Answers: ${correctAnswers}");
+    print("User Response: $userResponse");
+    print("Result: ${isCorrect ? 'Correct' : 'Incorrect'}");
+  }
+
+
+
+
   Widget buildDragAndDrop(DragAndDropQuestion question) {
     // Implement your UI for Drag and Drop question type here.
     // You can use draggable and drag target widgets to create draggable cards.
@@ -486,8 +489,7 @@ class _QuizPageState extends State<QuizPage> {
       print("1");
       if (currentQuestion.type == QuestionType.multipleChoice) {
         print("Multiple Choice Start");
-        QuestionMultipleChoice multipleChoiceAnswer =
-            currentQuestion.answer as QuestionMultipleChoice;
+        QuestionMultipleChoice multipleChoiceAnswer = QuestionMultipleChoice.fromMap(currentQuestion.answer.toFirestore());
         print("Options: ${multipleChoiceAnswer.options}");
         print("Correct Answers: ${multipleChoiceAnswer.correctAnswers}");
         userSummary[loadedQuestions[currentQuestionIndex].questionText] = {
@@ -501,7 +503,7 @@ class _QuizPageState extends State<QuizPage> {
         setState(() {
           fillInTheBlankController.text = fillInTheBlankAnswer.userResponse;
         });
-        print("fillInTheBlankAnswer: ${fillInTheBlankController.text}");
+        print("fillInTheBlankAnswer: ${fillInTheBlankAnswer.userResponse}");
         print("Correct Answers: ${fillInTheBlankAnswer.correctAnswers}");
         userSummary[loadedQuestions[currentQuestionIndex].questionText] = {
           'correctIncorrect': 'Not Answered',
@@ -565,8 +567,6 @@ class _QuizPageState extends State<QuizPage> {
     }
   }
 
-
-
   // Function to get correct answers for a specific question
   List<dynamic> getCorrectAnswersForQuestion(QuizQuestion question) {
     if (question.type == QuestionType.multipleChoice) {
@@ -579,25 +579,22 @@ class _QuizPageState extends State<QuizPage> {
     }
   }
 
-
-
-// Helper function to get correct answers from loaded questions
-Map<String, dynamic> getCorrectAnswers(List<QuizQuestion> questions) {
-  Map<String, dynamic> correctAnswers = {};
-  questions.forEach((question) {
-    if (question.type == QuestionType.multipleChoice) {
-      QuestionMultipleChoice mcQuestion = question.answer as QuestionMultipleChoice;
-      correctAnswers[question.questionText] = mcQuestion.correctAnswers;
-    } else if (question.type == QuestionType.fillInTheBlank) {
-      QuestionFillInTheBlank fitbQuestion = question.answer as QuestionFillInTheBlank;
-      correctAnswers[question.questionText] = fitbQuestion.correctAnswers;
-    } else {
-      // Handle other question types if needed
-    }
-  });
-  return correctAnswers;
-}
-
+  // Helper function to get correct answers from loaded questions
+  Map<String, dynamic> getCorrectAnswers(List<QuizQuestion> questions) {
+    Map<String, dynamic> correctAnswers = {};
+    questions.forEach((question) {
+      if (question.type == QuestionType.multipleChoice) {
+        QuestionMultipleChoice mcQuestion = question.answer as QuestionMultipleChoice;
+        correctAnswers[question.questionText] = mcQuestion.correctAnswers;
+      } else if (question.type == QuestionType.fillInTheBlank) {
+        QuestionFillInTheBlank fitbQuestion = question.answer as QuestionFillInTheBlank;
+        correctAnswers[question.questionText] = fitbQuestion.correctAnswers;
+      } else {
+        // Handle other question types if needed
+      }
+    });
+    return correctAnswers;
+  }
 
   // Calculate user total based on the summary
   int calculateUserTotal(Map<String, dynamic> userSummary) {
