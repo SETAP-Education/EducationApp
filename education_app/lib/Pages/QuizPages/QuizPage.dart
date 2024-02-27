@@ -30,72 +30,6 @@ class _QuizPageState extends State<QuizPage> {
     super.dispose();
   }
 
-  // Future<void> loadQuiz(String quizId) async {
-  //   print("Loading quiz with ID: $quizId");
-
-  //   Quiz? loadedQuiz = await quizManager.getQuizWithId(quizId);
-
-  //   if (loadedQuiz != null) {
-  //     setState(() {
-  //       quiz = loadedQuiz;
-  //       loadedQuestions = quiz.loadedQuestions;
-  //     });
-
-  //     // Print quiz details
-  //     print("Loaded quiz: ${quiz.name}");
-  //     print("Question IDs: ${quiz.questionIds}");
-
-  //     // Fetch questions and populate loadedQuestions
-  //     await fetchQuestionsForQuiz(quiz.questionIds);
-
-  //     print("Current Question Index: $currentQuestionIndex...");
-  //     print("loadedQuestions: $loadedQuestions");
-
-  //     if (currentQuestionIndex < loadedQuestions.length) {
-  //       print("Current Question ID: ${loadedQuestions[currentQuestionIndex].questionText}");
-  //     } else {
-  //       print("Error: Index out of range - Current Question Index: $currentQuestionIndex");
-  //     }
-
-  //     displayQuestion(currentQuestionIndex);
-  //   } else {
-  //     // Handle the case where the quiz is not found
-  //     // You may want to show an error message or navigate back
-  //     print("Quiz not found with ID: $quizId");
-  //   }
-  // }
-
-  // Future<void> fetchQuestionsForQuiz(List<String> questionIds) async {
-  //   List<QuizQuestion> questions = [];
-
-  //   for (String questionId in questionIds) {
-  //     print("1 Fetching Question: $questionId, list length: ${questions.length}");
-
-  //     // Fetch the question document directly from Firestore using QuizManager
-  //     QuizQuestion? question = await QuizManager().getQuizQuestionById(questionId);
-
-  //     print("Middle of the fetch function...");
-
-  //     if (question != null) {
-  //       questions.add(question);
-
-  //       // Print question type
-  //       print("Question Text: ${question.questionText}");
-  //       print("Question Type: ${question.type}");
-
-  //       print("Added question, list length: ${questions.length}");
-  //     } else {
-  //       // Handle case where question doesn't exist
-  //     }
-
-  //     print("2 Fetching Question: $questionId, list length: ${questions.length}");
-  //   }
-
-  //   setState(() {
-  //     loadedQuestions = questions;
-  //   });
-  // }
-
   Future<void> loadQuiz(String quizId) async {
     print("Loading quiz with ID: $quizId");
 
@@ -305,6 +239,8 @@ class _QuizPageState extends State<QuizPage> {
           buildMultipleChoiceOptions(question.answer as QuestionMultipleChoice),
         if (question.type == QuestionType.fillInTheBlank)
           buildFillInTheBlank(question.answer as QuestionFillInTheBlank),
+        if (question.type == QuestionType.dragAndDrop) 
+        buildDragAndDrop(question.answer as DragAndDropQuestion),
       ],
     );
   }
@@ -364,6 +300,75 @@ class _QuizPageState extends State<QuizPage> {
         hintText: "Type your answer here...",
         // You can customize the input decoration based on your design
       ),
+    );
+  }
+
+  Widget buildDragAndDrop(DragAndDropQuestion question) {
+    // Implement your UI for Drag and Drop question type here.
+    // You can use draggable and drag target widgets to create draggable cards.
+    // Here's a simple example:
+
+    return Column(
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            // Draggable cards
+            for (String option in question.options)
+              Draggable<String>(
+                data: option,
+                child: Card(
+                  elevation: 3,
+                  child: Container(
+                    width: 100,
+                    height: 50,
+                    alignment: Alignment.center,
+                    child: Text(option),
+                  ),
+                ),
+                feedback: Card(
+                  elevation: 5,
+                  child: Container(
+                    width: 100,
+                    height: 50,
+                    alignment: Alignment.center,
+                    child: Text(option),
+                  ),
+                ),
+                childWhenDragging: Container(),
+              ),
+          ],
+        ),
+        SizedBox(height: 20),
+        // Drag targets
+        for (int i = 0; i < question.options.length; i++)
+          DragTarget<String>(
+            builder: (context, candidateData, rejectedData) {
+              return Card(
+                elevation: 3,
+                child: Container(
+                  width: 100,
+                  height: 50,
+                  alignment: Alignment.center,
+                  child: Text("Drop here"),
+                ),
+              );
+            },
+            onWillAccept: (data) {
+              // Add your logic to determine if the dragged item is correct.
+              // Return true if it's correct, false otherwise.
+              return true;
+            },
+            onAccept: (data) {
+              // Handle the accepted item (optional).
+              print("Accepted: $data");
+            },
+            onLeave: (data) {
+              // Handle when a draggable item leaves the target area (optional).
+              print("Left: $data");
+            },
+          ),
+      ],
     );
   }
 

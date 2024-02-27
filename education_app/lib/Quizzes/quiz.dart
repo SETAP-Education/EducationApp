@@ -4,7 +4,7 @@ enum QuestionType {
   none, 
   multipleChoice,
   fillInTheBlank,
-  // dragAndDrop,
+  dragAndDrop,
 }
 
 // Base class for questions
@@ -91,37 +91,51 @@ class QuestionFillInTheBlank extends QuestionAnswer {
   }
 }
 
-// class DragAndDropQuestion extends QuestionAnswer {
-//   List<String> definitions;
-//   List<String> correctOrder;
+class DragAndDropQuestion extends QuestionAnswer {
+  List<String> options;
+  List<int> correctAnswers;
 
-//   DragAndDropQuestion({
-//     required String questionText,
-//     required this.definitions,
-//     required this.correctOrder,
-//   }) : super(
-//           questionText: questionText,
-//           type: QuestionType.dragAndDrop,
-//         );
+  DragAndDropQuestion({
+    required this.options,
+    required this.correctAnswers,
+    String questionText = "Match the corresponding text to its draggable square.",
+  });
 
-//   @override
-//   Map<String, dynamic> toFirestore() {
-//     Map<String, dynamic> superData = super.toFirestore();
-//     superData.addAll({
-//       'definitions': definitions,
-//       'correctOrder': correctOrder,
-//     });
-//     return superData;
-//   }
+  @override
+  void debugPrint() {
+    print("Options:");
+    for (var option in options) {
+      print(option);
+    }
 
-//   factory DragAndDropQuestion.fromMap(Map<String, dynamic> map) {
-//     return DragAndDropQuestion(
-//       questionText: map["questionText"],
-//       definitions: map["definitions"] is Iterable ? List.from(map["definitions"]) : List.empty(),
-//       correctOrder: map["correctOrder"] is Iterable ? List.from(map["correctOrder"]) : List.empty(),
-//     );
-//   }
-// }
+    String correctAnswersStr = "Correct Answers: ";
+    for (var answer in correctAnswers) {
+      correctAnswersStr += "$answer, ";
+    }
+    print(correctAnswersStr);
+  }
+
+  @override
+  Map<String, dynamic> toFirestore() {
+    return {
+      "answer": {
+        "options": options,
+        "correctAnswers": correctAnswers,
+      },
+    };
+  }
+
+  factory DragAndDropQuestion.fromMap(Map<String, dynamic> map) {
+    return DragAndDropQuestion(
+      questionText: map["questionText"] ?? "Match the corresponding text to its draggable square.",
+      options: map["answer"]["options"] is Iterable ? List.from(map["answer"]["options"]) : List.empty(),
+      correctAnswers: map["answer"]["correctAnswers"] is Iterable
+          ? List.from(map["answer"]["correctAnswers"])
+          : List.empty(),
+    );
+  }
+}
+
 
 class QuizQuestion {
 
