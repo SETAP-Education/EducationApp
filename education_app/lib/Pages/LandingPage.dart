@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:education_app/Pages/AuthenticationPages/LoginPage.dart';
 import 'package:education_app/Pages/QuizPages/QuizPage.dart';
 import 'package:education_app/Quizzes/quizManager.dart';
+import 'package:education_app/Pages/QuizPages/dragndroptesting-Failed.dart';
 
 class LandingPage extends StatefulWidget {
   @override
@@ -61,7 +62,7 @@ class _LandingPageState extends State<LandingPage> {
                 // Navigate to the quiz page when the button is pressed
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => QuizPage()), // Replace QuizPage with your actual quiz page
+                  MaterialPageRoute(builder: (context) => DraggableExample ()), // Replace QuizPage with your actual quiz page
                 );
               },
               child: Text('Take Quiz'),

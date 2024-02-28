@@ -1,4 +1,7 @@
+import 'dart:html';
+
 import 'package:flutter/material.dart';
+import 'dart:math';
 import 'package:education_app/Quizzes/quiz.dart';
 import 'package:education_app/Quizzes/quizManager.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -268,16 +271,16 @@ class _QuizPageState extends State<QuizPage> {
         // } //FOR SOME REASON THIS IF STATEMENT WONT WORK SO I DECIDED TO USE A SWITCH STATEMENT...
 
         if (question.type == QuestionType.multipleChoice)
-          buildMultipleChoiceOptions(question.answer as QuestionMultipleChoice),
+          buildMultipleChoiceQuestion(question.answer as QuestionMultipleChoice),
         if (question.type == QuestionType.fillInTheBlank)
-          buildFillInTheBlank(question.answer as QuestionFillInTheBlank),
+          buildFillInTheBlankQuestion(question.answer as QuestionFillInTheBlank),
         if (question.type == QuestionType.dragAndDrop) 
-          buildDragAndDrop(question.answer as DragAndDropQuestion),
+          buildDragAndDropQuestion(question.answer as DragAndDropQuestion, context),
       ],
     );
   }
 
-  Widget buildMultipleChoiceOptions(QuestionMultipleChoice question) {
+  Widget buildMultipleChoiceQuestion(QuestionMultipleChoice question) {
     return ListView.builder(
       shrinkWrap: true,
       physics: NeverScrollableScrollPhysics(),
@@ -365,7 +368,7 @@ class _QuizPageState extends State<QuizPage> {
   }
 
 
-  Widget buildFillInTheBlank(QuestionFillInTheBlank question) {
+  Widget buildFillInTheBlankQuestion(QuestionFillInTheBlank question) {
     return TextField(
       onChanged: (text) {
         // Handle user input here
@@ -403,75 +406,181 @@ class _QuizPageState extends State<QuizPage> {
     print("Result: ${isCorrect ? 'Correct' : 'Incorrect'}");
   }
 
-  Widget buildDragAndDrop(DragAndDropQuestion question) {
-  // Implement your UI for Drag and Drop question type here.
-  // You can use draggable and drag target widgets to create draggable cards.
-  // Here's an updated example:
+Widget buildDragAndDropQuestion(DragAndDropQuestion question, BuildContext context) {
+  List<Widget> droppedItems = [];
 
   return Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
     children: [
-      // Drag targets
-      for (int i = 0; i < question.options.length; i++)
-        DragTarget<String>(
-          builder: (context, candidateData, rejectedData) {
-            return Card(
-              elevation: 3,
-              child: Container(
-                width: 100,
-                height: 50,
-                alignment: Alignment.center,
-                child: Text(question.options[i]),
-              ),
-            );
-          },
-          onWillAccept: (data) {
-            // Add your logic to determine if the dragged item is correct.
-            // Return true if it's correct, false otherwise.
-            return data == question.optionsText[i];
-          },
-          onAccept: (data) {
-            // Handle the accepted item (optional).
-            print("Accepted: $data");
-          },
-          onLeave: (data) {
-            // Handle when a draggable item leaves the target area (optional).
-            print("Left: $data");
-          },
-        ),
+      Text(
+        question.optionsText.join('\n'),
+        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+      ),
       SizedBox(height: 20),
-      // Draggable cards
       Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
-          // Draggable cards
+          // Drag Targets
           for (int i = 0; i < question.options.length; i++)
-            Draggable<String>(
-              data: question.optionsText[i],
-              child: Card(
-                elevation: 3,
-                child: Container(
-                  width: 100,
-                  height: 50,
-                  alignment: Alignment.center,
-                  child: Text(question.optionsText[i]),
-                ),
+            Draggable<Widget>(
+              child: Container(
+                width: 50,
+                height: 50,
+                color: Colors.blue,
+                child: const Center(child: Text('Item 1'))
               ),
+              feedback: Container(
+                width: 100,
+                height: 100,
+                color: Colors.blue,
+                child: const Center(child: Text('Item 1'))
+              ),
+              data: Container(
+                width: 100,
+                height: 100,
+                color: Colors.blue,
+                child: const Center(child: Text('Item 1'))
+              )
+            ),
+          for (int i = 0; i < question.options.length; i++)
+            DragTarget<Widget>(
+              builder: (context, accepted, rejected) {
+                return Container(
+                  width: 300,
+                  height: 200,
+                  color: Colors.grey,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: droppedItems.isEmpty
+                      ? [const Text('Drop Items Here')]
+                      : droppedItems
+                  ),
+                );
+              },
+              onWillAccept: (Widget? data) {
+                return true;
+              },
+              onAccept: (Widget data) {
+                setState(() {
+                  droppedItems.add(data);
+                });
+              },
+            ),
+            // buildTarget(
+            //   context,
+            //   text: 'Target ${i + 1}',
+            //   options: question.options, // Assuming question.options is the list of options
+            //   onAccept: (data) {
+            //     setState(() {
+            //       // Update the order of the dragged item
+            //       question.correctOrder[i] = data;
+            //     });
+            //   },
+            // ),
+
+          // Draggable Options
+          // for (int i = 0; i < question.options.length; i++)
+          //   Draggable<String>(
+          //     data: question.options[i],
+          //     feedback: Card(
+          //       elevation: 5,
+          //       child: Container(
+          //         width: 100,
+          //         height: 50,
+          //         alignment: Alignment.center,
+          //         child: Text(question.options[i]),
+          //       ),
+          //     ),
+          //     child: Card(
+          //       elevation: 3,
+          //       child: Container(
+          //         width: 100,
+          //         height: 50,
+          //         alignment: Alignment.center,
+          //         child: Text(question.options[i]),
+          //       ),
+          //     ),
+          //   ),
+
+        ],
+      ),
+    ],
+  );
+}
+
+
+Widget buildTarget(
+  BuildContext context, {
+  required String text,
+  required List<String> options,
+  required DragTargetAccept<String> onAccept,
+}) =>
+    CircleAvatar(
+      radius: 50,
+      child: DragTarget<String>(
+        builder: (context, candidateData, rejectedData) => Stack(
+          children: [
+            // Draggable Options
+            for (int i = 0; i < options.length; i++)
+              Draggable<String>(
+              data: options[i],
               feedback: Card(
                 elevation: 5,
                 child: Container(
                   width: 100,
                   height: 50,
                   alignment: Alignment.center,
-                  child: Text(question.optionsText[i]),
+                  child: Text(options[i]),
                 ),
               ),
-              childWhenDragging: Container(),
+              child: Card(
+                elevation: 3,
+                child: Container(
+                  width: 100,
+                  height: 50,
+                  alignment: Alignment.center,
+                  child: Text(options[i]),
+                ),
+              ),
             ),
-        ],
+            // IgnorePointer(child: Center(child: buildText(text))),
+          ],
+        ),
+        onWillAcceptWithDetails: (data) => true,
+        onAcceptWithDetails: (DragTargetDetails<String> details) {
+          String data = details.data;
+          onAccept(data);
+        },
       ),
-    ],
-  );
-}
+    );
+
+
+Widget buildText(String text) => Container(
+      decoration: BoxDecoration(boxShadow: [
+        BoxShadow(
+          color: Colors.black.withOpacity(0.8),
+          blurRadius: 12,
+        )
+      ]),
+      child: Text(
+        text,
+        style: TextStyle(
+          color: Colors.white,
+          fontSize: 16,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+    );
+
+
+
+
+
+
+
+
+
+
 
 
 
