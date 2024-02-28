@@ -151,7 +151,8 @@ Map<String, dynamic> checkUserAnswers(List<QuizQuestion> loadedQuestions) {
   for (var question in loadedQuestions) {
     String questionId = question.questionText;
     String correctIncorrect = "";
-    String userResponse = "";
+    List<dynamic> userResponse = [];
+    List<dynamic> correctAnswers = [];
 
     // Check user response based on question type
     if (question.type == QuestionType.multipleChoice) {
@@ -159,7 +160,8 @@ Map<String, dynamic> checkUserAnswers(List<QuizQuestion> loadedQuestions) {
       correctIncorrect = multipleChoiceAnswer.correctAnswers.every((option) => multipleChoiceAnswer.selectedOptions.contains(option))
         ? "Correct"
         : "Incorrect";
-      userResponse = multipleChoiceAnswer.selectedOptions.join(", ");
+      userResponse = multipleChoiceAnswer.selectedOptions;
+      correctAnswers = multipleChoiceAnswer.correctAnswers;
     }
     
     if (question.type == QuestionType.fillInTheBlank) {
@@ -167,7 +169,8 @@ Map<String, dynamic> checkUserAnswers(List<QuizQuestion> loadedQuestions) {
       correctIncorrect = fillInTheBlankAnswer.correctAnswers.contains(fillInTheBlankAnswer.userResponse)
           ? "Correct"
           : "Incorrect";
-      userResponse = fillInTheBlankAnswer.userResponse;
+      userResponse = [fillInTheBlankAnswer.userResponse];
+      correctAnswers = fillInTheBlankAnswer.correctAnswers;
     } 
     
     if (question.type == QuestionType.dragAndDrop) {
@@ -177,11 +180,14 @@ Map<String, dynamic> checkUserAnswers(List<QuizQuestion> loadedQuestions) {
     summary[questionId] = {
       'correctIncorrect': correctIncorrect,
       'userResponse': userResponse,
+      'correctAnswers': correctAnswers,
     };
   }
 
   return summary;
 }
+
+
 
 class QuizQuestion {
 

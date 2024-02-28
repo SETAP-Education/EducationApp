@@ -1,7 +1,4 @@
-import 'dart:html';
-
 import 'package:flutter/material.dart';
-import 'dart:math';
 import 'package:education_app/Quizzes/quiz.dart';
 import 'package:education_app/Quizzes/quizManager.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -342,6 +339,7 @@ class _QuizPageState extends State<QuizPage> {
       userSummary[loadedQuestions[currentQuestionIndex].questionText] = {
         'correctIncorrect': 'Correct',
         'userResponse': question.selectedOptions,
+        'correctAnswers': correctAnswers,
       };
     } else {
       // The user's answer is incorrect
@@ -349,6 +347,7 @@ class _QuizPageState extends State<QuizPage> {
       userSummary[loadedQuestions[currentQuestionIndex].questionText] = {
         'correctIncorrect': 'Incorrect',
         'userResponse': question.selectedOptions,
+        'correctAnswers': correctAnswers,
       };
     }
   }
@@ -397,6 +396,7 @@ class _QuizPageState extends State<QuizPage> {
     userSummary[loadedQuestions[currentQuestionIndex].questionText] = {
       'correctIncorrect': isCorrect ? 'Correct' : 'Incorrect',
       'userResponse': userResponse,
+      'correctAnswers': correctAnswers,
     };
 
     // Print the result (you can remove this in the final version)
@@ -572,20 +572,6 @@ Widget buildText(String text) => Container(
       ),
     );
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
   Future<void> displayQuestion(int index) async {
     if (loadedQuestions.isNotEmpty && index < loadedQuestions.length) {
       QuizQuestion currentQuestion = loadedQuestions[index];
@@ -597,16 +583,23 @@ Widget buildText(String text) => Container(
       print("Difficulty: ${currentQuestion.difficulty}");
       print("Tags: ${currentQuestion.tags}");
 
-      print("1");
       if (currentQuestion.type == QuestionType.multipleChoice) {
         print("Multiple Choice Start");
-        QuestionMultipleChoice multipleChoiceAnswer = QuestionMultipleChoice.fromMap(currentQuestion.answer.toFirestore());
+        QuestionMultipleChoice multipleChoiceAnswer =
+            QuestionMultipleChoice.fromMap(currentQuestion.answer.toFirestore());
+
+        // Get the correct answers for the question
+        List<int> correctAnswers = multipleChoiceAnswer.correctAnswers;
         print("Options: ${multipleChoiceAnswer.options}");
-        print("Correct Answers: ${multipleChoiceAnswer.correctAnswers}");
-        userSummary[loadedQuestions[currentQuestionIndex].questionText] = {
+        print("Correct Answers: $correctAnswers");
+
+        // Initialize user response in userSummary
+        userSummary[currentQuestion.questionText] = {
           'correctIncorrect': 'Not Answered',
           'userResponse': [],
+          'correctAnswers': correctAnswers,
         };
+        
         print("Multiple Choice End");
       } else if (currentQuestion.type == QuestionType.fillInTheBlank) {
         QuestionFillInTheBlank fillInTheBlankAnswer =
@@ -615,16 +608,21 @@ Widget buildText(String text) => Container(
           fillInTheBlankController.text = fillInTheBlankAnswer.userResponse;
         });
         print("fillInTheBlankAnswer: ${fillInTheBlankAnswer.userResponse}");
-        print("Correct Answers: ${fillInTheBlankAnswer.correctAnswers}");
-        userSummary[loadedQuestions[currentQuestionIndex].questionText] = {
+        List<String> correctAnswers = fillInTheBlankAnswer.correctAnswers;
+        print("Correct Answers: $correctAnswers");
+
+        // Initialize user response in userSummary
+        userSummary[currentQuestion.questionText] = {
           'correctIncorrect': 'Not Answered',
           'userResponse': fillInTheBlankAnswer.userResponse,
+          'correctAnswers': correctAnswers,
         };
       }
     } else {
       print("Error: loadedQuestions is empty or index is out of range.");
     }
   }
+
 
   Future<void> storeUserAnswersInFirebase() async {
     try {

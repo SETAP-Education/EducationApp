@@ -62,7 +62,7 @@ class _LandingPageState extends State<LandingPage> {
                 // Navigate to the quiz page when the button is pressed
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => DraggableExample ()), // Replace QuizPage with your actual quiz page
+                  MaterialPageRoute(builder: (context) => QuizPage()), // Replace QuizPage with your actual quiz page
                 );
               },
               child: Text('Take Quiz'),
