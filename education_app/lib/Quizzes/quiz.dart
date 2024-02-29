@@ -173,9 +173,6 @@ Map<String, dynamic> checkUserAnswers(QuestionMultipleChoice question, String qu
   return userSummary;
 }
 
-
-
-
 bool areListsEqual(List<dynamic> list1, List<dynamic> list2) {
   if (list1.length != list2.length) {
     return false;

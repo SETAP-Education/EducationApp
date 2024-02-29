@@ -18,7 +18,7 @@ class _QuizSummaryPageState extends State<QuizSummaryPage> {
   late Quiz quiz;
   late List<QuizQuestion> loadedQuestions = [];
   int currentQuestionIndex = 0;
-  Map<String, dynamic> userSummary = {};
+  late Map<String, dynamic> userSummary;
   String quizId = 'yKExulogYwk65MqHrFMN';
 
   @override
@@ -28,7 +28,7 @@ class _QuizSummaryPageState extends State<QuizSummaryPage> {
     loadQuiz(quizId);
     userSummary = widget.quizSummary;
     fillInTheBlankController = TextEditingController();
-    print("USER SUMMARY SUPPOSEDLY $userSummary...");
+    print("QuizSummaryPage initialised userSummary $userSummary...");
   }
 
   Future<void> loadQuiz(String quizId) async {
@@ -117,38 +117,42 @@ class _QuizSummaryPageState extends State<QuizSummaryPage> {
         title: Text("Summary Page"),
       ),
       body: SingleChildScrollView(
-        child: Center(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              for (int i = 0; i < loadedQuestions.length; i++)
-                Container(
-                  margin: EdgeInsets.symmetric(vertical: 10),
-                  width: 1600,
-                  padding: EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(12),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.grey.withOpacity(0.1),
-                        spreadRadius: 5,
-                        blurRadius: 0,
-                        offset: Offset(0, 3),
-                      ),
-                    ],
+        child: Column(
+          children: [
+            // Display general quiz statistics
+            Container(
+              padding: EdgeInsets.all(16),
+              margin: EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(12),
+                color: Colors.blue.withOpacity(0.1),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Text(
+                    "User Results",
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                   ),
-                  child: loadedQuestions.isNotEmpty
-                      ? buildQuizSummaryPage(loadedQuestions[i])
-                      : Container(),
-                ),
-            ],
-          ),
+                  SizedBox(height: 10),
+                  // Display general quiz statistics using userSummary
+                  Text("Total Questions: ${loadedQuestions.length}"),
+                  Text("Correct Answers: ${calculateCorrectAnswers()}"),
+                  Text("Incorrect Answers: ${calculateIncorrectAnswers()}"),
+                  // You can add more statistics as needed
+                ],
+              ),
+            ),
+            // Display quiz questions
+            for (int i = 0; i < loadedQuestions.length; i++)
+              buildQuizSummaryPage(loadedQuestions[i], i),
+          ],
         ),
       ),
     );
   }
 
-  Widget buildQuizSummaryPage(QuizQuestion question) {
+  Widget buildQuizSummaryPage(QuizQuestion question, int questionIndex) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
@@ -160,75 +164,84 @@ class _QuizSummaryPageState extends State<QuizSummaryPage> {
         SizedBox(height: 20),
         if (question.type == QuestionType.multipleChoice)
           buildMultipleChoiceQuestion(
-              question.answer as QuestionMultipleChoice),
+              question.answer as QuestionMultipleChoice, questionIndex),
       ],
     );
   }
 
-  Widget buildMultipleChoiceQuestion(QuestionMultipleChoice question) {
-  // Create a local variable to store the current question and its selected options
-  QuizQuestion currentQuestion = loadedQuestions[currentQuestionIndex];
-  QuestionMultipleChoice currentQuestionAnswer =
-      QuestionMultipleChoice.fromMap(currentQuestion.answer.toFirestore());
+  Widget buildMultipleChoiceQuestion(QuestionMultipleChoice question, int questionIndex) {
+    List<int> userResponse =
+        List<int>.from(userSummary[questionIndex.toString()]?['userResponse'] ?? []);
 
-  return ListView.builder(
-    shrinkWrap: true,
-    physics: NeverScrollableScrollPhysics(),
-    itemCount: question.options.length,
-    itemBuilder: (context, index) {
-      String option = question.options[index];
-      bool isSelected = currentQuestionAnswer.selectedOptions.contains(index);
+    return ListView.builder(
+      shrinkWrap: true,
+      physics: NeverScrollableScrollPhysics(),
+      itemCount: question.options.length,
+      itemBuilder: (context, index) {
+        String option = question.options[index];
+        bool isSelected = userResponse.contains(index);
 
-      List<int> correctAnswers =
-          List<int>.from(userSummary[currentQuestion.questionText]![
-                  'correctAnswers'] ??
-              []);
-      List<int> userResponse =
-          List<int>.from(userSummary[currentQuestion.questionText]![
-                  'userResponse'] ??
-              []);
+        bool isCorrectAnswer = question.correctAnswers.contains(index);
 
-      bool isCorrectAnswer = correctAnswers.contains(index);
-      bool isUserResponse = userResponse.contains(index);
+        return InkWell(
+          onTap: () {
+            setState(() {
+              if (isSelected) {
+                userResponse.remove(index);
+              } else {
+                userResponse.add(index);
+              }
 
-      return InkWell(
-        onTap: () {
-          setState(() {
-            if (isSelected) {
-              currentQuestionAnswer.selectedOptions.remove(index);
-            } else {
-              currentQuestionAnswer.selectedOptions.add(index);
-            }
-
-            userSummary[currentQuestion.questionText]![
-                'userResponse'] = List<int>.from(
-                currentQuestionAnswer.selectedOptions);
-          });
-        },
-        child: Container(
-          padding: EdgeInsets.all(10),
-          margin: EdgeInsets.symmetric(vertical: 5),
-          decoration: BoxDecoration(
-            color: isSelected
-                ? Colors.blue
-                : (isUserResponse
-                    ? (isCorrectAnswer ? Colors.green : Colors.red)
-                    : Colors.white),
-            borderRadius: BorderRadius.circular(8),
-            border: Border.all(
-              color: Colors.blue,
-              width: 1,
+              userSummary[questionIndex.toString()] = {
+                'correctIncorrect': 'Not Answered',
+                'userResponse': List<int>.from(userResponse),
+              };
+            });
+          },
+          child: Container(
+            padding: EdgeInsets.all(10),
+            margin: EdgeInsets.symmetric(vertical: 5),
+            decoration: BoxDecoration(
+              color: isSelected
+                  ? Colors.blue
+                  : (isCorrectAnswer ? Colors.green : Colors.white),
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(
+                color: Colors.blue,
+                width: 1,
+              ),
+            ),
+            child: Text(
+              option,
+              style: TextStyle(
+                color: isSelected ? Colors.white : Colors.black,
+              ),
             ),
           ),
-          child: Text(
-            option,
-            style: TextStyle(
-              color: isSelected ? Colors.white : Colors.black,
-            ),
-          ),
-        ),
-      );
-    },
-  );
-}
+        );
+      },
+    );
+  }
+
+  int calculateCorrectAnswers() {
+    int correctAnswers = 0;
+    for (int i = 0; i < loadedQuestions.length; i++) {
+      String key = i.toString();
+      if (userSummary[key]?['correctIncorrect'] == 'Correct') {
+        correctAnswers++;
+      }
+    }
+    return correctAnswers;
+  }
+
+  int calculateIncorrectAnswers() {
+    int incorrectAnswers = 0;
+    for (int i = 0; i < loadedQuestions.length; i++) {
+      String key = i.toString();
+      if (userSummary[key]?['correctIncorrect'] == 'Incorrect') {
+        incorrectAnswers++;
+      }
+    }
+    return incorrectAnswers;
+  }
 }
