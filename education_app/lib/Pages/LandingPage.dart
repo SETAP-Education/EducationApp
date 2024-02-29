@@ -1,3 +1,4 @@
+import 'package:education_app/Pages/QuizBuilder.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:education_app/Pages/AuthenticationPages/LoginPage.dart';
@@ -66,6 +67,11 @@ class _LandingPageState extends State<LandingPage> {
               },
               child: Text('Take Quiz'),
             ),
+
+            ElevatedButton(
+              onPressed: (){
+                Navigator.push(context, MaterialPageRoute(builder: (context) => QuizBuilder()));
+            }, child: Text("Quiz Builder"))
           ],
         ),
       ),
