@@ -90,7 +90,7 @@ class _QuizPageState extends State<QuizPage> {
             "Error: Index out of range - Current Question Index: $currentQuestionIndex");
       }
 
-      displayQuestion(currentQuestionIndex);
+      displayQuestion(currentQuestionIndex, quiz.questionIds);
     } else {
       // Handle the case where the quiz is not found
       // may want to show an error message or navigate back
@@ -98,18 +98,35 @@ class _QuizPageState extends State<QuizPage> {
     }
   }
 
-  Future<void> moveToNextOrSubmit() async {
+  void moveToNextOrSubmit() async {
     if (currentQuestionIndex >= loadedQuestions.length) {
       // Prevents accessing an index that out of bounds
       return;
     }
 
     QuizQuestion currentQuestion = loadedQuestions[currentQuestionIndex];
+    String questionId = quiz.questionIds[currentQuestionIndex]; // Get the correct questionId
 
     if (currentQuestion.type == QuestionType.multipleChoice) {
       if (currentQuestion.answer is QuestionMultipleChoice) {
-        checkMultipleChoiceAnswer(currentQuestion.answer as QuestionMultipleChoice);
-        print("Options selected: ${(currentQuestion.answer as QuestionMultipleChoice).selectedOptions}");
+        Map<String, dynamic> questionSummary = checkUserAnswers(
+          currentQuestion.answer as QuestionMultipleChoice,
+          questionId,
+          currentQuestion.type,
+          userSummary,
+        );
+        print("71 User Summary: $questionSummary");
+
+        // Update userSummary with the new summary
+        userSummary = {
+          ...userSummary,
+          ...questionSummary,
+        };
+
+        await Future.delayed(Duration(milliseconds: 500));
+
+        print("70 User Summary: $userSummary");
+        // storeUserAnswersInFirebase2(userSummary);
       } else {
         print("Error: Incorrect question type for multiple-choice question.");
         return;
@@ -125,7 +142,11 @@ class _QuizPageState extends State<QuizPage> {
       // Add other question types if needed
     }
 
-    print("Current Question Index: $currentQuestionIndex");
+    // checkUserAnswers(quiz.questionIds, loadedQuestions);
+    // storeUserAnswersInFirebase2(userSummary);
+    print("43 User Summary: $userSummary");
+
+    // print("Current Question Index: $currentQuestionIndex");
 
     if (currentQuestionIndex < loadedQuestions.length - 1) {
       // Move to the next question
@@ -133,15 +154,12 @@ class _QuizPageState extends State<QuizPage> {
         currentQuestionIndex++;
         quizCompleted = false;
       });
-      await displayQuestion(currentQuestionIndex);
+      await displayQuestion(currentQuestionIndex, quiz.questionIds);
     } else {
       // Last question, submit the quiz
       setState(() {
         quizCompleted = true;
       });
-
-      // Store user answers in Firebase
-      await storeUserAnswersInFirebase();
 
       // Navigate to QuizSummaryPage with quizSummary
       Navigator.push(
@@ -151,10 +169,8 @@ class _QuizPageState extends State<QuizPage> {
         ),
       );
     }
-
     print("Question Index: $currentQuestionIndex");
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -201,8 +217,9 @@ class _QuizPageState extends State<QuizPage> {
                       ElevatedButton(
                         onPressed: () {
                           if (currentQuestionIndex > 0) {
+                            // If there is a previous question, move to it
                             currentQuestionIndex--;
-                            displayQuestion(currentQuestionIndex);
+                            displayQuestion(currentQuestionIndex, quiz.questionIds);
                             setState(() {
                               quizCompleted = false;
                             });
@@ -212,12 +229,17 @@ class _QuizPageState extends State<QuizPage> {
                       ),
                       ElevatedButton(
                         onPressed: () async {
-                          await moveToNextOrSubmit();
+                          moveToNextOrSubmit();
+                          if (currentQuestionIndex < loadedQuestions.length - 2) {
+                              // If there are more questions, store user answers in Firebase
+                              print("Just before storing the userSummary: $userSummary");
+                              // storeUserAnswersInFirebase2(userSummary);
+                            }
                         },
                         child: Text(
                           currentQuestionIndex < loadedQuestions.length - 1
                               ? 'Next Question'
-                              : 'Submit Quiz',
+                              : 'Submit Quiz'
                         ),
                       ),
                   ],
@@ -271,8 +293,8 @@ class _QuizPageState extends State<QuizPage> {
           buildMultipleChoiceQuestion(question.answer as QuestionMultipleChoice),
         if (question.type == QuestionType.fillInTheBlank)
           buildFillInTheBlankQuestion(question.answer as QuestionFillInTheBlank),
-        if (question.type == QuestionType.dragAndDrop) 
-          buildDragAndDropQuestion(question.answer as DragAndDropQuestion, context),
+        // if (question.type == QuestionType.dragAndDrop) 
+          // buildDragAndDropQuestion(question.answer as DragAndDropQuestion, context),
       ],
     );
   }
@@ -321,36 +343,41 @@ class _QuizPageState extends State<QuizPage> {
   }
 
   // Function to check correctness of selected options for multiple-choice question
-  void checkMultipleChoiceAnswer(QuestionMultipleChoice question) {
-    // Get the correct answers for the question
-    List<int> correctAnswers = question.correctAnswers;
+  // void checkMultipleChoiceAnswer(QuestionMultipleChoice question, String questionId) {
+  //   // Get the correct answers for the question
+  //   List<int> correctAnswers = question.correctAnswers;
 
-    // Get the user's selected options
-    List<int> selectedOptions = question.selectedOptions;
+  //   // Get the user's selected options
+  //   List<int> selectedOptions = question.selectedOptions;
 
-    // Sort both lists to compare them easily
-    correctAnswers.sort();
-    selectedOptions.sort();
+  //   // Sort both lists to compare them easily
+  //   correctAnswers.sort();
+  //   selectedOptions.sort();
 
-    // Check if the selected options match the correct answers
-    if (areListsEqual(correctAnswers, selectedOptions)) {
-      // The user's answer is correct
-      print("Correct! User selected the right options.");
-      userSummary[loadedQuestions[currentQuestionIndex].questionText] = {
-        'correctIncorrect': 'Correct',
-        'userResponse': question.selectedOptions,
-        'correctAnswers': correctAnswers,
-      };
-    } else {
-      // The user's answer is incorrect
-      print("Incorrect! User selected the wrong options.");
-      userSummary[loadedQuestions[currentQuestionIndex].questionText] = {
-        'correctIncorrect': 'Incorrect',
-        'userResponse': question.selectedOptions,
-        'correctAnswers': correctAnswers,
-      };
-    }
-  }
+  //   // Check if the selected options match the correct answers
+  //   print("1 THESE ARE THE SELECTED OPTIONS: $selectedOptions, $correctAnswers");
+  //   if (areListsEqual(correctAnswers, selectedOptions)) {
+  //     // The user's answer is correct
+  //     print("2 THESE ARE THE SELECTED OPTIONS: $selectedOptions");
+  //     print("Correct! User selected the right options.");
+  //     userSummary[questionId] = {
+  //       'correctIncorrect': 'Correct',
+  //       'userResponse': question.selectedOptions,
+  //       'correctAnswers': correctAnswers,
+  //     };
+  //   } else {
+  //     print("3 THESE ARE THE SELECTED OPTIONS: $selectedOptions, $correctAnswers");
+  //     // The user's answer is incorrect
+  //     print("Incorrect! User selected the wrong options.");
+  //     userSummary[questionId] = {
+  //       'correctIncorrect': 'Incorrect',
+  //       'userResponse': question.selectedOptions,
+  //       'correctAnswers': correctAnswers,
+  //     };
+  //   }
+  // }
+
+
 
   bool areListsEqual(List<dynamic> list1, List<dynamic> list2) {
     if (list1.length != list2.length) {
@@ -406,236 +433,282 @@ class _QuizPageState extends State<QuizPage> {
     print("Result: ${isCorrect ? 'Correct' : 'Incorrect'}");
   }
 
-Widget buildDragAndDropQuestion(DragAndDropQuestion question, BuildContext context) {
-  List<Widget> droppedItems = [];
+// Widget buildDragAndDropQuestion(DragAndDropQuestion question, BuildContext context) {
+//   List<Widget> droppedItems = [];
 
-  return Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      Text(
-        question.optionsText.join('\n'),
-        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-      ),
-      SizedBox(height: 20),
-      Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: [
-          // Drag Targets
-          for (int i = 0; i < question.options.length; i++)
-            Draggable<Widget>(
-              child: Container(
-                width: 50,
-                height: 50,
-                color: Colors.blue,
-                child: const Center(child: Text('Item 1'))
-              ),
-              feedback: Container(
-                width: 100,
-                height: 100,
-                color: Colors.blue,
-                child: const Center(child: Text('Item 1'))
-              ),
-              data: Container(
-                width: 100,
-                height: 100,
-                color: Colors.blue,
-                child: const Center(child: Text('Item 1'))
-              )
-            ),
-          for (int i = 0; i < question.options.length; i++)
-            DragTarget<Widget>(
-              builder: (context, accepted, rejected) {
-                return Container(
-                  width: 300,
-                  height: 200,
-                  color: Colors.grey,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: droppedItems.isEmpty
-                      ? [const Text('Drop Items Here')]
-                      : droppedItems
-                  ),
-                );
-              },
-              onWillAccept: (Widget? data) {
-                return true;
-              },
-              onAccept: (Widget data) {
-                setState(() {
-                  droppedItems.add(data);
-                });
-              },
-            ),
-            // buildTarget(
-            //   context,
-            //   text: 'Target ${i + 1}',
-            //   options: question.options, // Assuming question.options is the list of options
-            //   onAccept: (data) {
-            //     setState(() {
-            //       // Update the order of the dragged item
-            //       question.correctOrder[i] = data;
-            //     });
-            //   },
-            // ),
-
-          // Draggable Options
-          // for (int i = 0; i < question.options.length; i++)
-          //   Draggable<String>(
-          //     data: question.options[i],
-          //     feedback: Card(
-          //       elevation: 5,
-          //       child: Container(
-          //         width: 100,
-          //         height: 50,
-          //         alignment: Alignment.center,
-          //         child: Text(question.options[i]),
-          //       ),
-          //     ),
-          //     child: Card(
-          //       elevation: 3,
-          //       child: Container(
-          //         width: 100,
-          //         height: 50,
-          //         alignment: Alignment.center,
-          //         child: Text(question.options[i]),
-          //       ),
-          //     ),
-          //   ),
-
-        ],
-      ),
-    ],
-  );
-}
+//   return Column(
+//     crossAxisAlignment: CrossAxisAlignment.start,
+//     children: [
+//       Text(
+//         question.optionsText.join('\n'),
+//         style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+//       ),
+//       SizedBox(height: 20),
+//       Row(
+//         mainAxisAlignment: MainAxisAlignment.spaceAround,
+//         children: [
+//           // Drag Targets
+//           for (int i = 0; i < question.options.length; i++)
+//             Draggable<Widget>(
+//               child: Container(
+//                 width: 50,
+//                 height: 50,
+//                 color: Colors.blue,
+//                 child: const Center(child: Text('Item 1'))
+//               ),
+//               feedback: Container(
+//                 width: 100,
+//                 height: 100,
+//                 color: Colors.blue,
+//                 child: const Center(child: Text('Item 1'))
+//               ),
+//               data: Container(
+//                 width: 100,
+//                 height: 100,
+//                 color: Colors.blue,
+//                 child: const Center(child: Text('Item 1'))
+//               )
+//             ),
+//           for (int i = 0; i < question.options.length; i++)
+//             DragTarget<Widget>(
+//               builder: (context, accepted, rejected) {
+//                 return Container(
+//                   width: 300,
+//                   height: 200,
+//                   color: Colors.grey,
+//                   child: Column(
+//                     mainAxisAlignment: MainAxisAlignment.center,
+//                     children: droppedItems.isEmpty
+//                       ? [const Text('Drop Items Here')]
+//                       : droppedItems
+//                   ),
+//                 );
+//               },
+//               onWillAccept: (Widget? data) {
+//                 return true;
+//               },
+//               onAccept: (Widget data) {
+//                 setState(() {
+//                   droppedItems.add(data);
+//                 });
+//               },
+//             ),
+//         ],
+//       ),
+//     ],
+//   );
+// }
 
 
-Widget buildTarget(
-  BuildContext context, {
-  required String text,
-  required List<String> options,
-  required DragTargetAccept<String> onAccept,
-}) =>
-    CircleAvatar(
-      radius: 50,
-      child: DragTarget<String>(
-        builder: (context, candidateData, rejectedData) => Stack(
-          children: [
-            // Draggable Options
-            for (int i = 0; i < options.length; i++)
-              Draggable<String>(
-              data: options[i],
-              feedback: Card(
-                elevation: 5,
-                child: Container(
-                  width: 100,
-                  height: 50,
-                  alignment: Alignment.center,
-                  child: Text(options[i]),
-                ),
-              ),
-              child: Card(
-                elevation: 3,
-                child: Container(
-                  width: 100,
-                  height: 50,
-                  alignment: Alignment.center,
-                  child: Text(options[i]),
-                ),
-              ),
-            ),
-            // IgnorePointer(child: Center(child: buildText(text))),
-          ],
-        ),
-        onWillAcceptWithDetails: (data) => true,
-        onAcceptWithDetails: (DragTargetDetails<String> details) {
-          String data = details.data;
-          onAccept(data);
-        },
-      ),
-    );
+// Widget buildTarget(
+//   BuildContext context, {
+//   required String text,
+//   required List<String> options,
+//   required DragTargetAccept<String> onAccept,
+// }) =>
+//     CircleAvatar(
+//       radius: 50,
+//       child: DragTarget<String>(
+//         builder: (context, candidateData, rejectedData) => Stack(
+//           children: [
+//             // Draggable Options
+//             for (int i = 0; i < options.length; i++)
+//               Draggable<String>(
+//               data: options[i],
+//               feedback: Card(
+//                 elevation: 5,
+//                 child: Container(
+//                   width: 100,
+//                   height: 50,
+//                   alignment: Alignment.center,
+//                   child: Text(options[i]),
+//                 ),
+//               ),
+//               child: Card(
+//                 elevation: 3,
+//                 child: Container(
+//                   width: 100,
+//                   height: 50,
+//                   alignment: Alignment.center,
+//                   child: Text(options[i]),
+//                 ),
+//               ),
+//             ),
+//             // IgnorePointer(child: Center(child: buildText(text))),
+//           ],
+//         ),
+//         onWillAcceptWithDetails: (data) => true,
+//         onAcceptWithDetails: (DragTargetDetails<String> details) {
+//           String data = details.data;
+//           onAccept(data);
+//         },
+//       ),
+//     );
 
 
-Widget buildText(String text) => Container(
-      decoration: BoxDecoration(boxShadow: [
-        BoxShadow(
-          color: Colors.black.withOpacity(0.8),
-          blurRadius: 12,
-        )
-      ]),
-      child: Text(
-        text,
-        style: TextStyle(
-          color: Colors.white,
-          fontSize: 16,
-          fontWeight: FontWeight.bold,
-        ),
-      ),
-    );
+//     Widget buildText(String text) => Container(
+//       decoration: BoxDecoration(boxShadow: [
+//         BoxShadow(
+//           color: Colors.black.withOpacity(0.8),
+//           blurRadius: 12,
+//         )
+//       ]),
+//       child: Text(
+//         text,
+//         style: TextStyle(
+//           color: Colors.white,
+//           fontSize: 16,
+//           fontWeight: FontWeight.bold,
+//         ),
+//       ),
+//     );
 
-  Future<void> displayQuestion(int index) async {
-    if (loadedQuestions.isNotEmpty && index < loadedQuestions.length) {
-      QuizQuestion currentQuestion = loadedQuestions[index];
+  Future<void> displayQuestion(int index, List<String> questionIds) async {
+  if (loadedQuestions.isNotEmpty && index < loadedQuestions.length) {
+    QuizQuestion currentQuestion = loadedQuestions[index];
+    String questionId = questionIds[index]; // Use the correct questionId
 
-      // Print question details
-      print("Question ${index + 1}:");
-      print("Text: ${currentQuestion.questionText}");
-      print("Type: ${currentQuestion.type}");
-      print("Difficulty: ${currentQuestion.difficulty}");
-      print("Tags: ${currentQuestion.tags}");
-
+    // Initialize user response in userSummary only if not already present
+    if (!userSummary.containsKey(questionId)) {
       if (currentQuestion.type == QuestionType.multipleChoice) {
-        print("Multiple Choice Start");
         QuestionMultipleChoice multipleChoiceAnswer =
             QuestionMultipleChoice.fromMap(currentQuestion.answer.toFirestore());
 
         // Get the correct answers for the question
         List<int> correctAnswers = multipleChoiceAnswer.correctAnswers;
-        print("Options: ${multipleChoiceAnswer.options}");
-        print("Correct Answers: $correctAnswers");
 
-        // Initialize user response in userSummary
-        userSummary[currentQuestion.questionText] = {
-          'correctIncorrect': 'Not Answered',
-          'userResponse': [],
-          'correctAnswers': correctAnswers,
-        };
-        
-        print("Multiple Choice End");
+        // Initialize user response in userSummary only if not already present
+        if (!userSummary.containsKey(questionId)) {
+          userSummary[questionId] = {
+            'questionText': currentQuestion.questionText,
+            'correctIncorrect': 'Not Answered',
+            'userResponse': multipleChoiceAnswer.selectedOptions,
+            'correctAnswers': correctAnswers,
+          };
+        }
       } else if (currentQuestion.type == QuestionType.fillInTheBlank) {
         QuestionFillInTheBlank fillInTheBlankAnswer =
             currentQuestion.answer as QuestionFillInTheBlank;
         setState(() {
           fillInTheBlankController.text = fillInTheBlankAnswer.userResponse;
         });
-        print("fillInTheBlankAnswer: ${fillInTheBlankAnswer.userResponse}");
+
         List<String> correctAnswers = fillInTheBlankAnswer.correctAnswers;
-        print("Correct Answers: $correctAnswers");
 
-        // Initialize user response in userSummary
-        userSummary[currentQuestion.questionText] = {
-          'correctIncorrect': 'Not Answered',
-          'userResponse': fillInTheBlankAnswer.userResponse,
-          'correctAnswers': correctAnswers,
-        };
+        // Initialize user response in userSummary only if not already present
+        if (!userSummary.containsKey(questionId)) {
+          userSummary[questionId] = {
+            'questionText': currentQuestion.questionText,
+            'correctIncorrect': 'Not Answered',
+            'userResponse': fillInTheBlankAnswer.userResponse,
+            'correctAnswers': correctAnswers,
+          };
+        }
       }
-    } else {
-      print("Error: loadedQuestions is empty or index is out of range.");
     }
+  } else {
+    print("Error: loadedQuestions is empty or index is out of range.");
   }
+}
 
 
-  Future<void> storeUserAnswersInFirebase() async {
+  // Future<void> storeUserAnswersInFirebase(List<String> questionIds, loadedQuestions) async {
+  //   try {
+  //     Quiz? loadedQuiz = await quizManager.getQuizWithId(quizId);
+  //     User? user = FirebaseAuth.instance.currentUser;
+  //     if (user == null) {
+  //       // Handle the case where the user is not logged in
+  //       print("User not logged in.");
+  //       return;
+  //     }
+
+  //     if (loadedQuiz != null) {
+  //       setState(() {
+  //         quiz = loadedQuiz;
+  //       });
+
+  //       // Print quiz details
+  //       print("Loaded quiz: ${quiz.name}");
+  //       print("Question IDs: ${quiz.questionIds}");
+
+  //       String userId = user.uid;
+
+  //       // Your existing code...
+  //       // Create a reference to the users collection
+  //       CollectionReference usersCollection = FirebaseFirestore.instance.collection('users');
+
+  //       // Create a reference to the user's document
+  //       DocumentReference userDocument = usersCollection.doc(userId);
+
+  //       // Create a reference to the quiz history subcollection for the current quiz
+  //       CollectionReference quizHistoryCollection = userDocument.collection('quizHistory').doc(quizId).collection('attempts');
+
+  //       // Generate a unique ID for this quiz attempt (using timestamp)
+  //       String quizAttemptId = DateTime.now().toUtc().toIso8601String();
+
+  //       // Create a reference to the quiz attempt document
+  //       DocumentReference quizAttemptDocument = quizHistoryCollection.doc(quizAttemptId);
+
+  //       List<QuizQuestion> questions = [];
+
+  //       for (String questionId in questionIds) {
+  //         // Fetch the question document directly from Firestore using QuizManager instead
+  //         QuizQuestion? question = await QuizManager().getQuizQuestionById(questionId);
+
+  //         if (question != null) {
+  //           questions.add(question);
+  //         } else {
+  //           // Handle the case where the question doesn't exist
+  //           print("Question not found with ID: $questionId");
+  //         }
+  //       }
+
+  //       // print("84 User Summary: $userSummary");
+  //       Map<String, dynamic> userSummary = checkUserAnswers(questionIds, loadedQuestions);
+  //       print("85 User Summary: $userSummary");
+
+  //       // Prepare data to store in Firebase
+  //       Map<String, dynamic> quizAttemptData = {
+  //         'timestamp': FieldValue.serverTimestamp(), // Store timestamp
+  //         'userResults': {
+  //           'quizTotal': 20, // Update this with the actual maximum points
+  //           'userTotal': calculateUserTotal(userSummary),
+  //         },
+  //         'userSummary': userSummary,
+  //       };
+
+  //       // Store data in Firebase
+  //       await quizAttemptDocument.set(quizAttemptData);
+
+  //       // Print success message
+  //       print("User answers and summary stored successfully!");
+  //     }
+  //   } catch (error) {
+  //     // Handle errors, e.g., display an error message
+  //     print("Error storing user answers: $error");
+  //   }
+  // }
+
+  Future<void> storeUserAnswersInFirebase2(Map<String, dynamic> userSummary) async {
     try {
-      // Assuming you have the currently logged-in user
       User? user = FirebaseAuth.instance.currentUser;
+      
       if (user == null) {
         // Handle the case where the user is not logged in
         print("User not logged in.");
         return;
       }
 
-      // Get the user's ID
+      // Fetch the quiz details
+      Quiz? loadedQuiz2 = await quizManager.getQuizWithId(quizId);  // Rename variable to avoid conflict
+      if (loadedQuiz2 == null) {
+        print("Quiz not found with ID: $quizId");
+        return;
+      }
+
+      // Get the user ID and quiz ID
       String userId = user.uid;
+      String quizId2 = quizId;  // Rename variable to avoid conflict
 
       // Create a reference to the users collection
       CollectionReference usersCollection = FirebaseFirestore.instance.collection('users');
@@ -644,7 +717,7 @@ Widget buildText(String text) => Container(
       DocumentReference userDocument = usersCollection.doc(userId);
 
       // Create a reference to the quiz history subcollection for the current quiz
-      CollectionReference quizHistoryCollection = userDocument.collection('quizHistory').doc(quizId).collection('attempts');
+      CollectionReference quizHistoryCollection = userDocument.collection('quizHistory').doc(quizId2).collection('attempts');
 
       // Generate a unique ID for this quiz attempt (using timestamp)
       String quizAttemptId = DateTime.now().toUtc().toIso8601String();
@@ -652,15 +725,12 @@ Widget buildText(String text) => Container(
       // Create a reference to the quiz attempt document
       DocumentReference quizAttemptDocument = quizHistoryCollection.doc(quizAttemptId);
 
-      // Check user answers and get the summary
-      Map<String, dynamic> userSummary = checkUserAnswers(loadedQuestions);
-
       // Prepare data to store in Firebase
       Map<String, dynamic> quizAttemptData = {
         'timestamp': FieldValue.serverTimestamp(), // Store timestamp
         'userResults': {
-          'quizTotal': 20, // widget.quiz.getQuizDifficulty(), // Update this with the actual maximum points
-          'userTotal': 4, // calculateUserTotal(userSummary),
+          'quizTotal': 20, // Update this with the actual maximum points
+          'userTotal': calculateUserTotal(userSummary),
         },
         'userSummary': userSummary,
       };
@@ -675,6 +745,13 @@ Widget buildText(String text) => Container(
       print("Error storing user answers: $error");
     }
   }
+
+
+
+
+
+
+
 
   // Function to get correct answers for a specific question
   List<dynamic> getCorrectAnswersForQuestion(QuizQuestion question) {
