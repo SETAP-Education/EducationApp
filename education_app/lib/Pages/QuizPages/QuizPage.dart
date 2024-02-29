@@ -161,6 +161,8 @@ class _QuizPageState extends State<QuizPage> {
         quizCompleted = true;
       });
 
+      await storeUserAnswersInFirebase2(userSummary);
+
       // Navigate to QuizSummaryPage with quizSummary
       Navigator.push(
         context,
@@ -229,12 +231,17 @@ class _QuizPageState extends State<QuizPage> {
                       ),
                       ElevatedButton(
                         onPressed: () async {
+                          if (currentQuestionIndex == loadedQuestions.length) {
+                            // If there are more questions, store user answers in Firebase
+                            print("Just before storing the userSummary: $userSummary");
+                            // await storeUserAnswersInFirebase2(userSummary);
+                          }
                           moveToNextOrSubmit();
-                          if (currentQuestionIndex < loadedQuestions.length - 2) {
-                              // If there are more questions, store user answers in Firebase
-                              print("Just before storing the userSummary: $userSummary");
-                              // storeUserAnswersInFirebase2(userSummary);
-                            }
+                          // if (currentQuestionIndex < loadedQuestions.length - 2) {
+                          //     // If there are more questions, store user answers in Firebase
+                          //     print("Just before storing the userSummary: $userSummary");
+                          //     // storeUserAnswersInFirebase2(userSummary);
+                          //   }
                         },
                         child: Text(
                           currentQuestionIndex < loadedQuestions.length - 1
@@ -690,6 +697,8 @@ class _QuizPageState extends State<QuizPage> {
   // }
 
   Future<void> storeUserAnswersInFirebase2(Map<String, dynamic> userSummary) async {
+    print("EXECUTING storeUserAnswersInFirebase2 FUNCTION!!!!!");
+
     try {
       User? user = FirebaseAuth.instance.currentUser;
       
