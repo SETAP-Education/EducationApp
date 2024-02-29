@@ -5,6 +5,17 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 enum QuestionType {
   none, 
   multipleChoice, 
+  fillInTheBlank,
+  dragAndDrop,
+}
+
+String questionTypeToString(QuestionType type) {
+  switch(type) {
+    case QuestionType.multipleChoice: return "Multiple Choice";
+    case QuestionType.fillInTheBlank: return "Fill in the Blank";
+    case QuestionType.dragAndDrop: return "Drag & Drop";
+    default: return "";
+  }
 }
 
 // Base class for questions
