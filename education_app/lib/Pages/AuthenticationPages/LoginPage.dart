@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:education_app/Pages/AuthenticationPages/RegistrationPage.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'dart:async';
+import 'package:education_app/Pages/AuthenticationPages/DisplayNamePage.dart';
 
 // basic colour scheme - will come up with one on friday with max
 Color primaryColour = Colors.white;
@@ -238,7 +239,7 @@ class _LoginPageState extends State<LoginPage> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => LandingPage(),
+                    builder: (context) => DisplayUser(),
                   ),
                 );
               },
