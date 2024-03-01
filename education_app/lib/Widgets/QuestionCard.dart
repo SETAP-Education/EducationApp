@@ -23,9 +23,6 @@ class QuestionCard extends StatelessWidget {
     );
   }
 
-  Widget buildTags() {
-
-  }
 
   @override
   Widget build(BuildContext context) {
