@@ -61,34 +61,32 @@ class QuestionMultipleChoice extends QuestionAnswer {
 }
 
 class QuestionFillInTheBlank extends QuestionAnswer {
-  QuestionFillInTheBlank({required this.correctAnswers, this.userResponse = ""});
+  QuestionFillInTheBlank({required this.correctAnswer, this.userResponse = ""});
 
-  List<String> correctAnswers;
+  String correctAnswer;
   String userResponse;
 
   @override
   void debugPrint() {
-    print("Correct Answers:");
-    for (String answer in correctAnswers) {
-      print(answer);
-    }
+    print("Correct Answer: $correctAnswer");
   }
 
   @override
   Map<String, dynamic> toFirestore() {
     return {
-      "correctAnswers": correctAnswers,
+      "correctAnswer": correctAnswer,
       "userResponse": userResponse,
     };
   }
 
   factory QuestionFillInTheBlank.fromMap(Map<String, dynamic> map) {
     return QuestionFillInTheBlank(
-      correctAnswers: map["correctAnswers"] is Iterable ? List.from(map["correctAnswers"]) : List.empty(),
+      correctAnswer: map["correctAnswer"] ?? "",
       userResponse: map["userResponse"] ?? "",
     );
   }
 }
+
 
 class DragAndDropQuestion extends QuestionAnswer {
   List<String> options;
@@ -212,26 +210,25 @@ Map<String, dynamic> checkFillInTheBlankAnswer(
   String questionId,
   Map<String, dynamic> userSummary,
 ) {
-  // Get the correct answers for the question
-  List<String> correctAnswers = question.correctAnswers.map((answer) => answer.toLowerCase()).toList();
+  // Get the correct answer for the question
+  String correctAnswer = question.correctAnswer.toLowerCase();
 
   // Get the user's response
   String userResponse = question.userResponse.toLowerCase();
 
-  // Check if the user's response matches any of the correct answers
-  bool isCorrect = correctAnswers.contains(userResponse);
+  // Check if the user's response matches the correct answer
+  bool isCorrect = correctAnswer == userResponse;
 
   // Update the user summary
   userSummary[questionId] = {
     'correctIncorrect': isCorrect ? 'Correct' : 'Incorrect',
     'userResponse': userResponse,
-    'correctAnswers': correctAnswers,
+    'correctAnswer': correctAnswer,
   };
 
   print("THIS IS THE USER SUMMARY IN checkFillInTheBlankAnswer: $userSummary");
   return userSummary;
 }
-
 
 bool areListsEqual(List<dynamic> list1, List<dynamic> list2) {
   if (list1.length != list2.length) {

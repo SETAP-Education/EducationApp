@@ -196,6 +196,9 @@ class _QuizPageState extends State<QuizPage> {
 
   @override
   Widget build(BuildContext context) {
+    double containerWidth = MediaQuery.of(context).size.width * 2 / 3;
+    double containerHeight = MediaQuery.of(context).size.height * 2 / 3;
+
     return Scaffold(
       appBar: AppBar(
         title: Text("Quiz Page"),
@@ -206,15 +209,16 @@ class _QuizPageState extends State<QuizPage> {
           Expanded(
             child: Center(
               child: Container(
-                width: 1600,
-                height: 800,
+                width: containerWidth,
+                height: containerHeight,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(12),
+                  color: Color(0xFFf3edf6).withOpacity(1),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.grey.withOpacity(0.1),
+                      color: Colors.black.withOpacity(0.2),
                       spreadRadius: 5,
-                      blurRadius: 0,
+                      blurRadius: 10,
                       offset: Offset(0, 3),
                     ),
                   ],
@@ -249,26 +253,21 @@ class _QuizPageState extends State<QuizPage> {
                         },
                         child: Text('Previous Question'),
                       ),
-                      ElevatedButton(
-                        onPressed: () async {
-                          if (currentQuestionIndex == loadedQuestions.length) {
-                            // If there are more questions, store user answers in Firebase
-                            print("Just before storing the userSummary: $userSummary");
-                            // await storeUserAnswersInFirebase2(userSummary);
-                          }
-                          moveToNextOrSubmit();
-                          // if (currentQuestionIndex < loadedQuestions.length - 2) {
-                          //     // If there are more questions, store user answers in Firebase
-                          //     print("Just before storing the userSummary: $userSummary");
-                          //     // storeUserAnswersInFirebase2(userSummary);
-                          //   }
-                        },
-                        child: Text(
-                          currentQuestionIndex < loadedQuestions.length - 1
-                              ? 'Next Question'
-                              : 'Submit Quiz'
-                        ),
+                    ElevatedButton(
+                      onPressed: () async {
+                        if (currentQuestionIndex == loadedQuestions.length) {
+                          // If there are more questions, store user answers in Firebase
+                          print("Just before storing the userSummary: $userSummary");
+                          // await storeUserAnswersInFirebase2(userSummary);
+                        }
+                        moveToNextOrSubmit();
+                      },
+                      child: Text(
+                        currentQuestionIndex < loadedQuestions.length - 1
+                            ? 'Next Question'
+                            : 'Submit Quiz'
                       ),
+                    ),
                   ],
                 ),
                 SizedBox(height: 16),
@@ -296,6 +295,10 @@ class _QuizPageState extends State<QuizPage> {
       ),
     );
   }
+
+
+
+
 
   Widget buildQuizPage(QuizQuestion question) {
     return Column(
@@ -620,7 +623,7 @@ class _QuizPageState extends State<QuizPage> {
           fillInTheBlankController.text = fillInTheBlankAnswer.userResponse;
         });
 
-        List<String> correctAnswers = fillInTheBlankAnswer.correctAnswers;
+        String correctAnswer = fillInTheBlankAnswer.correctAnswer;
 
         // Initialize user response in userSummary only if not already present
         if (!userSummary.containsKey(questionId)) {
@@ -628,7 +631,7 @@ class _QuizPageState extends State<QuizPage> {
             'questionText': currentQuestion.questionText,
             'correctIncorrect': 'Not Answered',
             'userResponse': fillInTheBlankAnswer.userResponse,
-            'correctAnswers': correctAnswers,
+            'correctAnswers': correctAnswer,
           };
         }
       }
@@ -783,16 +786,18 @@ class _QuizPageState extends State<QuizPage> {
 
 
   // Function to get correct answers for a specific question
-  List<dynamic> getCorrectAnswersForQuestion(QuizQuestion question) {
+  dynamic getCorrectAnswersForQuestion(QuizQuestion question) {
     if (question.type == QuestionType.multipleChoice) {
       return (question.answer as QuestionMultipleChoice).correctAnswers;
     } else if (question.type == QuestionType.fillInTheBlank) {
-      return (question.answer as QuestionFillInTheBlank).correctAnswers;
+      return (question.answer as QuestionFillInTheBlank).correctAnswer;
     } else {
       // Handle other question types if needed
-      return [];
+      return null;
     }
   }
+
+
 
   // Helper function to get correct answers from loaded questions
   Map<String, dynamic> getCorrectAnswers(List<QuizQuestion> questions) {
@@ -803,7 +808,7 @@ class _QuizPageState extends State<QuizPage> {
         correctAnswers[question.questionText] = mcQuestion.correctAnswers;
       } else if (question.type == QuestionType.fillInTheBlank) {
         QuestionFillInTheBlank fitbQuestion = question.answer as QuestionFillInTheBlank;
-        correctAnswers[question.questionText] = fitbQuestion.correctAnswers;
+        correctAnswers[question.questionText] = fitbQuestion.correctAnswer;
       } else {
         // Handle other question types if needed
       }

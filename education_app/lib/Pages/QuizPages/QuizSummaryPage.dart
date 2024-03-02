@@ -67,8 +67,6 @@ class QuizSummaryPage extends StatelessWidget {
     );
   }
 
-
-
   Widget buildQuizResults(Map<String, dynamic> quizAttemptData, BuildContext context) {
     // Extract relevant data
     int quizTotal = quizAttemptData['userResults']['quizTotal'];
@@ -137,7 +135,7 @@ class QuizSummaryItem extends StatelessWidget {
         if (question.type == QuestionType.multipleChoice)
           buildMultipleChoiceQuestion(question.answer as QuestionMultipleChoice, userResponse),
         if (question.type == QuestionType.fillInTheBlank)
-          buildFillInTheBlankQuestion(question as QuestionFillInTheBlank, userResponse),
+          buildFillInTheBlankQuestion(question.answer as QuestionFillInTheBlank),
       ],
     );
   }
@@ -182,33 +180,41 @@ class QuizSummaryItem extends StatelessWidget {
     );
   }
 
-  Widget buildFillInTheBlankQuestion(QuestionFillInTheBlank question, dynamic userResponse) {
-    print("The question: $question, The userResponse: $userResponse");
+  Widget buildFillInTheBlankQuestion(QuestionFillInTheBlank question) {
+    print("The user response: ${question.userResponse}, The correct response: ${question.correctAnswer}");
+
+    // Determine background and border colors
+    Color backgroundColour = (question.userResponse.isEmpty)
+        ? Colors.transparent // Not answered
+        : (question.userResponse.toLowerCase() == question.correctAnswer.toLowerCase())
+            ? Colors.green // Correct
+            : Colors.red; // Incorrect
+
+    Color borderColour = (question.userResponse.isEmpty)
+        ? Colors.blue // Not answered
+        : (question.userResponse.toLowerCase() == question.correctAnswer.toLowerCase())
+            ? Colors.green // Correct
+            : Colors.red; // Incorrect
 
     return Container(
       padding: EdgeInsets.all(10),
       margin: EdgeInsets.symmetric(vertical: 5),
       decoration: BoxDecoration(
+        color: backgroundColour,
         border: Border.all(
-          color: Colors.blue,
+          color: borderColour,
           width: 1,
         ),
         borderRadius: BorderRadius.circular(8),
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          SizedBox(height: 10),
-          Text(
-            userResponse != null ? userResponse.toString() : 'Not answered',
-            style: TextStyle(
-              color: Colors.black,
-            ),
+      child: Center(
+        child: Text(
+          (question.userResponse.isEmpty) ? 'Not answered' : question.userResponse,
+          style: const TextStyle(
+            color: Colors.white,
           ),
-        ],
+        ),
       ),
     );
   }
-
-
 }
