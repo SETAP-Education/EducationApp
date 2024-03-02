@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:education_app/Pages/AuthenticationPages/RegistrationPage.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'dart:async';
+import '../openingPage.dart';
 
 // basic colour scheme - will come up with one on friday with max
 Color primaryColour = Colors.white;
@@ -34,34 +35,57 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return PopScope(
-      canPop: false, //When false, blocks the current route from being popped
-      child: Scaffold(
-        body: Stack(
-          children: [
-            Container(
-              decoration: BoxDecoration(
-                color: primaryColour,
-              ),
-              child: Center(
-                child: LayoutBuilder(
-                  builder: (BuildContext context, BoxConstraints constraints) {
-                    return Container(
-                      width: constraints.maxWidth < 500 ? null : 500,
-                      padding: EdgeInsets.all(20.0),
-                      decoration: BoxDecoration(
-                        color: primaryColour,
-                        borderRadius: BorderRadius.circular(15.0),
-                      ),
-                      child: _buildLoginForm(),
-                    );
-                  },
+        canPop: false, //When false, blocks the current route from being popped
+        child: Scaffold(
+          body: Stack(
+            children: [
+              Container(
+                decoration: BoxDecoration(
+                  color: primaryColour,
                 ),
+                child:
+                Column(
+                  children: [
+                    Padding(
+                    padding: EdgeInsets.only(right: 1225, top: 10),
+                      child: IconButton(
+                          // color: tertiary,
+                          // hoverColor: secondary,
+                          icon: const Icon(Icons.arrow_back),
+                          tooltip: 'Back',
+                          onPressed: () {
+                            setState(() {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(builder: (context) => OpeningPage()),
+                              );
+                            });
+                          },
+                        )
+                    ),
+                    SizedBox(height: 100),
+                    Center(
+                      child: LayoutBuilder(
+                        builder: (BuildContext context, BoxConstraints constraints) {
+                          return Container(
+                            width: constraints.maxWidth < 500 ? null : 500,
+                            padding: EdgeInsets.all(20.0),
+                            decoration: BoxDecoration(
+                              color: primaryColour,
+                              borderRadius: BorderRadius.circular(15.0),
+                            ),
+                            child: _buildLoginForm(),
+                          );
+                        },
+                      ),
+                    ),
+                  ]
+                )
               ),
-            ),
-            if (_error) _buildErrorMessage(_errorMessages),
-          ],
-        ),
-      )
+              if (_error) _buildErrorMessage(_errorMessages),
+            ],
+          ),
+        )
     );
   }
 
@@ -76,7 +100,7 @@ class _LoginPageState extends State<LoginPage> {
             SizedBox(
               width: 600, // Set the desired width
               child: Text(
-                'User Login',
+                'Login',
                 style: GoogleFonts.nunito(
                   fontSize: 30.0,
                   fontWeight: FontWeight.bold,
@@ -185,8 +209,8 @@ class _LoginPageState extends State<LoginPage> {
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 GestureDetector(
-                 onTap: () async {
-                   final email = _emailController.text.trim();
+                  onTap: () async {
+                    final email = _emailController.text.trim();
                     if (email.isNotEmpty) {
                       try {
                         var user = await FirebaseAuth.instance.fetchSignInMethodsForEmail(email);

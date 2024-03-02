@@ -4,6 +4,7 @@ import 'package:education_app/Pages/LandingPage.dart';
 import 'package:education_app/Pages/AuthenticationPages/LoginPage.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'dart:async';
+import '../openingPage.dart';
 
 // Basic color scheme - will come up with one on Friday with Max
 Color primaryColour = Colors.white;
@@ -41,7 +42,27 @@ class _RegistrationPageState extends State<RegistrationPage> {
               decoration: BoxDecoration(
                 color: primaryColour,
               ),
-              child: Center(
+            child: Column(
+              children: [
+                Padding(
+                padding: EdgeInsets.only(right: 1225, top: 10),
+                child: IconButton(
+                  // color: tertiary,
+                  // hoverColor: secondary,
+                  icon: const Icon(Icons.arrow_back),
+                  tooltip: 'Back',
+                  onPressed: () {
+                    setState(() {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => OpeningPage()),
+                      );
+                    });
+                  },
+                )
+              ),
+              SizedBox(height: 100),
+              Center(
                 child: LayoutBuilder(
                   builder: (BuildContext context, BoxConstraints constraints) {
                     return Container(
@@ -56,7 +77,9 @@ class _RegistrationPageState extends State<RegistrationPage> {
                   },
                 ),
               ),
-            ),
+              ]
+            )
+      ),
             if (_error) _buildErrorMessage(_errorMessages),
           ],
         ),
@@ -71,7 +94,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
         SizedBox(
           width: 600, // Set the desired width
           child: Text(
-            'User Registration',
+            'Registration',
             style: GoogleFonts.nunito(
               fontSize: 30.0,
               fontWeight: FontWeight.bold,
