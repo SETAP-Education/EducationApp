@@ -1,8 +1,5 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:education_app/Quizzes/quiz.dart';
-import 'package:education_app/Pages/QuizPages/QuizPage.dart';
 
 class QuizSummaryPage extends StatelessWidget {
   final List<QuizQuestion> loadedQuestions;

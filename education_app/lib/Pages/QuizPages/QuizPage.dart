@@ -161,7 +161,7 @@ class _QuizPageState extends State<QuizPage> {
       quizCompleted = true;
     });
 
-    await storeUserAnswersInFirebase2(userSummary);
+    await storeUserAnswersInFirebase(userSummary);
     Map<String, dynamic> quizAttemptData = createQuizAttemptData(userSummary);
 
     // Navigate to QuizSummaryPage with quizSummary
@@ -594,208 +594,102 @@ class _QuizPageState extends State<QuizPage> {
 //     );
 
   Future<void> displayQuestion(int index, List<String> questionIds) async {
-  if (loadedQuestions.isNotEmpty && index < loadedQuestions.length) {
-    QuizQuestion currentQuestion = loadedQuestions[index];
-    String questionId = questionIds[index]; // Use the correct questionId
+    if (loadedQuestions.isNotEmpty && index < loadedQuestions.length) {
+      QuizQuestion currentQuestion = loadedQuestions[index];
+      String questionId = questionIds[index]; // Use the correct questionId
 
-    // Initialize user response in userSummary only if not already present
-    if (!userSummary.containsKey(questionId)) {
-      if (currentQuestion.type == QuestionType.multipleChoice) {
-        QuestionMultipleChoice multipleChoiceAnswer =
-            QuestionMultipleChoice.fromMap(currentQuestion.answer.toFirestore());
+      // Initialize user response in userSummary only if not already present
+      if (!userSummary.containsKey(questionId)) {
+        if (currentQuestion.type == QuestionType.multipleChoice) {
+          QuestionMultipleChoice multipleChoiceAnswer =
+              QuestionMultipleChoice.fromMap(currentQuestion.answer.toFirestore());
 
-        // Get the correct answers for the question
-        List<int> correctAnswers = multipleChoiceAnswer.correctAnswers;
+          // Get the correct answers for the question
+          List<int> correctAnswers = multipleChoiceAnswer.correctAnswers;
 
-        // Initialize user response in userSummary only if not already present
-        if (!userSummary.containsKey(questionId)) {
-          userSummary[questionId] = {
-            'questionText': currentQuestion.questionText,
-            'correctIncorrect': 'Not Answered',
-            'userResponse': multipleChoiceAnswer.selectedOptions,
-            'correctAnswers': correctAnswers,
-          };
-        }
-      } else if (currentQuestion.type == QuestionType.fillInTheBlank) {
-        QuestionFillInTheBlank fillInTheBlankAnswer =
-            currentQuestion.answer as QuestionFillInTheBlank;
-        setState(() {
-          fillInTheBlankController.text = fillInTheBlankAnswer.userResponse;
-        });
+          // Initialize user response in userSummary only if not already present
+          if (!userSummary.containsKey(questionId)) {
+            userSummary[questionId] = {
+              'questionText': currentQuestion.questionText,
+              'correctIncorrect': 'Not Answered',
+              'userResponse': multipleChoiceAnswer.selectedOptions,
+              'correctAnswers': correctAnswers,
+            };
+          }
+        } else if (currentQuestion.type == QuestionType.fillInTheBlank) {
+          QuestionFillInTheBlank fillInTheBlankAnswer =
+              currentQuestion.answer as QuestionFillInTheBlank;
+          setState(() {
+            fillInTheBlankController.text = fillInTheBlankAnswer.userResponse;
+          });
 
-        String correctAnswer = fillInTheBlankAnswer.correctAnswer;
+          String correctAnswer = fillInTheBlankAnswer.correctAnswer;
 
-        // Initialize user response in userSummary only if not already present
-        if (!userSummary.containsKey(questionId)) {
-          userSummary[questionId] = {
-            'questionText': currentQuestion.questionText,
-            'correctIncorrect': 'Not Answered',
-            'userResponse': fillInTheBlankAnswer.userResponse,
-            'correctAnswers': correctAnswer,
-          };
+          // Initialize user response in userSummary only if not already present
+          if (!userSummary.containsKey(questionId)) {
+            userSummary[questionId] = {
+              'questionText': currentQuestion.questionText,
+              'correctIncorrect': 'Not Answered',
+              'userResponse': fillInTheBlankAnswer.userResponse,
+              'correctAnswers': correctAnswer,
+            };
+          }
         }
       }
+    } else {
+      print("Error: loadedQuestions is empty or index is out of range.");
     }
-  } else {
-    print("Error: loadedQuestions is empty or index is out of range.");
+  }
+
+  Future<void> storeUserAnswersInFirebase(Map<String, dynamic> userSummary) async {
+  try {
+    User? user = FirebaseAuth.instance.currentUser;
+
+    if (user == null) {
+      print("User not logged in.");
+      return;
+    }
+
+    String userId = user.uid;
+    Quiz? loadedQuiz2 = await quizManager.getQuizWithId(quizId);
+
+    if (loadedQuiz2 == null) {
+      print("Quiz not found with ID: $quizId");
+      return;
+    }
+
+    CollectionReference usersCollection = FirebaseFirestore.instance.collection('users');
+    DocumentReference userDocument = usersCollection.doc(userId);
+    CollectionReference quizHistoryCollection = userDocument.collection('quizHistory').doc(quizId).collection('attempts');
+
+    String quizAttemptId = DateTime.now().toUtc().toIso8601String();
+    DocumentReference quizAttemptDocument = quizHistoryCollection.doc(quizAttemptId);
+
+    // Include the timestamp field in the userSummary
+    Map<String, dynamic> quizAttemptData = {
+      'timestamp': FieldValue.serverTimestamp(),
+      'userResults': {
+        'quizTotal': 20, // Update this with the actual maximum points
+        'userTotal': calculateUserTotal(userSummary),
+      },
+      'userSummary': userSummary,
+    };
+
+    // Store data in Firebase
+    await quizAttemptDocument.set(quizAttemptData);
+
+    // Now, update the timestamp field in the quizId2 document
+    await FirebaseFirestore.instance.collection('users').doc(userId).collection('quizHistory').doc(quizId).set({
+      'timestamp': FieldValue.serverTimestamp(),
+    }, SetOptions(merge: true));
+
+    // Print success message
+    print("User answers and summary stored successfully!");
+  } catch (error) {
+    print("Error storing user answers: $error");
   }
 }
 
-
-  // Future<void> storeUserAnswersInFirebase(List<String> questionIds, loadedQuestions) async {
-  //   try {
-  //     Quiz? loadedQuiz = await quizManager.getQuizWithId(quizId);
-  //     User? user = FirebaseAuth.instance.currentUser;
-  //     if (user == null) {
-  //       // Handle the case where the user is not logged in
-  //       print("User not logged in.");
-  //       return;
-  //     }
-
-  //     if (loadedQuiz != null) {
-  //       setState(() {
-  //         quiz = loadedQuiz;
-  //       });
-
-  //       // Print quiz details
-  //       print("Loaded quiz: ${quiz.name}");
-  //       print("Question IDs: ${quiz.questionIds}");
-
-  //       String userId = user.uid;
-
-  //       // Your existing code...
-  //       // Create a reference to the users collection
-  //       CollectionReference usersCollection = FirebaseFirestore.instance.collection('users');
-
-  //       // Create a reference to the user's document
-  //       DocumentReference userDocument = usersCollection.doc(userId);
-
-  //       // Create a reference to the quiz history subcollection for the current quiz
-  //       CollectionReference quizHistoryCollection = userDocument.collection('quizHistory').doc(quizId).collection('attempts');
-
-  //       // Generate a unique ID for this quiz attempt (using timestamp)
-  //       String quizAttemptId = DateTime.now().toUtc().toIso8601String();
-
-  //       // Create a reference to the quiz attempt document
-  //       DocumentReference quizAttemptDocument = quizHistoryCollection.doc(quizAttemptId);
-
-  //       List<QuizQuestion> questions = [];
-
-  //       for (String questionId in questionIds) {
-  //         // Fetch the question document directly from Firestore using QuizManager instead
-  //         QuizQuestion? question = await QuizManager().getQuizQuestionById(questionId);
-
-  //         if (question != null) {
-  //           questions.add(question);
-  //         } else {
-  //           // Handle the case where the question doesn't exist
-  //           print("Question not found with ID: $questionId");
-  //         }
-  //       }
-
-  //       // print("84 User Summary: $userSummary");
-  //       Map<String, dynamic> userSummary = checkUserAnswers(questionIds, loadedQuestions);
-  //       print("85 User Summary: $userSummary");
-
-  //       // Prepare data to store in Firebase
-  //       Map<String, dynamic> quizAttemptData = {
-  //         'timestamp': FieldValue.serverTimestamp(), // Store timestamp
-  //         'userResults': {
-  //           'quizTotal': 20, // Update this with the actual maximum points
-  //           'userTotal': calculateUserTotal(userSummary),
-  //         },
-  //         'userSummary': userSummary,
-  //       };
-
-  //       // Store data in Firebase
-  //       await quizAttemptDocument.set(quizAttemptData);
-
-  //       // Print success message
-  //       print("User answers and summary stored successfully!");
-  //     }
-  //   } catch (error) {
-  //     // Handle errors, e.g., display an error message
-  //     print("Error storing user answers: $error");
-  //   }
-  // }
-
-  Future<void> storeUserAnswersInFirebase2(Map<String, dynamic> userSummary) async {
-    print("EXECUTING storeUserAnswersInFirebase2 FUNCTION!!!!!");
-
-    try {
-      User? user = FirebaseAuth.instance.currentUser;
-      
-      if (user == null) {
-        // Handle the case where the user is not logged in
-        print("User not logged in.");
-        return;
-      }
-
-      // Fetch the quiz details
-      Quiz? loadedQuiz2 = await quizManager.getQuizWithId(quizId);  // Rename variable to avoid conflict
-      if (loadedQuiz2 == null) {
-        print("Quiz not found with ID: $quizId");
-        return;
-      }
-
-      // Get the user ID and quiz ID
-      String userId = user.uid;
-      String quizId2 = quizId;  // Rename variable to avoid conflict
-
-      // Create a reference to the users collection
-      CollectionReference usersCollection = FirebaseFirestore.instance.collection('users');
-
-      // Create a reference to the user's document
-      DocumentReference userDocument = usersCollection.doc(userId);
-
-      // Create a reference to the quiz history subcollection for the current quiz
-      CollectionReference quizHistoryCollection = userDocument.collection('quizHistory').doc(quizId2).collection('attempts');
-
-      // Generate a unique ID for this quiz attempt (using timestamp)
-      String quizAttemptId = DateTime.now().toUtc().toIso8601String();
-
-      // Create a reference to the quiz attempt document
-      DocumentReference quizAttemptDocument = quizHistoryCollection.doc(quizAttemptId);
-
-      // Prepare data to store in Firebase
-      Map<String, dynamic> quizAttemptData = {
-        'timestamp': FieldValue.serverTimestamp(), // Store timestamp
-        'userResults': {
-          'quizTotal': 20, // Update this with the actual maximum points
-          'userTotal': calculateUserTotal(userSummary),
-        },
-        'userSummary': userSummary,
-      };
-
-      // Store data in Firebase
-      await quizAttemptDocument.set(quizAttemptData);
-
-      // Print success message
-      print("User answers and summary stored successfully!");
-    } catch (error) {
-      // Handle errors, e.g., display an error message
-      print("Error storing user answers: $error");
-    }
-  }
-
-
-
-
-
-
-
-
-  // Function to get correct answers for a specific question
-  dynamic getCorrectAnswersForQuestion(QuizQuestion question) {
-    if (question.type == QuestionType.multipleChoice) {
-      return (question.answer as QuestionMultipleChoice).correctAnswers;
-    } else if (question.type == QuestionType.fillInTheBlank) {
-      return (question.answer as QuestionFillInTheBlank).correctAnswer;
-    } else {
-      // Handle other question types if needed
-      return null;
-    }
-  }
 
 
 
