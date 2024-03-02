@@ -21,6 +21,7 @@ class _QuizPageState extends State<QuizPage> {
   bool quizSubmitted = false;
   // Replace the quizId being passed in, it is static for testing purposes.
   String quizId = 'yKExulogYwk65MqHrFMN';
+  Map<String, dynamic> quizAttemptData = {};
 
   @override
   void initState() {
@@ -99,79 +100,98 @@ class _QuizPageState extends State<QuizPage> {
   }
 
   void moveToNextOrSubmit() async {
-    if (currentQuestionIndex >= loadedQuestions.length) {
-      // Prevents accessing an index that out of bounds
+  if (currentQuestionIndex >= loadedQuestions.length) {
+    // Prevents accessing an index that is out of bounds
+    return;
+  }
+
+  QuizQuestion currentQuestion = loadedQuestions[currentQuestionIndex];
+  String questionId = quiz.questionIds[currentQuestionIndex]; // Get the correct questionId
+
+  Map<String, dynamic> questionSummary;
+
+  if (currentQuestion.type == QuestionType.multipleChoice) {
+    if (currentQuestion.answer is QuestionMultipleChoice) {
+      questionSummary = checkUserAnswers(
+        currentQuestion,
+        questionId,
+        currentQuestion.type,
+        userSummary,
+      );
+    } else {
+      print("Error: Incorrect question type for multiple-choice question.");
       return;
     }
-
-    QuizQuestion currentQuestion = loadedQuestions[currentQuestionIndex];
-    String questionId = quiz.questionIds[currentQuestionIndex]; // Get the correct questionId
-
-    if (currentQuestion.type == QuestionType.multipleChoice) {
-      if (currentQuestion.answer is QuestionMultipleChoice) {
-        Map<String, dynamic> questionSummary = checkUserAnswers(
-          currentQuestion.answer as QuestionMultipleChoice,
-          questionId,
-          currentQuestion.type,
-          userSummary,
-        );
-        print("71 User Summary: $questionSummary");
-
-        // Update userSummary with the new summary
-        userSummary = {
-          ...userSummary,
-          ...questionSummary,
-        };
-
-        await Future.delayed(Duration(milliseconds: 500));
-
-        print("70 User Summary: $userSummary");
-        // storeUserAnswersInFirebase2(userSummary);
-      } else {
-        print("Error: Incorrect question type for multiple-choice question.");
-        return;
-      }
-    } else if (currentQuestion.type == QuestionType.fillInTheBlank) {
-      if (currentQuestion.answer is QuestionFillInTheBlank) {
-        checkFillInTheBlankAnswer(currentQuestion.answer as QuestionFillInTheBlank);
-      } else {
-        print("Error: Incorrect question type for fill-in-the-blank question.");
-        return;
-      }
-    } else {
-      // Add other question types if needed
-    }
-
-    // checkUserAnswers(quiz.questionIds, loadedQuestions);
-    // storeUserAnswersInFirebase2(userSummary);
-    print("43 User Summary: $userSummary");
-
-    // print("Current Question Index: $currentQuestionIndex");
-
-    if (currentQuestionIndex < loadedQuestions.length - 1) {
-      // Move to the next question
-      setState(() {
-        currentQuestionIndex++;
-        quizCompleted = false;
-      });
-      await displayQuestion(currentQuestionIndex, quiz.questionIds);
-    } else {
-      // Last question, submit the quiz
-      setState(() {
-        quizCompleted = true;
-      });
-
-      await storeUserAnswersInFirebase2(userSummary);
-
-      // Navigate to QuizSummaryPage with quizSummary
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => QuizSummaryPage(quizSummary: userSummary),
-        ),
+  } else if (currentQuestion.type == QuestionType.fillInTheBlank) {
+    if (currentQuestion.answer is QuestionFillInTheBlank) {
+      questionSummary = checkUserAnswers(
+        currentQuestion,
+        questionId,
+        currentQuestion.type,
+        userSummary,
       );
+    } else {
+      print("Error: Incorrect question type for fill-in-the-blank question.");
+      return;
     }
-    print("Question Index: $currentQuestionIndex");
+  } else {
+    // Add other question types if needed
+    return;
+  }
+
+
+  // Update userSummary with the new summary
+  userSummary = {
+    ...userSummary,
+    ...questionSummary,
+  };
+
+  // Print the current question summary (you can remove this in the final version)
+  print("User Summary: $userSummary");
+
+  // Move to the next question or submit the quiz
+  if (currentQuestionIndex < loadedQuestions.length - 1) {
+    setState(() {
+      currentQuestionIndex++;
+      quizCompleted = false;
+    });
+    await displayQuestion(currentQuestionIndex, quiz.questionIds);
+  } else {
+    setState(() {
+      quizCompleted = true;
+    });
+
+    await storeUserAnswersInFirebase2(userSummary);
+    Map<String, dynamic> quizAttemptData = createQuizAttemptData(userSummary);
+
+    // Navigate to QuizSummaryPage with quizSummary
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => QuizSummaryPage(
+          loadedQuestions: loadedQuestions,
+          quizAttemptData: quizAttemptData,
+        ),
+      ),
+    );
+  }
+
+  // Print the current question index (you can remove this in the final version)
+  print("Question Index: $currentQuestionIndex");
+}
+
+
+  Map<String, dynamic> createQuizAttemptData(Map<String, dynamic> userSummary) {
+    int quizTotal = loadedQuestions.length;
+
+    return {
+      'timestamp': FieldValue.serverTimestamp(),
+      'userResults': {
+        'quizTotal': quizTotal,  // Update this with the actual maximum points
+        'userTotal': calculateUserTotal(userSummary),
+      },
+      'userSummary': userSummary,
+    };
   }
 
   @override
@@ -386,19 +406,19 @@ class _QuizPageState extends State<QuizPage> {
 
 
 
-  bool areListsEqual(List<dynamic> list1, List<dynamic> list2) {
-    if (list1.length != list2.length) {
-      return false;
-    }
+  // bool areListsEqual(List<dynamic> list1, List<dynamic> list2) {
+  //   if (list1.length != list2.length) {
+  //     return false;
+  //   }
 
-    for (int i = 0; i < list1.length; i++) {
-      if (list1[i] != list2[i]) {
-        return false;
-      }
-    }
+  //   for (int i = 0; i < list1.length; i++) {
+  //     if (list1[i] != list2[i]) {
+  //       return false;
+  //     }
+  //   }
 
-    return true;
-  }
+  //   return true;
+  // }
 
 
   Widget buildFillInTheBlankQuestion(QuestionFillInTheBlank question) {
@@ -416,29 +436,29 @@ class _QuizPageState extends State<QuizPage> {
     );
   }
 
-  void checkFillInTheBlankAnswer(QuestionFillInTheBlank question) {
-    // Get the correct answers for the question
-    List<String> correctAnswers = question.correctAnswers.map((answer) => answer.toLowerCase()).toList();
+  // void checkFillInTheBlankAnswer(QuestionFillInTheBlank question) {
+  //   // Get the correct answers for the question
+  //   List<String> correctAnswers = question.correctAnswers.map((answer) => answer.toLowerCase()).toList();
 
-    // Get the user's response
-    String userResponse = question.userResponse.toLowerCase();
+  //   // Get the user's response
+  //   String userResponse = question.userResponse.toLowerCase();
 
-    // Check if the user's response matches any of the correct answers
-    bool isCorrect = correctAnswers.contains(userResponse);
+  //   // Check if the user's response matches any of the correct answers
+  //   bool isCorrect = correctAnswers.contains(userResponse);
 
-    // Update the user summary
-    userSummary[loadedQuestions[currentQuestionIndex].questionText] = {
-      'correctIncorrect': isCorrect ? 'Correct' : 'Incorrect',
-      'userResponse': userResponse,
-      'correctAnswers': correctAnswers,
-    };
+  //   // Update the user summary
+  //   userSummary[loadedQuestions[currentQuestionIndex].questionText] = {
+  //     'correctIncorrect': isCorrect ? 'Correct' : 'Incorrect',
+  //     'userResponse': userResponse,
+  //     'correctAnswers': correctAnswers,
+  //   };
 
-    // Print the result (you can remove this in the final version)
-    print("Question: ${loadedQuestions[currentQuestionIndex].questionText}");
-    print("Correct Answers: ${correctAnswers}");
-    print("User Response: $userResponse");
-    print("Result: ${isCorrect ? 'Correct' : 'Incorrect'}");
-  }
+  //   // Print the result (you can remove this in the final version)
+  //   print("Question: ${loadedQuestions[currentQuestionIndex].questionText}");
+  //   print("Correct Answers: ${correctAnswers}");
+  //   print("User Response: $userResponse");
+  //   print("Result: ${isCorrect ? 'Correct' : 'Incorrect'}");
+  // }
 
 // Widget buildDragAndDropQuestion(DragAndDropQuestion question, BuildContext context) {
 //   List<Widget> droppedItems = [];

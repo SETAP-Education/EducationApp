@@ -141,37 +141,97 @@ class DragAndDropQuestion extends QuestionAnswer {
   }
 }
 
-Map<String, dynamic> checkUserAnswers(QuestionMultipleChoice question, String questionId, currentType, Map<String, dynamic> userSummary) {
-  // Map<String, dynamic> userSummary = {...userSummary}; // Copy the existing userSummary
-
+Map<String, dynamic> checkUserAnswers(
+  QuizQuestion question,
+  String questionId,
+  QuestionType currentType,
+  Map<String, dynamic> userSummary,
+) {
   if (currentType == QuestionType.multipleChoice) {
-    List<int> correctAnswers = question.correctAnswers;
-    List<int> selectedOptions = question.selectedOptions;
-    correctAnswers.sort();
-    selectedOptions.sort();
-
-    print("$selectedOptions");
-
-    if (areListsEqual(correctAnswers, selectedOptions)) {
-      userSummary[questionId] = {
-        'correctIncorrect': 'Correct',
-        'userResponse': question.selectedOptions,
-        'correctAnswers': correctAnswers,
-      };
+    if (question.answer is QuestionMultipleChoice) {
+      return checkMultipleChoiceAnswer(
+        question.answer as QuestionMultipleChoice,
+        questionId,
+        userSummary,
+      );
     } else {
-      // The user's answer is incorrect
-      print("Incorrect! User selected the wrong options.");
-      userSummary[questionId] = {
-        'correctIncorrect': 'Incorrect',
-        'userResponse': question.selectedOptions,
-        'correctAnswers': correctAnswers,
-      };
+      print("Error: Incorrect question type for multiple-choice question.");
+      return userSummary;
     }
+  } else if (currentType == QuestionType.fillInTheBlank) {
+    if (question.answer is QuestionFillInTheBlank) {
+      return checkFillInTheBlankAnswer(
+        question.answer as QuestionFillInTheBlank,
+        questionId,
+        userSummary,
+      );
+    } else {
+      print("Error: Incorrect question type for fill-in-the-blank question.");
+      return userSummary;
+    }
+  } else {
+    // Handle other question types if needed
+    return userSummary;
+  }
+}
+
+Map<String, dynamic> checkMultipleChoiceAnswer(
+  QuestionMultipleChoice question,
+  String questionId,
+  Map<String, dynamic> userSummary,
+) {
+  List<int> correctAnswers = question.correctAnswers;
+  List<int> selectedOptions = question.selectedOptions;
+  correctAnswers.sort();
+  selectedOptions.sort();
+
+  print("$selectedOptions");
+
+  if (areListsEqual(correctAnswers, selectedOptions)) {
+    userSummary[questionId] = {
+      'correctIncorrect': 'Correct',
+      'userResponse': question.selectedOptions,
+      'correctAnswers': correctAnswers,
+    };
+  } else {
+    // The user's answer is incorrect
+    print("Incorrect! User selected the wrong options.");
+    userSummary[questionId] = {
+      'correctIncorrect': 'Incorrect',
+      'userResponse': question.selectedOptions,
+      'correctAnswers': correctAnswers,
+    };
   }
 
-  print("THIS IS THE USER SUMMARY IN checkUserSummary: $userSummary");
+  print("THIS IS THE USER SUMMARY IN checkMultipleChoiceAnswer: $userSummary");
   return userSummary;
 }
+
+Map<String, dynamic> checkFillInTheBlankAnswer(
+  QuestionFillInTheBlank question,
+  String questionId,
+  Map<String, dynamic> userSummary,
+) {
+  // Get the correct answers for the question
+  List<String> correctAnswers = question.correctAnswers.map((answer) => answer.toLowerCase()).toList();
+
+  // Get the user's response
+  String userResponse = question.userResponse.toLowerCase();
+
+  // Check if the user's response matches any of the correct answers
+  bool isCorrect = correctAnswers.contains(userResponse);
+
+  // Update the user summary
+  userSummary[questionId] = {
+    'correctIncorrect': isCorrect ? 'Correct' : 'Incorrect',
+    'userResponse': userResponse,
+    'correctAnswers': correctAnswers,
+  };
+
+  print("THIS IS THE USER SUMMARY IN checkFillInTheBlankAnswer: $userSummary");
+  return userSummary;
+}
+
 
 bool areListsEqual(List<dynamic> list1, List<dynamic> list2) {
   if (list1.length != list2.length) {
