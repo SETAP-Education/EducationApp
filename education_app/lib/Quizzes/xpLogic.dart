@@ -1,3 +1,5 @@
+import 'package:flutter/material.dart';
+
 // xp needs to be taken from users account - but don't know how to access that db rn
 int xp = 10;
 int level = 0;
@@ -7,32 +9,32 @@ bool reachedMaxLevel = false;
 
 // function to be ran at the beginning of the program, takes xp and sets level and rank
 void setUpLevelAndRank(){
-  level = setLevel();
-  rank = setRank();
+  level = getLevel();
+  rank = getRank();
 }
 
 // adds gained xp from quiz to total xp - called after user completes a quiz
-void setXp(int quizXp){
+void setXp(BuildContext context, int quizXp){
   xp += quizXp;
 
   // check if level has changed
   if(checkIfLeveledUp() == true){
     // only need to set level and rank if user has leveled up, otherwise just wasting time
-    level = setLevel();
-    rank = setRank();
+    level = getLevel();
+    rank = getRank();
     if(reachedMaxLevel == true){
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: const Text('Congratulations you have reached the maximum level! You are now at level ${level} and rank ${rank}'),
+          content: Text('Congratulations you have reached the maximum level! You are now at level ${level} and rank ${rank}'),
         ),
-      ),
+      );
     }
     else{
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: const Text('Congratulations you leveled up! You are now at level ${level} and rank ${rank}'),
+          content: Text('Congratulations you leveled up! You are now at level ${level} and rank ${rank}'),
         ),
-      ),
+      );
     }
   }
 
@@ -61,7 +63,7 @@ int getLevel(){
 bool checkIfLeveledUp(){
   // compare level before and after xp from completed quiz is added
   int prevLevel = level;
-  int newLevel = setLevel();
+  int newLevel = getLevel();
   if(prevLevel != newLevel){
     return true;
   }
@@ -83,12 +85,12 @@ String getRank(){
 }
 
 // function to calculate xp gained from completing a quiz
-void xpGained(){
+void xpGained(BuildContext context){
   int xpGained = 0;
 
   // get total number of questions answered correctly
   // add up difficulty for each question answered correctly
   // divide this by the average difficulty of the quiz - xpGained = this value
 
-  setXp(xpGained);
+  setXp(context, xpGained);
 }

@@ -88,9 +88,7 @@ class _OpeningPageState extends State<OpeningPage> {
                         onPressed: () {
                           Navigator.push(
                             context,
-                            MaterialPageRoute(
-                              builder: (context) => RegistrationPage(),
-                            ),
+                            _createRoute(RegistrationPage()),
                           );
                         },
                         style: ElevatedButton.styleFrom(
@@ -115,9 +113,7 @@ class _OpeningPageState extends State<OpeningPage> {
                         onPressed: () {
                           Navigator.push(
                             context,
-                            MaterialPageRoute(
-                              builder: (context) => LoginPage(),
-                            ),
+                            _createRoute(LoginPage()),
                           );
                         },
                         style: ElevatedButton.styleFrom(
@@ -141,4 +137,13 @@ class _OpeningPageState extends State<OpeningPage> {
       ),
     );
   }
+}
+
+Route _createRoute(Widget page) {
+  return PageRouteBuilder(
+    pageBuilder: (context, animation, secondaryAnimation) => page,
+    transitionsBuilder: (context, animation, secondaryAnimation, child) {
+      return child;
+    },
+  );
 }
