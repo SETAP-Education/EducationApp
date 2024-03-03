@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:education_app/Quizzes/quiz.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class QuizSummaryPage extends StatelessWidget {
   final List<QuizQuestion> loadedQuestions;
@@ -14,12 +15,14 @@ class QuizSummaryPage extends StatelessWidget {
   Widget build(BuildContext context) {
     print("THIS IS THE INITIAL QUIZ SUMMARY PAGE: $quizAttemptData");
     print("THIS IS THE INITIAL LoadedQuestions: $loadedQuestions");
+    List<String> questionIds = quizAttemptData['userSummary'].keys.toList();
+    print("4 Question Ids: $questionIds");
 
     return Scaffold(
       appBar: AppBar(
         title: Text('Quiz Summary'),
       ),
-      body: Center( // Center everything on the screen
+      body: Center(
         child: SingleChildScrollView(
           padding: EdgeInsets.all(16.0),
           child: Column(
@@ -30,10 +33,7 @@ class QuizSummaryPage extends StatelessWidget {
                 style: TextStyle(fontSize: 24.0, fontWeight: FontWeight.bold),
               ),
               SizedBox(height: 16.0),
-              // Display overall quiz results
               buildQuizResults(quizAttemptData, context),
-              // SizedBox(height: 8.0),
-              // Display quizAttemptData using QuizSummaryItem
               for (int i = 0; i < loadedQuestions.length; i++)
                 FractionallySizedBox(
                   widthFactor: 2 / 3,
@@ -43,11 +43,7 @@ class QuizSummaryPage extends StatelessWidget {
                     child: Padding(
                       padding: const EdgeInsets.all(16.0),
                       child: loadedQuestions.isNotEmpty
-                          ? QuizSummaryItem(
-                              question: loadedQuestions[i],
-                              questionIndex: i,
-                              quizAttemptData: quizAttemptData,
-                            )
+                          ? buildQuizSummaryItem(loadedQuestions[i], i, quizAttemptData)
                           : Container(),
                     ),
                   ),
@@ -55,7 +51,6 @@ class QuizSummaryPage extends StatelessWidget {
               SizedBox(height: 16.0),
               ElevatedButton(
                 onPressed: () {
-                  // Navigate back to the quiz page or any other action
                   Navigator.pop(context);
                 },
                 child: Text('Back to Quiz'),
@@ -67,8 +62,53 @@ class QuizSummaryPage extends StatelessWidget {
     );
   }
 
+  Future<dynamic> getUserResponseForQuestion(QuizQuestion question, Map<String, dynamic> quizAttemptData, int questionIndex) async {
+    dynamic userResponse; // Initialize the userResponse variable
+
+    quizAttemptData['userSummary'].forEach((questionId, summary) {
+      // Check if 'userResponse' exists for the current question
+      if (summary.containsKey('userResponse')) {
+        // Retrieve 'userResponse' based on question type
+        var summaryUserResponse = summary['userResponse'];
+
+        // Check question type (assuming multiple choice or fill in the blank)
+        if (question.type == QuestionType.multipleChoice && summaryUserResponse is List<int>) {
+          // Handle 'userResponse' as List<int> (multiple choice)
+          print('Question ID: $questionId, User Response (Multiple Choice): $summaryUserResponse');
+          userResponse = summaryUserResponse;
+        } else if (question.type == QuestionType.fillInTheBlank && summaryUserResponse is String) {
+          // Handle 'userResponse' as String (fill in the blank)
+          print('Question ID: $questionId, User Response (Fill in the Blank): $summaryUserResponse');
+          userResponse = summaryUserResponse;
+        } else {
+          print('Unknown question type for Question ID: $questionId');
+        }
+      } else {
+        // Handle the case where 'userResponse' is not present in the summary
+        print('No user response found for Question ID: $questionId');
+      }
+    });
+
+    return userResponse;
+  }
+
+
+  // Future<int> getQuestionTypeFromFirestore(String questionId, FirebaseFirestore firestore) async {
+  //   try {
+  //     final questionDoc = await firestore.collection('questions').doc(questionId).get();
+  //     if (questionDoc.exists) {
+  //       final questionType = questionDoc.data()?['type'];
+  //       return questionType;
+  //     } else {
+  //       print('Question not found in Firestore for ID: $questionId');
+  //     }
+  //   } catch (e) {
+  //     print('Error fetching question type from Firestore: $e');
+  //     return null;
+  //   }
+  // }
+
   Widget buildQuizResults(Map<String, dynamic> quizAttemptData, BuildContext context) {
-    // Extract relevant data
     int quizTotal = quizAttemptData['userResults']['quizTotal'];
     int userTotal = quizAttemptData['userResults']['userTotal'];
     print("3 Quiz Attempt Data: $quizAttemptData");
@@ -80,7 +120,7 @@ class QuizSummaryPage extends StatelessWidget {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12.0),
         ),
-        elevation: 5, // Set the elevation for the shadow
+        elevation: 5,
         child: Container(
           padding: EdgeInsets.all(16.0),
           child: Column(
@@ -106,23 +146,39 @@ class QuizSummaryPage extends StatelessWidget {
       ),
     );
   }
-}
 
-class QuizSummaryItem extends StatelessWidget {
-  final QuizQuestion question;
-  final int questionIndex;
-  final Map<String, dynamic> quizAttemptData;
+  Widget buildQuizSummaryItem(QuizQuestion question, int questionIndex, Map<String, dynamic> quizAttemptData) {
+    dynamic userResponse;
 
-  QuizSummaryItem({
-    required this.question,
-    required this.questionIndex,
-    required this.quizAttemptData,
-  });
+    for (var entry in quizAttemptData['userSummary'].entries) {
+      var questionId = entry.key;
+      var summary = entry.value;
 
-  @override
-  Widget build(BuildContext context) {
-    print("12 question: $question");
-    print("13 question answer: ${question.answer}");
+      if (questionId == question.questionId) {
+        // Found the user response for the current question
+        if (summary.containsKey('userResponse')) {
+          var summaryUserResponse = summary['userResponse'];
+
+          if (question.type == QuestionType.multipleChoice) {
+            print('Question ID: $questionId, User Response (Multiple Choice): $summaryUserResponse');
+            // Convert userResponse to List<int>
+            userResponse = (summaryUserResponse as List).cast<int>();
+          } else if (question.type == QuestionType.fillInTheBlank) {
+            print('Question ID: $questionId, User Response (Fill in the Blank): $summaryUserResponse');
+            // Convert userResponse to List<int>
+            userResponse = (summaryUserResponse as String);
+          } else {
+            print('Unknown question type for Question ID: $questionId');
+            userResponse = "asdf";
+          }
+        } else {
+          print('No user response found for Question ID: $questionId');
+        }
+
+        // Break the loop once we find the user response for the current question
+        break;
+      }
+    }
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
@@ -134,20 +190,17 @@ class QuizSummaryItem extends StatelessWidget {
         ),
         SizedBox(height: 20),
         if (question.type == QuestionType.multipleChoice)
-          buildMultipleChoiceQuestion(question.answer as QuestionMultipleChoice),
+          buildMultipleChoiceQuestion(question.answer as QuestionMultipleChoice, userResponse),
         if (question.type == QuestionType.fillInTheBlank)
-          buildFillInTheBlankQuestion(question.answer as QuestionFillInTheBlank),
+          buildFillInTheBlankQuestion(question.answer as QuestionFillInTheBlank, userResponse),
       ],
     );
   }
 
-  Widget buildMultipleChoiceQuestion(QuestionMultipleChoice question) {
-    print("23 quesiton: $question");
-    print("24 The user response: ${question.selectedOptions}, The correct response: ${question.correctAnswers}");
-    print("25 Quiz Data: ${quizAttemptData}");
-    print("26 Question Index: ${questionIndex}}");
-    int outputtedStatement = quizAttemptData['userSummary'][questionIndex]['userResponse'];
-    print("27 The outputted statemtent: $outputtedStatement");
+  Widget buildMultipleChoiceQuestion(QuestionMultipleChoice question, List<int> userResponse) {
+    // String questionId = question.questionId; // Use the appropriate key to get the question ID
+    // List<dynamic> userResponseList = quizAttemptData['userSummary'][quizAttemptData.questionId]['userResponse'];
+    print("MC USER RESPONSE: $userResponse");
 
     return ListView.builder(
       shrinkWrap: true,
@@ -155,7 +208,7 @@ class QuizSummaryItem extends StatelessWidget {
       itemCount: question.options.length,
       itemBuilder: (context, index) {
         String option = question.options[index];
-        bool isSelected = question.selectedOptions.contains(index);
+        bool isSelected = userResponse.contains(index);
         bool isCorrect = question.correctAnswers.contains(index);
 
         Color backgroundColour = isSelected
@@ -188,21 +241,21 @@ class QuizSummaryItem extends StatelessWidget {
     );
   }
 
-  Widget buildFillInTheBlankQuestion(QuestionFillInTheBlank question) {
-    print("The user response: ${question.userResponse}, The correct response: ${question.correctAnswer}");
+  Widget buildFillInTheBlankQuestion(QuestionFillInTheBlank question, String userResponse) {
+    print("The user response: ${userResponse}, The correct response: ${question.correctAnswer}");
+    print("FITB USER RESPONSE: $userResponse");
 
-    // Determine background and border colors
-    Color backgroundColour = (question.userResponse.isEmpty)
-        ? Colors.transparent // Not answered
+    Color backgroundColour = userResponse.isEmpty
+        ? Colors.transparent
         : (question.userResponse.toLowerCase() == question.correctAnswer.toLowerCase())
-            ? Colors.green // Correct
-            : Colors.red; // Incorrect
+            ? Colors.green
+            : Colors.red;
 
-    Color borderColour = (question.userResponse.isEmpty)
-        ? Colors.blue // Not answered
-        : (question.userResponse.toLowerCase() == question.correctAnswer.toLowerCase())
-            ? Colors.green // Correct
-            : Colors.red; // Incorrect
+    Color borderColour = userResponse.isEmpty
+        ? Colors.blue
+        : (userResponse.toLowerCase() == question.correctAnswer.toLowerCase())
+            ? Colors.green
+            : Colors.red;
 
     return Container(
       padding: EdgeInsets.all(10),
@@ -217,7 +270,7 @@ class QuizSummaryItem extends StatelessWidget {
       ),
       child: Center(
         child: Text(
-          (question.userResponse.isEmpty) ? 'Not answered - The correct Answer is: "${question.correctAnswer}"' : question.userResponse,
+          (userResponse.isEmpty) ? 'Not answered - The correct Answer is: "${question.correctAnswer}"' : userResponse,
           style: const TextStyle(
             color: Colors.black,
           ),

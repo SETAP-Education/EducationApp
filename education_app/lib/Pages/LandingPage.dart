@@ -14,7 +14,6 @@ class LandingPage extends StatefulWidget {
 }
 
 class _LandingPageState extends State<LandingPage> {
-  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   User? _user;
   List<String> recentQuizzes = [];
   late List<QuizQuestion> loadedQuestions = [];
@@ -102,8 +101,10 @@ class _LandingPageState extends State<LandingPage> {
   }
 
   Future<void> _getloadedQuestions(String quizId) async {
+    // int currentQuestionIndex = 0;
+
     if (mounted) {
-      print("Loading quiz with ID: $quizId");
+      // print("Loading quiz with ID: $quizId");
 
       Quiz? loadedQuiz = await quizManager.getQuizWithId(quizId);
 
@@ -113,8 +114,8 @@ class _LandingPageState extends State<LandingPage> {
         });
 
         // Print quiz details
-        print("Loaded quiz: ${quiz.name}");
-        print("Question IDs: ${quiz.questionIds}");
+        // print("Loaded quiz: ${quiz.name}");
+        // print("Question IDs: ${quiz.questionIds}");
 
         List<QuizQuestion> questions = [];
         for (String questionId in quiz.questionIds) {
@@ -127,8 +128,8 @@ class _LandingPageState extends State<LandingPage> {
             questions.add(question);
 
             // Print question type
-            print("Question Text: ${question.questionText}");
-            print("Question Type: ${question.type}");
+            // print("Question Text: ${question.questionText}");
+            // print("Question Type: ${question.type}");
 
           } else {
             // Handle case where question doesn't exist
@@ -142,7 +143,8 @@ class _LandingPageState extends State<LandingPage> {
         }
 
         // print("Current Question Index: $currentQuestionIndex...");
-        print("loadedQuestions: $loadedQuestions");
+        // print("loadedQuestions: $loadedQuestions");
+        // print("loadedQuestions: ${loadedQuestions[currentQuestionIndex].questionText}");
 
         // if (currentQuestionIndex < loadedQuestions.length) {
         //   print(
@@ -162,7 +164,6 @@ class _LandingPageState extends State<LandingPage> {
   }
 
   Future<void> _loadQuizAttemptData(String quizId) async {
-
     if (_user != null && mounted) {
       try {
         final CollectionReference userCollection =
@@ -184,11 +185,12 @@ class _LandingPageState extends State<LandingPage> {
               Map<String, dynamic> attemptDataMap = attemptData as Map<String, dynamic>;
 
               // Extracting relevant data from the attemptData map
-              Map<String, dynamic>? userResults = attemptDataMap['userResults'];
-              Map<String, dynamic>? userSummary = attemptDataMap['userSummary'];
+              Map<String, dynamic> userResults = attemptDataMap['userResults'];
+              Map<String, dynamic> userSummary = attemptDataMap['userSummary'];
               Timestamp? timestamp = attemptDataMap['timestamp'];
 
-              // Check if the necessary keys are not null
+              // print("67 LANDING PAGE USER SUMMARY: $userSummary");
+
               if (userResults != null && userSummary != null && timestamp != null) {
                 // Formatting the quizAttemptData
                 quizAttemptData = {
@@ -199,9 +201,14 @@ class _LandingPageState extends State<LandingPage> {
                   },
                   'userSummary': userSummary,
                 };
+                // print("53 user summary: $userSummary");
+                // print("54 quiz summary: $quizAttemptData");
               }
             }
           });
+
+          // Print the retrieved attemptData for debugging
+          // print("Attempt Data: $attemptData");
         } else {
           print('No attempts found for quiz $quizId');
         }
@@ -211,18 +218,19 @@ class _LandingPageState extends State<LandingPage> {
     }
   }
 
-  // Map<String, dynamic> createQuizAttemptData(Map<String, dynamic> userSummary) {
-  //   int quizTotal = loadedQuestions.length;
 
-  //   return {
-  //     'timestamp': FieldValue.serverTimestamp(),
-  //     'userResults': {
-  //       'quizTotal': userResults['quizTotal'],  // Update this with the actual maximum points
-  //       'userTotal': userResults['userTotal'],
-  //     },
-  //     'userSummary': userSummary,
-  //   };
-  // }
+  Map<String, dynamic> createQuizAttemptData(Map<String, dynamic> userSummary) {
+    int quizTotal = loadedQuestions.length;
+
+    return {
+      'timestamp': FieldValue.serverTimestamp(),
+      'userResults': {
+        'quizTotal': quizTotal,  // Update this with the actual maximum points
+        'userTotal': -1,
+      },
+      'userSummary': userSummary,
+    };
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -311,12 +319,13 @@ class _LandingPageState extends State<LandingPage> {
                                         // Assuming you want to get attempt data for the first recent quiz
                                         String selectedQuizId = recentQuizzes.first;
 
-                                        print("Fetching attempt data for quizId: $selectedQuizId");
+                                        // print("Fetching attempt data for quizId: $selectedQuizId");
 
-                                        try {
+                                        // try {
                                           await _getloadedQuestions(selectedQuizId);
                                           await _loadQuizAttemptData(selectedQuizId);
-                                          // await _getloadedQuestions(selectedQuizId);
+
+                                          // Map<String, dynamic> quizAttemptData = createQuizAttemptData(userSummary);
 
                                           print("FINAL loadedQuestions: $loadedQuestions");
                                           print("2 FINAL attempt data: $quizAttemptData");
@@ -334,17 +343,17 @@ class _LandingPageState extends State<LandingPage> {
                                             // );
                                             _quizSummaryButton(loadedQuestions, quizAttemptData);
                                           }
-                                        } catch (e) {
-                                          print("Error loading quiz attempt data: $e");
-                                          if (mounted) {
-                                            // Ensure the widget is still mounted before showing the SnackBar
-                                            ScaffoldMessenger.of(context).showSnackBar(
-                                              SnackBar(
-                                                content: Text('Error loading quiz attempt data'),
-                                              ),
-                                            );
-                                          }
-                                        }
+                                        // } catch (e) {
+                                        //   print("Error loading quiz attempt data: $e");
+                                        //   if (mounted) {
+                                        //     // Ensure the widget is still mounted before showing the SnackBar
+                                        //     ScaffoldMessenger.of(context).showSnackBar(
+                                        //       SnackBar(
+                                        //         content: Text('Error loading quiz attempt data'),
+                                        //       ),
+                                        //     );
+                                        //   }
+                                        // }
                                       } else {
                                         print("No recent quizzes available.");
                                       }
