@@ -12,6 +12,9 @@ class QuizSummaryPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    print("THIS IS THE INITIAL QUIZ SUMMARY PAGE: $quizAttemptData");
+    print("THIS IS THE INITIAL LoadedQuestions: $loadedQuestions");
+
     return Scaffold(
       appBar: AppBar(
         title: Text('Quiz Summary'),
@@ -68,6 +71,7 @@ class QuizSummaryPage extends StatelessWidget {
     // Extract relevant data
     int quizTotal = quizAttemptData['userResults']['quizTotal'];
     int userTotal = quizAttemptData['userResults']['userTotal'];
+    print("3 Quiz Attempt Data: $quizAttemptData");
 
     return FractionallySizedBox(
       widthFactor: 2 / 3,
@@ -117,8 +121,8 @@ class QuizSummaryItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Initialize userResponse with an empty list if not present in quizAttemptData
-    List<int> userResponse = List<int>.from(quizAttemptData['userSummary'][questionIndex.toString()]?['userResponse'] ?? []);
+    print("12 question: $question");
+    print("13 question answer: ${question.answer}");
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
@@ -130,14 +134,21 @@ class QuizSummaryItem extends StatelessWidget {
         ),
         SizedBox(height: 20),
         if (question.type == QuestionType.multipleChoice)
-          buildMultipleChoiceQuestion(question.answer as QuestionMultipleChoice, userResponse),
+          buildMultipleChoiceQuestion(question.answer as QuestionMultipleChoice),
         if (question.type == QuestionType.fillInTheBlank)
           buildFillInTheBlankQuestion(question.answer as QuestionFillInTheBlank),
       ],
     );
   }
 
-  Widget buildMultipleChoiceQuestion(QuestionMultipleChoice question, List<int> userResponse) {
+  Widget buildMultipleChoiceQuestion(QuestionMultipleChoice question) {
+    print("23 quesiton: $question");
+    print("24 The user response: ${question.selectedOptions}, The correct response: ${question.correctAnswers}");
+    print("25 Quiz Data: ${quizAttemptData}");
+    print("26 Question Index: ${questionIndex}}");
+    int outputtedStatement = quizAttemptData['userSummary'][questionIndex]['userResponse'];
+    print("27 The outputted statemtent: $outputtedStatement");
+
     return ListView.builder(
       shrinkWrap: true,
       physics: NeverScrollableScrollPhysics(),
@@ -206,9 +217,9 @@ class QuizSummaryItem extends StatelessWidget {
       ),
       child: Center(
         child: Text(
-          (question.userResponse.isEmpty) ? 'Not answered' : question.userResponse,
+          (question.userResponse.isEmpty) ? 'Not answered - The correct Answer is: "${question.correctAnswer}"' : question.userResponse,
           style: const TextStyle(
-            color: Colors.white,
+            color: Colors.black,
           ),
         ),
       ),

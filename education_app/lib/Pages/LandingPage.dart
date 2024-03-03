@@ -14,6 +14,7 @@ class LandingPage extends StatefulWidget {
 }
 
 class _LandingPageState extends State<LandingPage> {
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   User? _user;
   List<String> recentQuizzes = [];
   late List<QuizQuestion> loadedQuestions = [];
@@ -29,17 +30,26 @@ class _LandingPageState extends State<LandingPage> {
     _checkAuthState();
     quizManager = QuizManager();
   }
+  
+  @override
+  void dispose() {
+    super.dispose();
+  }
 
   void _checkAuthState() {
-    FirebaseAuth.instance.authStateChanges().listen((User? user) {
-      if (mounted) {
-        setState(() {
-          _user = user; // Set the current user
-        });
-        _checkQuizHistory();
+      FirebaseAuth.instance.authStateChanges().listen((User? user) {
+        if (mounted) {
+          setState(() {
+            _user = user; // Set the current user
+          });
+          if (user != null) {
+            _checkQuizHistory();
+          }
+        }
       }
-    });
+    );
   }
+
 
   Future<List<String>> getQuizNames(List<String> quizIds) async {
     try {
@@ -92,55 +102,58 @@ class _LandingPageState extends State<LandingPage> {
   }
 
   Future<void> _getloadedQuestions(String quizId) async {
-    print("Loading quiz with ID: $quizId");
+    if (mounted) {
+      print("Loading quiz with ID: $quizId");
 
-    Quiz? loadedQuiz = await quizManager.getQuizWithId(quizId);
+      Quiz? loadedQuiz = await quizManager.getQuizWithId(quizId);
 
-    if (loadedQuiz != null) {
-      setState(() {
-        quiz = loadedQuiz;
-        quizName = loadedQuiz.name;
-      });
+      if (loadedQuiz != null) {
+        setState(() {
+          quiz = loadedQuiz;
+        });
 
-      // Print quiz details
-      print("Loaded quiz: ${quiz.name}");
-      print("Question IDs: ${quiz.questionIds}");
+        // Print quiz details
+        print("Loaded quiz: ${quiz.name}");
+        print("Question IDs: ${quiz.questionIds}");
 
-      List<QuizQuestion> questions = [];
-      for (String questionId in quiz.questionIds) {
+        List<QuizQuestion> questions = [];
+        for (String questionId in quiz.questionIds) {
 
-        // Fetch the question document directly from Firestore using QuizManager instead
-        QuizQuestion? question =
-            await QuizManager().getQuizQuestionById(questionId);
+          // Fetch the question document directly from Firestore using QuizManager instead
+          QuizQuestion? question =
+              await QuizManager().getQuizQuestionById(questionId);
 
-        if (question != null) {
-          questions.add(question);
+          if (question != null) {
+            questions.add(question);
 
-          // Print question type
-          print("Question Text: ${question.questionText}");
-          print("Question Type: ${question.type}");
+            // Print question type
+            print("Question Text: ${question.questionText}");
+            print("Question Type: ${question.type}");
 
-        } else {
-          // Handle case where question doesn't exist
+          } else {
+            // Handle case where question doesn't exist
+          }
         }
+
+        if (mounted) {
+          setState(() {
+            loadedQuestions = questions;
+          });
+        }
+
+        // print("Current Question Index: $currentQuestionIndex...");
+        print("loadedQuestions: $loadedQuestions");
+
+        // if (currentQuestionIndex < loadedQuestions.length) {
+        //   print(
+        //       "Current Question ID: ${loadedQuestions[currentQuestionIndex].questionText}");
+        // } else {
+        //   print(
+        //       "Error: Index out of range - Current Question Index: $currentQuestionIndex");
+        // }
+
+        // displayQuestion(currentQuestionIndex, quiz.questionIds);
       }
-
-      setState(() {
-        loadedQuestions = questions;
-      });
-
-      // print("Current Question Index: $currentQuestionIndex...");
-      print("loadedQuestions: $loadedQuestions");
-
-      // if (currentQuestionIndex < loadedQuestions.length) {
-      //   print(
-      //       "Current Question ID: ${loadedQuestions[currentQuestionIndex].questionText}");
-      // } else {
-      //   print(
-      //       "Error: Index out of range - Current Question Index: $currentQuestionIndex");
-      // }
-
-      // displayQuestion(currentQuestionIndex, quiz.questionIds);
     } else {
       // Handle the case where the quiz is not found
       // may want to show an error message or navigate back
@@ -149,9 +162,8 @@ class _LandingPageState extends State<LandingPage> {
   }
 
   Future<void> _loadQuizAttemptData(String quizId) async {
-    _getloadedQuestions(quizId);
 
-    if (_user != null) {
+    if (_user != null && mounted) {
       try {
         final CollectionReference userCollection =
             FirebaseFirestore.instance.collection('users');
@@ -163,7 +175,7 @@ class _LandingPageState extends State<LandingPage> {
         final QuerySnapshot attemptsSnapshot =
             await quizHistoryCollection.orderBy('timestamp', descending: true).limit(1).get();
 
-        if (attemptsSnapshot.docs.isNotEmpty) {
+        if (attemptsSnapshot.docs.isNotEmpty && mounted) {
           final attemptData = attemptsSnapshot.docs.first.data();
           setState(() {
             // Check if attemptData is not null
@@ -199,6 +211,18 @@ class _LandingPageState extends State<LandingPage> {
     }
   }
 
+  // Map<String, dynamic> createQuizAttemptData(Map<String, dynamic> userSummary) {
+  //   int quizTotal = loadedQuestions.length;
+
+  //   return {
+  //     'timestamp': FieldValue.serverTimestamp(),
+  //     'userResults': {
+  //       'quizTotal': userResults['quizTotal'],  // Update this with the actual maximum points
+  //       'userTotal': userResults['userTotal'],
+  //     },
+  //     'userSummary': userSummary,
+  //   };
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -289,23 +313,38 @@ class _LandingPageState extends State<LandingPage> {
 
                                         print("Fetching attempt data for quizId: $selectedQuizId");
 
-                                        // Fetch the most recent attempt data for the selected quiz
-                                        await _loadQuizAttemptData(selectedQuizId);
+                                        try {
+                                          await _getloadedQuestions(selectedQuizId);
+                                          await _loadQuizAttemptData(selectedQuizId);
+                                          // await _getloadedQuestions(selectedQuizId);
 
-                                        // Retrieve loaded questions from the 'quizzes' collection
-                                        print("Final Loaded Questions: $loadedQuestions");
-                                        print("Final Quiz Attempt Data: $quizAttemptData");
+                                          print("FINAL loadedQuestions: $loadedQuestions");
+                                          print("2 FINAL attempt data: $quizAttemptData");
 
-                                        // Navigate to the QuizSummaryPage with the most recent attempt data and loaded questions
-                                        Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                            builder: (context) => QuizSummaryPage(
-                                              loadedQuestions: loadedQuestions,
-                                              quizAttemptData: quizAttemptData,
-                                            ),
-                                          ),
-                                        );
+                                          if (mounted) {
+                                            // Ensure the widget is still mounted before updating the state
+                                            // Navigator.push(
+                                            //   context,
+                                            //   MaterialPageRoute(
+                                            //     builder: (context) => QuizSummaryPage(
+                                            //       loadedQuestions: loadedQuestions,
+                                            //       quizAttemptData: quizAttemptData,
+                                            //     ),
+                                            //   ),
+                                            // );
+                                            _quizSummaryButton(loadedQuestions, quizAttemptData);
+                                          }
+                                        } catch (e) {
+                                          print("Error loading quiz attempt data: $e");
+                                          if (mounted) {
+                                            // Ensure the widget is still mounted before showing the SnackBar
+                                            ScaffoldMessenger.of(context).showSnackBar(
+                                              SnackBar(
+                                                content: Text('Error loading quiz attempt data'),
+                                              ),
+                                            );
+                                          }
+                                        }
                                       } else {
                                         print("No recent quizzes available.");
                                       }
@@ -341,6 +380,18 @@ class _LandingPageState extends State<LandingPage> {
               ),
             )
           ],
+        ),
+      ),
+    );
+  }
+
+  void _quizSummaryButton(loadedQuestions, quizData) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => QuizSummaryPage(
+          loadedQuestions: loadedQuestions,
+          quizAttemptData: quizData,
         ),
       ),
     );
