@@ -164,6 +164,9 @@ class _QuizPageState extends State<QuizPage> {
     await storeUserAnswersInFirebase(userSummary);
     Map<String, dynamic> quizAttemptData = createQuizAttemptData(userSummary);
 
+    print("FINAL loadedQuestions: $loadedQuestions");
+    print("FINAL attempt data: $quizAttemptData");
+
     // Navigate to QuizSummaryPage with quizSummary
     Navigator.push(
       context,
@@ -644,6 +647,7 @@ class _QuizPageState extends State<QuizPage> {
   Future<void> storeUserAnswersInFirebase(Map<String, dynamic> userSummary) async {
   try {
     User? user = FirebaseAuth.instance.currentUser;
+    // int quizTotal = quizAttemptData['userResults']['quizTotal'];
 
     if (user == null) {
       print("User not logged in.");
@@ -665,11 +669,13 @@ class _QuizPageState extends State<QuizPage> {
     String quizAttemptId = DateTime.now().toUtc().toIso8601String();
     DocumentReference quizAttemptDocument = quizHistoryCollection.doc(quizAttemptId);
 
+    int quizTotal = loadedQuestions.length;
+
     // Include the timestamp field in the userSummary
     Map<String, dynamic> quizAttemptData = {
       'timestamp': FieldValue.serverTimestamp(),
       'userResults': {
-        'quizTotal': 20, // Update this with the actual maximum points
+        'quizTotal': quizTotal, // Update this with the actual number of questions
         'userTotal': calculateUserTotal(userSummary),
       },
       'userSummary': userSummary,

@@ -3,6 +3,10 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:education_app/Pages/AuthenticationPages/LoginPage.dart';
 import 'package:education_app/Pages/QuizPages/QuizPage.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:education_app/Pages/QuizPages/QuizSummaryPage.dart';
+import 'package:education_app/Quizzes/quiz.dart';
+import 'package:education_app/Quizzes/quizManager.dart';
+
 
 class LandingPage extends StatefulWidget {
   @override
@@ -12,11 +16,18 @@ class LandingPage extends StatefulWidget {
 class _LandingPageState extends State<LandingPage> {
   User? _user;
   List<String> recentQuizzes = [];
+  late List<QuizQuestion> loadedQuestions = [];
+  Map<String, dynamic> quizAttemptData = {};
+  Map<String, dynamic> userSummary = {};
+  late QuizManager quizManager;
+  String quizName = "";
+  late Quiz quiz;
 
   @override
   void initState() {
     super.initState();
     _checkAuthState();
+    quizManager = QuizManager();
   }
 
   void _checkAuthState() {
@@ -28,6 +39,22 @@ class _LandingPageState extends State<LandingPage> {
         _checkQuizHistory();
       }
     });
+  }
+
+  Future<List<String>> getQuizNames(List<String> quizIds) async {
+    try {
+      List<String> quizNames = [];
+
+      for (String quizId in quizIds) {
+        Quiz? loadedQuiz = await quizManager.getQuizWithId(quizId);
+        quizNames.add(loadedQuiz?.name ?? 'Unnamed Quiz');
+      }
+
+      return quizNames;
+    } catch (e) {
+      print('Error fetching quiz names: $e');
+      return [];
+    }
   }
 
   void _checkQuizHistory() async {
@@ -64,6 +91,115 @@ class _LandingPageState extends State<LandingPage> {
     }
   }
 
+  Future<void> _getloadedQuestions(String quizId) async {
+    print("Loading quiz with ID: $quizId");
+
+    Quiz? loadedQuiz = await quizManager.getQuizWithId(quizId);
+
+    if (loadedQuiz != null) {
+      setState(() {
+        quiz = loadedQuiz;
+        quizName = loadedQuiz.name;
+      });
+
+      // Print quiz details
+      print("Loaded quiz: ${quiz.name}");
+      print("Question IDs: ${quiz.questionIds}");
+
+      List<QuizQuestion> questions = [];
+      for (String questionId in quiz.questionIds) {
+
+        // Fetch the question document directly from Firestore using QuizManager instead
+        QuizQuestion? question =
+            await QuizManager().getQuizQuestionById(questionId);
+
+        if (question != null) {
+          questions.add(question);
+
+          // Print question type
+          print("Question Text: ${question.questionText}");
+          print("Question Type: ${question.type}");
+
+        } else {
+          // Handle case where question doesn't exist
+        }
+      }
+
+      setState(() {
+        loadedQuestions = questions;
+      });
+
+      // print("Current Question Index: $currentQuestionIndex...");
+      print("loadedQuestions: $loadedQuestions");
+
+      // if (currentQuestionIndex < loadedQuestions.length) {
+      //   print(
+      //       "Current Question ID: ${loadedQuestions[currentQuestionIndex].questionText}");
+      // } else {
+      //   print(
+      //       "Error: Index out of range - Current Question Index: $currentQuestionIndex");
+      // }
+
+      // displayQuestion(currentQuestionIndex, quiz.questionIds);
+    } else {
+      // Handle the case where the quiz is not found
+      // may want to show an error message or navigate back
+      print("Quiz not found with ID: $quizId");
+    }
+  }
+
+  Future<void> _loadQuizAttemptData(String quizId) async {
+    _getloadedQuestions(quizId);
+
+    if (_user != null) {
+      try {
+        final CollectionReference userCollection =
+            FirebaseFirestore.instance.collection('users');
+        final DocumentReference userDoc = userCollection.doc(_user!.uid);
+
+        final CollectionReference quizHistoryCollection =
+            userDoc.collection('quizHistory').doc(quizId).collection('attempts');
+
+        final QuerySnapshot attemptsSnapshot =
+            await quizHistoryCollection.orderBy('timestamp', descending: true).limit(1).get();
+
+        if (attemptsSnapshot.docs.isNotEmpty) {
+          final attemptData = attemptsSnapshot.docs.first.data();
+          setState(() {
+            // Check if attemptData is not null
+            if (attemptData != null) {
+              // Explicitly cast attemptData to Map<String, dynamic>
+              Map<String, dynamic> attemptDataMap = attemptData as Map<String, dynamic>;
+
+              // Extracting relevant data from the attemptData map
+              Map<String, dynamic>? userResults = attemptDataMap['userResults'];
+              Map<String, dynamic>? userSummary = attemptDataMap['userSummary'];
+              Timestamp? timestamp = attemptDataMap['timestamp'];
+
+              // Check if the necessary keys are not null
+              if (userResults != null && userSummary != null && timestamp != null) {
+                // Formatting the quizAttemptData
+                quizAttemptData = {
+                  'timestamp': FieldValue.serverTimestamp(),
+                  'userResults': {
+                    'quizTotal': userResults['quizTotal'],
+                    'userTotal': userResults['userTotal'],
+                  },
+                  'userSummary': userSummary,
+                };
+              }
+            }
+          });
+        } else {
+          print('No attempts found for quiz $quizId');
+        }
+      } catch (e) {
+        print('Error loading quiz attempt data: $e');
+      }
+    }
+  }
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -77,9 +213,11 @@ class _LandingPageState extends State<LandingPage> {
               // Sign out the user
               await FirebaseAuth.instance.signOut();
               Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => LoginPage())); // Go back to the login page
+                context,
+                MaterialPageRoute(
+                  builder: (context) => LoginPage(),
+                ),
+              ); // Go back to the login page
             },
           ),
         ],
@@ -99,8 +237,9 @@ class _LandingPageState extends State<LandingPage> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                      builder: (context) => QuizPage()), // Replace QuizPage with your actual quiz page
-                );
+                    builder: (context) => QuizPage(),
+                  ),
+                ); // Replace QuizPage with your actual quiz page
               },
               child: Text('Take Quiz'),
             ),
@@ -113,17 +252,94 @@ class _LandingPageState extends State<LandingPage> {
               child: Text('Check Quiz History'),
             ),
             SizedBox(height: 20),
+            // Inside the ListView.builder in your landing page
             Container(
               height: 150,
-              child: ListView.builder(
-                itemCount: recentQuizzes.length,
-                itemBuilder: (context, index) {
-                  return ListTile(
-                    title: Text('Recent Quiz ${index + 1}: ${recentQuizzes[index]}'),
-                  );
+              child: FutureBuilder<List<String>>(
+                future: getQuizNames(recentQuizzes),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return CircularProgressIndicator();
+                  } else if (snapshot.hasError) {
+                    return Text('Error loading quiz names');
+                  } else {
+                    List<String> quizNames = snapshot.data ?? [];
+
+                    return ListView.builder(
+                      itemCount: recentQuizzes.length,
+                      itemBuilder: (context, index) {
+                        // Ensure index is within bounds
+                        if (index >= 0 && index < quizNames.length) {
+                          String quizName = quizNames[index];
+
+                          return Column(
+                            children: [
+                              ListTile(
+                                title: Text('Recent Quiz ${index + 1}: $quizName'),
+                              ),
+                              SizedBox(height: 5),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  ElevatedButton(
+                                    onPressed: () async {
+                                      if (recentQuizzes.isNotEmpty) {
+                                        // Assuming you want to get attempt data for the first recent quiz
+                                        String selectedQuizId = recentQuizzes.first;
+
+                                        print("Fetching attempt data for quizId: $selectedQuizId");
+
+                                        // Fetch the most recent attempt data for the selected quiz
+                                        await _loadQuizAttemptData(selectedQuizId);
+
+                                        // Retrieve loaded questions from the 'quizzes' collection
+                                        print("Final Loaded Questions: $loadedQuestions");
+                                        print("Final Quiz Attempt Data: $quizAttemptData");
+
+                                        // Navigate to the QuizSummaryPage with the most recent attempt data and loaded questions
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) => QuizSummaryPage(
+                                              loadedQuestions: loadedQuestions,
+                                              quizAttemptData: quizAttemptData,
+                                            ),
+                                          ),
+                                        );
+                                      } else {
+                                        print("No recent quizzes available.");
+                                      }
+                                    },
+                                    child: Text('View Quiz'),
+                                  ),
+                                  SizedBox(width: 10),
+                                  TextButton(
+                                    onPressed: () {
+                                      // Navigate to a page showing all attempts for the specific quiz
+                                      // Replace 'AllAttemptsPage' with your actual page or widget
+                                      // Navigator.push(
+                                      //   context,
+                                      //   MaterialPageRoute(
+                                      //     builder: (context) => AllAttemptsPage(quizId: recentQuizzes[index]),
+                                      //   ),
+                                      // );
+                                      print("All attempts");
+                                    },
+                                    child: Text('All Attempts'),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          );
+                        } else {
+                          return Container(); // Placeholder for the case when the index is out of bounds
+                        }
+                      },
+                    );
+                  }
                 },
               ),
-            ),
+            )
           ],
         ),
       ),
