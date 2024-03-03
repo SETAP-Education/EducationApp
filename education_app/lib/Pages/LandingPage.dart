@@ -105,13 +105,6 @@ class _LandingPageState extends State<LandingPage> {
               },
               child: Text('Take Quiz'),
             ),
-<<<<<<< HEAD
-
-            ElevatedButton(
-              onPressed: (){
-                Navigator.push(context, MaterialPageRoute(builder: (context) => QuizBuilder()));
-            }, child: Text("Quiz Builder"))
-=======
             SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
@@ -119,6 +112,15 @@ class _LandingPageState extends State<LandingPage> {
                 _checkQuizHistory();
               },
               child: Text('Check Quiz History'),
+            ),
+             ElevatedButton(
+              onPressed: () {
+                Navigator.push(context,
+                MaterialPageRoute(
+                  builder: (context) => const QuizBuilder(),
+                ));
+              },
+              child: Text('Quiz Builder'),
             ),
             SizedBox(height: 20),
             Container(
@@ -132,7 +134,6 @@ class _LandingPageState extends State<LandingPage> {
                 },
               ),
             ),
->>>>>>> 839762c5425717e95315a0deaa2803d086d0dd3f
           ],
         ),
       ),

@@ -18,6 +18,7 @@ class QuizBuilderState extends State<QuizBuilder> {
   QuizManager quizManager = QuizManager();
 
   Quiz currentQuiz = Quiz(); 
+  List<QuizQuestion> questionsInQuiz = List.empty(growable: true); 
 
   @override
   void initState() {
@@ -31,7 +32,12 @@ class QuizBuilderState extends State<QuizBuilder> {
     quizManager.getQuizQuestions().then((value) {
       questionWidgets = List.generate(value.length, (index) {
         print("Loaded Question: ${value[index].questionText}");
-        return QuestionCard(question: value[index]);
+        return QuestionCard(question: value[index],
+        onRightArrow: (){
+          setState(() {
+            questionsInQuiz.add(value[index]);
+          });
+        },);
       });
 
       setState(() {
@@ -111,6 +117,21 @@ class QuizBuilderState extends State<QuizBuilder> {
                 width: 0,
                 thickness: 2,
               ),
+
+              SizedBox(
+                width: 300,
+                height: double.infinity,
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Scrollbar( 
+                    child: SingleChildScrollView(
+                      child: Column(
+                        children: questionWidgets 
+                      )
+                    )
+                  )
+                ),
+              )
             ],
           )
         )

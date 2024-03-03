@@ -8,9 +8,11 @@ import 'package:google_fonts/google_fonts.dart';
 
 class QuestionCard extends StatelessWidget {
 
-  const QuestionCard({ super.key, required this.question });
+  const QuestionCard({ super.key, required this.question, this.onRightArrow, this.onLeftArrow });
 
   final QuizQuestion question;
+  final Function? onRightArrow;
+  final Function? onLeftArrow;  
 
   Widget buildTypeTag() {
     return Container(
@@ -49,7 +51,25 @@ class QuestionCard extends StatelessWidget {
                 )
                 ,
                 ),
-                buildTypeTag()
+                buildTypeTag(),
+                
+                if (onRightArrow != null)
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: IconButton(
+                      icon: const Icon(Icons.arrow_right),
+                      onPressed: () => onRightArrow,
+                    ),
+                  ),
+
+                if (onLeftArrow != null)
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: IconButton(
+                      icon: const Icon(Icons.arrow_left),
+                      onPressed: () => onLeftArrow,
+                    ),
+                  ),
               ]
             )
         )
