@@ -201,7 +201,6 @@ class _QuizPageState extends State<QuizPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text("Quiz Page"),
       ),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -233,60 +232,76 @@ class _QuizPageState extends State<QuizPage> {
             ),
           ),
           Padding(
-            padding: const EdgeInsets.all(16.0),
+            padding: const EdgeInsets.only(left: 250),
             child: Column(
               children: [
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     if (currentQuestionIndex > 0)
-                      ElevatedButton(
-                        onPressed: () {
-                          if (currentQuestionIndex > 0) {
-                            // If there is a previous question, move to it
-                            currentQuestionIndex--;
-                            displayQuestion(currentQuestionIndex, quiz.questionIds);
-                            setState(() {
-                              quizCompleted = false;
-                            });
-                          }
-                        },
-                        child: Text('Previous Question'),
-                      ),
-                    ElevatedButton(
-                      onPressed: () async {
-                        if (currentQuestionIndex == loadedQuestions.length) {
-                          // If there are more questions, store user answers in Firebase
-                          print("Just before storing the userSummary: $userSummary");
-                          // await storeUserAnswersInFirebase2(userSummary);
-                        }
-                        moveToNextOrSubmit();
-                      },
-                      child: Text(
-                        currentQuestionIndex < loadedQuestions.length - 1
+                      Padding(
+                        padding: const EdgeInsets.only(left: 350),
+                        child: IconButton(
+                          // color: tertiary,
+                          // hoverColor: secondary,
+                          icon: const Icon(Icons.arrow_left),
+                          tooltip: 'Previous question',
+                          onPressed: () {
+                            if (currentQuestionIndex > 0) {
+                              // If there is a previous question, move to it
+                              currentQuestionIndex--;
+                              displayQuestion(currentQuestionIndex, quiz.questionIds);
+                              setState(() {
+                                quizCompleted = false;
+                              });
+                            }
+                          },
+                        ),
+                      )
+                    else
+                      SizedBox(width: 48), // Add a placeholder SizedBox when the condition is false
+                    Padding(
+                      padding: const EdgeInsets.only(right: 550),
+                      child: IconButton(
+                        // color: tertiary,
+                        // hoverColor: secondary,
+                        icon: const Icon(Icons.arrow_right),
+                        tooltip: currentQuestionIndex < loadedQuestions.length - 1
                             ? 'Next Question'
-                            : 'Submit Quiz'
+                            : 'Submit Quiz',
+                        onPressed: () async {
+                          if (currentQuestionIndex == loadedQuestions.length) {
+                            // If there are more questions, store user answers in Firebase
+                            print("Just before storing the userSummary: $userSummary");
+                            // await storeUserAnswersInFirebase2(userSummary);
+                          }
+                          moveToNextOrSubmit();
+                        },
                       ),
                     ),
                   ],
                 ),
+
                 SizedBox(height: 16),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: loadedQuestions.map((id) {
-                    int index = loadedQuestions.indexOf(id);
-                    return Container(
-                      margin: EdgeInsets.symmetric(horizontal: 5),
-                      width: 10,
-                      height: 10,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: index == currentQuestionIndex
-                            ? Colors.blue
-                            : Colors.grey,
-                      ),
-                    );
-                  }).toList(),
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 50, right: 190),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: loadedQuestions.map((id) {
+                      int index = loadedQuestions.indexOf(id);
+                      return Container(
+                        margin: EdgeInsets.symmetric(horizontal: 5),
+                        width: 10,
+                        height: 10,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: index == currentQuestionIndex
+                              ? Colors.blue
+                              : Colors.grey,
+                        ),
+                      );
+                    }).toList(),
+                  ),
                 ),
               ],
             ),
@@ -304,12 +319,12 @@ class _QuizPageState extends State<QuizPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        SizedBox(height: 10),
+        SizedBox(height: 20),
         Text(
           question.questionText,
-          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+          style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
         ),
-        SizedBox(height: 20),
+        SizedBox(height: 45),
         //This is where the question will be asked / written to the page. The question format for posing the question is universal for all question types thus doesn't need to be type specific.
 
         //This is where the response format will change depending on the question type. Multiple Choice will have selectable thingys. Drag and Drop something else...
@@ -324,6 +339,7 @@ class _QuizPageState extends State<QuizPage> {
         if (question.type == QuestionType.fillInTheBlank)
           buildFillInTheBlankQuestion(question.answer as QuestionFillInTheBlank),
         // if (question.type == QuestionType.dragAndDrop) 
+          // buildDragAndDropQuestion(question.answer as DragAndDropQuestion, context),
           // buildDragAndDropQuestion(question.answer as DragAndDropQuestion, context),
       ],
     );
@@ -351,19 +367,21 @@ class _QuizPageState extends State<QuizPage> {
           },
           child: Container(
             padding: EdgeInsets.all(10),
-            margin: EdgeInsets.symmetric(vertical: 5),
+            margin: EdgeInsets.symmetric(vertical: 8, horizontal: 100),
             decoration: BoxDecoration(
               color: isSelected ? Colors.blue : Colors.white,
-              borderRadius: BorderRadius.circular(8),
+              borderRadius: BorderRadius.circular(20),
               border: Border.all(
                 color: Colors.blue,
                 width: 1,
               ),
             ),
-            child: Text(
-              option,
-              style: TextStyle(
-                color: isSelected ? Colors.white : Colors.black,
+            child: Center(
+              child: Text(
+                option,
+                style: TextStyle(
+                  color: isSelected ? Colors.white : Colors.black,
+                ),
               ),
             ),
           ),
@@ -425,17 +443,23 @@ class _QuizPageState extends State<QuizPage> {
 
 
   Widget buildFillInTheBlankQuestion(QuestionFillInTheBlank question) {
-    return TextField(
-      onChanged: (text) {
-        // Handle user input here
-        setState(() {
-          question.userResponse = text;
-        });
-      },
-      decoration: InputDecoration(
-        hintText: "Type your answer here...",
-        // You can customize the input decoration based on your design
-      ),
+    return Container(
+      width: 500,
+      child: TextField(
+        onChanged: (text) {
+          setState(() {
+            question.userResponse = text;
+          });
+        },
+        decoration: InputDecoration(
+          hintText: "Enter your answer here",
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(25),
+          ),
+          filled: true,
+          fillColor: Colors.white,
+        ),
+      )
     );
   }
 

@@ -256,7 +256,7 @@ class _LoginPageState extends State<LoginPage> {
                     style: ElevatedButton.styleFrom(
                       padding: EdgeInsets.symmetric(horizontal: 30, vertical: 15),
                     ),
-                    child: Text('Log in', style: GoogleFonts.nunito(color: Colors.black, fontSize: 17)
+                    child: Text('Log in', style: GoogleFonts.nunito(color: Colors.black, fontSize: 20)
                     ),
                   ),
                   ElevatedButton(

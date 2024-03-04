@@ -187,7 +187,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
               style: ElevatedButton.styleFrom(
                 padding: EdgeInsets.symmetric(horizontal: 30, vertical: 15),
               ),
-              child: Text('Register', style: GoogleFonts.nunito(color: Colors.black, fontSize: 17)),
+              child: Text('Register', style: GoogleFonts.nunito(color: Colors.black, fontSize: 20)),
             ),
             SizedBox(height: 20.0),
             Row(

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:education_app/Quizzes/quiz.dart';
+import 'package:education_app/Pages/LandingPage.dart';
 
 class QuizSummaryPage extends StatelessWidget {
   final List<QuizQuestion> loadedQuestions;
@@ -14,7 +15,6 @@ class QuizSummaryPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Quiz Summary'),
       ),
       body: Center( // Center everything on the screen
         child: SingleChildScrollView(
@@ -50,13 +50,20 @@ class QuizSummaryPage extends StatelessWidget {
                   ),
                 ),
               SizedBox(height: 16.0),
-              ElevatedButton(
-                onPressed: () {
-                  // Navigate back to the quiz page or any other action
-                  Navigator.pop(context);
-                },
-                child: Text('Back to Quiz'),
+              Padding(
+                padding: EdgeInsets.only(left: 390),
+                child: ElevatedButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => LandingPage(),
+                      ),
+                    );
+                  },
+                  child: Text('Home'),
               ),
+      ),
             ],
           ),
         ),
@@ -83,18 +90,13 @@ class QuizSummaryPage extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
-                'Quiz Results',
+                'Quiz overview',
                 style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),
               ),
-              SizedBox(height: 8.0),
+              SizedBox(height: 5.0),
               Text(
-                "Quiz Total: $quizTotal",
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-              ),
-              SizedBox(height: 8.0),
-              Text(
-                'Your Score: $userTotal',
-                style: TextStyle(fontSize: 16.0),
+                "                   ${(userTotal / quizTotal) * 100}% \n $userTotal / $quizTotal answered correctly ",
+                style: TextStyle(fontSize: 17.0),
               ),
             ],
           ),
