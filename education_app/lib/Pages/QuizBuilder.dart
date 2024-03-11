@@ -215,7 +215,39 @@ class QuestionBuilderState extends State<QuestionBuilder> {
            const SizedBox(height: 16),
 
           TextButton(
-            onPressed: () {}, 
+            onPressed: () {
+
+              // Add to the database
+
+              QuizQuestion question = QuizQuestion(); 
+              question.questionText = questionController.text;
+              question.tags = tags;
+              question.difficulty = int.parse(difficulty.text);
+              question.type = selectedItem;
+              
+              if (selectedItem == QuestionType.multipleChoice) {
+                List<int> correct = List.empty(growable: true);
+                List<String> choices = List.generate(multipleChoiceAnswers.length, (index) {
+                  if (multipleChoiceAnswers[index].item2) {
+                    correct.add(index);
+                  }
+
+                  return multipleChoiceAnswers[index].item1.text;
+                });
+                QuestionMultipleChoice mc = QuestionMultipleChoice(correctAnswers: correct, options: choices);
+                question.answer = mc;
+              }
+
+               if (selectedItem == QuestionType.fillInTheBlank) {
+                question.answer = QuestionFillInTheBlank(correctAnswer: fillInTheBlank.text);
+               }
+
+              question.debugPrint();
+
+              // Upload to firestore
+              QuizManager.addQuizQuestionToDatabase(question);
+
+            }, 
             child: Text("Add to database"))
         ],
       ) 

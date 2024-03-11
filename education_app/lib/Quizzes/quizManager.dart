@@ -115,4 +115,10 @@ class QuizManager {
     return List.generate(
         questionRef.docs.length, (index) => questionRef.docs[index].data());
   }
+
+  static void addQuizQuestionToDatabase(QuizQuestion question) {
+    var db = FirebaseFirestore.instance;
+
+    db.collection("questions").doc().set(question.toFirestore());
+  }
 }
