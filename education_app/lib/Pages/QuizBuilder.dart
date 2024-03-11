@@ -60,6 +60,7 @@ class QuestionBuilderState extends State<QuestionBuilder> {
   TextEditingController questionController = TextEditingController();
   QuestionType selectedItem = QuestionType.none;
 
+  TextEditingController fillInTheBlank = TextEditingController(); 
   List<Tuple<TextEditingController, bool>> multipleChoiceAnswers = List.empty(growable: true);
 
   List<Widget> buildMultipleChoiceAnswers() {
@@ -115,13 +116,32 @@ class QuestionBuilderState extends State<QuestionBuilder> {
 
           const SizedBox(height: 16),
 
-          TextButton(onPressed: () {
-            setState(() {
-              multipleChoiceAnswers.add(Tuple<TextEditingController, bool>(TextEditingController(), false));
-            });
-          }, child: Text("Add Answer")),
+          if (selectedItem == QuestionType.multipleChoice)
+            TextButton(onPressed: () {
+              setState(() {
+                if (selectedItem == QuestionType.multipleChoice) {
+                  multipleChoiceAnswers.add(Tuple<TextEditingController, bool>(TextEditingController(), false));
+                }
+              });
+            }, child: Text("Add Answer")),
 
-          ...buildMultipleChoiceAnswers(),
+          if (selectedItem == QuestionType.multipleChoice)
+            ...buildMultipleChoiceAnswers(),
+
+          if (selectedItem == QuestionType.fillInTheBlank) 
+            SizedBox(
+              width: 500,
+              height: 50,
+              child: TextField(
+                controller: fillInTheBlank,
+                decoration: InputDecoration(
+                  hintText: "Answer"
+                ),
+              )
+
+            ),
+
+           const SizedBox(height: 16),
 
           TextButton(
             onPressed: () {}, 
@@ -244,6 +264,19 @@ class QuizBuilderState extends State<QuizBuilder> {
                 children: [
                   
                   const SizedBox(height: 8.0),
+                  
+                   Tooltip(
+                    verticalOffset: 10,
+                    message: "Back",
+                    child: IconButton(
+                      onPressed: (){
+                        Navigator.pop(context);
+                      },
+                      icon: Icon(Icons.arrow_back),
+                    )
+                  ),
+
+                  const SizedBox(height: 16), 
 
                   Tooltip(
                     verticalOffset: 10,
