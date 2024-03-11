@@ -3,6 +3,7 @@ import 'package:education_app/Quizzes/quiz.dart';
 import 'package:education_app/Widgets/QuestionCard.dart';
 import 'package:flutter/material.dart';
 import 'package:education_app/Quizzes/quizManager.dart';
+import 'package:flutter/services.dart';
 
 // Yes I know this is long... 
 // TODO: Now make as long
@@ -60,6 +61,11 @@ class QuestionBuilderState extends State<QuestionBuilder> {
   TextEditingController questionController = TextEditingController();
   QuestionType selectedItem = QuestionType.none;
 
+  TextEditingController difficulty = TextEditingController();
+
+  TextEditingController tagController = TextEditingController();
+  List<String> tags = List.empty(growable: true);
+
   TextEditingController fillInTheBlank = TextEditingController(); 
   List<Tuple<TextEditingController, bool>> multipleChoiceAnswers = List.empty(growable: true);
 
@@ -97,22 +103,87 @@ class QuestionBuilderState extends State<QuestionBuilder> {
           ),
 
           const SizedBox(height: 16),
-        
-          DropdownButton<QuestionType>(
-          value: selectedItem,
-          onChanged: (QuestionType? newValue) {
-            setState(() {
-              selectedItem = newValue!;
-            });
-          },
-          items: QuestionType.values
-              .map<DropdownMenuItem<QuestionType>>((QuestionType value) {
-            return DropdownMenuItem<QuestionType>(
-              value: value,
-              child: Text(value.toString().split('.')[1]), // Display enum value without the enum class name
+
+          Row(
+            children: [
+              SizedBox(
+                width: 150,
+                height: 50,
+                child: TextField(
+                  controller: tagController,
+                  decoration: InputDecoration(
+                    hintText: "Tag"
+                  ),
+                )
+              ),
+              const SizedBox(width: 8.0),
+              TextButton(onPressed: () {
+                setState(() {
+                  tags.add(tagController.text);
+                  tagController.text = "";
+                });
+              }, child: Text("Add Tag"))
+            ],
+          ),
+
+          Row(children: List.generate(tags.length, (index) {
+            return Padding(
+              padding: const EdgeInsets.all(4.0),
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.grey,
+                  borderRadius: BorderRadius.circular(100),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(6.0, 2.0, 6.0, 2.0),
+                  child: Row(
+                    children: [ 
+                      Text(tags[index]),
+                      IconButton(onPressed: () { tags.removeAt(index); }, icon: Icon(Icons.close, size: 14), iconSize: 14,)
+                    ]
+                ))
+              )
             );
-          }).toList(),
-        ),
+          }),),
+
+          const SizedBox(height: 16),
+
+          Row(
+            children: [
+               DropdownButton<QuestionType>(
+                value: selectedItem,
+                onChanged: (QuestionType? newValue) {
+                  setState(() {
+                    selectedItem = newValue!;
+                  });
+                },
+                items: QuestionType.values
+                    .map<DropdownMenuItem<QuestionType>>((QuestionType value) {
+                  return DropdownMenuItem<QuestionType>(
+                    value: value,
+                    child: Text(value.toString().split('.')[1]), // Display enum value without the enum class name
+                  );
+                }).toList(),
+              ),
+
+              const SizedBox(width: 16),
+
+              Text("Difficulty: "), 
+
+              SizedBox(
+                width: 50,
+                height: 50,
+                child: TextField(
+                  controller: difficulty,
+                  keyboardType: TextInputType.numberWithOptions(decimal: true),
+                  inputFormatters: <TextInputFormatter>[
+                    FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
+                  ]
+                )
+              )
+            ]
+          ),
+         
 
           const SizedBox(height: 16),
 
