@@ -1,16 +1,40 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:education_app/Pages/AuthenticationPages/LoginPageUI.dart';
+import 'package:education_app/Pages/AuthenticationPages/LoginPage.dart';
+import 'package:education_app/Quizzes/quiz.dart';
+import 'package:education_app/Quizzes/quizManager.dart';
 
-class LandingPage extends StatelessWidget {
-  final User user;
+class LandingPage extends StatefulWidget {
+  @override
+  _LandingPageState createState() => _LandingPageState();
+}
 
-  LandingPage({required this.user});
+class _LandingPageState extends State<LandingPage> {
+  User? _user;
+
+  final QuizManager quizManager = QuizManager();
+
+  @override
+  void initState() {
+    super.initState();
+    _checkAuthState();
+  }
+
+  void _checkAuthState() {
+    FirebaseAuth.instance.authStateChanges().listen((User? user) {
+      if (mounted) {
+        setState(() {
+          _user = user; // Set the current user
+        });
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         title: Text('Landing Page'),
         actions: [
           IconButton(
@@ -18,7 +42,7 @@ class LandingPage extends StatelessWidget {
             onPressed: () async {
               // Sign out the user
               await FirebaseAuth.instance.signOut();
-              Navigator.push(context, MaterialPageRoute(builder: (context) => LoginPageUI())); // Go back to the login page
+              Navigator.push(context, MaterialPageRoute(builder: (context) => LoginPage())); // Go back to the login page
             },
           ),
         ],
@@ -28,15 +52,19 @@ class LandingPage extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
-              'Welcome, ${user.displayName ?? user.email ?? user.uid}!',
+              'Welcome, ${_user?.displayName ?? _user?.email ?? _user?.uid}!',
               style: TextStyle(fontSize: 20),
             ),
             SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
-                // Add your landing page functionality here
+                // Navigate to the quiz page when the button is pressed
+                // Navigator.push(
+                //   context,
+                //   MaterialPageRoute(builder: (context) => QuizPage()), // Replace QuizPage with your actual quiz page
+                // );
               },
-              child: Text('I was thinking this is how we do testing pages to begin with. Just have a button that leads to the page. Yes i know this is a button. I am going to go and write some notes on big data now.'),
+              child: Text('Take Quiz'),
             ),
           ],
         ),
