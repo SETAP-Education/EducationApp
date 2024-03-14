@@ -5,6 +5,8 @@ import 'package:education_app/Pages/AuthenticationPages/RegistrationPage.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'dart:async';
 
+import '../../QuizPage.dart';
+
 // basic colour scheme - will come up with one on friday with max
 Color primaryColour = Colors.white;
 Color secondaryColour = Colors.black;
@@ -279,6 +281,18 @@ class _LoginPageState extends State<LoginPage> {
                 ),
               ],
             ),
+            Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => const QuizPage()));},
+                    child: const Text('PLACEHOLDER TO QUIZ PAGE'),
+                  )
+                ]
+            )
           ],
         ),
       ),
