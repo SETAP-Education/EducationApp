@@ -257,8 +257,10 @@ class QuizQuestion {
 
   QuizQuestion();
 
+  String questionId = "";
+
   // This is the text displayed for the actual question
-  String questionText = ""; 
+  String questionText = "";
 
   // This is the type of question. This determines how the question will be displayed/answered
   QuestionType type = QuestionType.none; 
@@ -274,7 +276,8 @@ class QuizQuestion {
 
   Map<String, dynamic> toFirestore() {
     return {
-      "questionText": questionText, 
+      "questionId": questionId,
+      "questionText": questionText,
       "type": type.index,
       "difficulty": difficulty, 
       "answer": answer.toFirestore(),
@@ -294,6 +297,7 @@ class QuizQuestion {
       return question; 
     }
   
+    question.questionId = snapshot.id;
     question.questionText = data["questionText"];
     question.type = QuestionType.values[data["type"]];
     question.difficulty = data.containsKey("difficulty") ? data["difficulty"] : 0;
@@ -391,7 +395,7 @@ class Quiz {
   // Firestore functions
   Map<String, dynamic> toFirestore() {
     return {
-      "name": name, 
+      "name": name,
       "creator": creator, 
       "sharecode": shareCode,
       "tags": tags,
