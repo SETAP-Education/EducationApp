@@ -1,3 +1,4 @@
+import 'package:education_app/Pages/QuizBuilder.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:education_app/Pages/AuthenticationPages/LoginPage.dart';
@@ -274,6 +275,16 @@ Widget build(BuildContext context) {
               ); // Replace QuizPage with your actual quiz page
             },
             child: Text('Take Quiz'),
+          ),
+          SizedBox(height: 20),
+           ElevatedButton(
+            onPressed: () {
+              // Check quiz history when the button is pressed
+              Navigator.push(context, MaterialPageRoute(
+                  builder: (context) => QuizBuilder(),
+                ));
+            },
+            child: Text('Quiz Builder'),
           ),
           SizedBox(height: 20),
           ElevatedButton(
