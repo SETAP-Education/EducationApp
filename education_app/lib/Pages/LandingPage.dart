@@ -42,7 +42,8 @@ class _LandingPageState extends State<LandingPage> {
             onPressed: () async {
               // Sign out the user
               await FirebaseAuth.instance.signOut();
-              Navigator.push(context, MaterialPageRoute(builder: (context) => LoginPage())); // Go back to the login page
+              Navigator.push(context, MaterialPageRoute(builder: (context) =>
+                  LoginPage())); // Go back to the login page
             },
           ),
         ],
@@ -52,7 +53,7 @@ class _LandingPageState extends State<LandingPage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
-              'Welcome, ${_user?.displayName ?? _user?.email ?? _user?.uid}!',
+              'Welcome, ${_user?.displayName ?? ""}!',
               style: TextStyle(fontSize: 20),
             ),
             SizedBox(height: 20),

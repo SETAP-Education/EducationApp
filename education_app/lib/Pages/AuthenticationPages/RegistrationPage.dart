@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:education_app/Pages/LandingPage.dart';
 import 'package:education_app/Pages/AuthenticationPages/LoginPage.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:education_app/Pages/AuthenticationPages/DisplayNamePage.dart';
 
 // Basic color scheme - will come up with one on Friday with Max
 Color primaryColour = Colors.white;
@@ -177,7 +178,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
         await _createDatabase();
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => LandingPage()),
+          MaterialPageRoute(builder: (context) => DisplayUser()),
         );
       }
     } catch (e) {

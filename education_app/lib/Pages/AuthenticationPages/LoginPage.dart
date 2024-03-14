@@ -106,24 +106,6 @@ class _LoginPageState extends State<LoginPage> {
                   fontSize: 20.0,
                 ),
                 cursorColor: secondaryColour,
-                // validator: (value) {
-                //   if (value == null || value.isEmpty) {
-                //     if (mounted) {
-                //       setState(() {
-                //         _error = true;
-                //         _errorMessages.insert(0, "Please ensure all fields are filled out");
-                //       });
-                //     }
-                //   } else if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value)) {
-                //     if (mounted) {
-                //       setState(() {
-                //         _error = true;
-                //         _errorMessages.insert(0, "Please enter a valid Email");
-                //       });
-                //     }
-                //   }
-                //   return null;
-                // },
                 onEditingComplete: () {
                   _validateEmail(_emailController.text);
                 },
