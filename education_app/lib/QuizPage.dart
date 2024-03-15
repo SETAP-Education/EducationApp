@@ -10,18 +10,11 @@ class QuizPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[200],
+      backgroundColor: Colors.white,
       appBar: AppBar(
         title: Text('Quiz', style: GoogleFonts.nunito(color: Colors.black, fontSize: 24)),
-        backgroundColor: Colors.grey[200],
+        backgroundColor: Colors.white,
         actions: [
-          IconButton(
-            icon: const Icon(Icons.settings),
-            onPressed: () async {
-              //await FirebaseAuth.instance.signOut();
-              //Navigator.push(context, MaterialPageRoute(builder: (context) => 'FUTURE SETTINGS PAGE'())); // Go back to the login page
-            },
-          ),
           IconButton(
             icon: const Icon(Icons.logout),
             onPressed: () async {
@@ -37,22 +30,38 @@ class QuizPage extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: <Widget>[
             Container(
-              decoration: BoxDecoration(border: Border.all(color: Colors.black)),
               margin: const EdgeInsets.all(30.0),
               width: MediaQuery.of(context).size.width * 0.4,
               child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
                 children: [
                   Container(
-                      margin: const EdgeInsets.fromLTRB(0.0, 20.0, 0.0, 10.0),
-                      child: Text('Available', style: GoogleFonts.nunito(color: Colors.black, fontSize: 28),
-                  )
-                ),
-                  Text('Test yourself!', style: GoogleFonts.nunito(color: Colors.black, fontSize: 20)),
+                      alignment: Alignment.center,
+                      color: const Color.fromRGBO(73, 160, 120, 1.0),
+                      width: MediaQuery.of(context).size.width * 0.4,
+                      height: MediaQuery.of(context).size.height * 0.1,
+                      margin: const EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 20.0),
+                      child: Text('Use a share code: [INSERT SEARCH BAR]', style: GoogleFonts.nunito(color: Colors.black, fontSize: 24),
+                      )),
                   Container(
-                      margin: const EdgeInsets.fromLTRB(0.0, 80.0, 0.0, 10.0),
-                      child: Text('[DISPLAY ALL AVAILABLE TESTS BELOW]', style: GoogleFonts.nunito(color: Colors.black, fontSize: 20))
-                  )
+                      alignment: Alignment.topCenter,
+                      color: const Color.fromRGBO(73, 160, 120, 1.0),
+                      width: MediaQuery.of(context).size.width * 0.4,
+                      height: MediaQuery.of(context).size.height * 0.7,
+                      //child: Text('History', style: GoogleFonts.nunito(color: Colors.black, fontSize: 28),
+                      child: Column(
+                        children: [
+                          Container(
+                              margin: const EdgeInsets.fromLTRB(0.0, 20.0, 0.0, 10.0),
+                              child: Text('Available', style: GoogleFonts.nunito(color: Colors.black, fontSize: 28),
+                              )),
+                          Text('Test yourself!', style: GoogleFonts.nunito(color: Colors.black, fontSize: 20),
+                          ),
+                          Container(
+                              margin: const EdgeInsets.fromLTRB(0.0, 80.0, 0.0, 10.0),
+                              child: Text('[DISPLAY ALL AVAILABLE TESTS BELOW]', style: GoogleFonts.nunito(color: Colors.black, fontSize: 20))
+                          )
+                        ],
+                      )),
                 ],
               ),
             ),
@@ -63,18 +72,17 @@ class QuizPage extends StatelessWidget {
                 children: [
                   Container(
                     alignment: Alignment.center,
-                      decoration: BoxDecoration(border: Border.all(color: Colors.black)),
+                      color: const Color.fromRGBO(73, 160, 120, 1.0),
                       width: MediaQuery.of(context).size.width * 0.4,
-                      height: MediaQuery.of(context).size.width * 0.1,
+                      height: MediaQuery.of(context).size.height * 0.1,
                       margin: const EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 20.0),
                       child: Text('XP: [4439]', style: GoogleFonts.nunito(color: Colors.black, fontSize: 24),
                   )),
                   Container(
                       alignment: Alignment.topCenter,
-                      decoration: BoxDecoration(border: Border.all(color: Colors.black)),
+                      color: const Color.fromRGBO(73, 160, 120, 1.0),
                       width: MediaQuery.of(context).size.width * 0.4,
-                      height: MediaQuery.of(context).size.width * 0.58,
-                    //child: Text('History', style: GoogleFonts.nunito(color: Colors.black, fontSize: 28),
+                      height: MediaQuery.of(context).size.height * 0.7,
                       child: Column(
                         children: [
                           Container(
@@ -85,7 +93,7 @@ class QuizPage extends StatelessWidget {
                           ),
                           Container(
                               margin: const EdgeInsets.fromLTRB(0.0, 80.0, 0.0, 10.0),
-                              child: Text('[DISPLAY ALL AVAILABLE TESTS BELOW]', style: GoogleFonts.nunito(color: Colors.black, fontSize: 20))
+                              child: Text('[DISPLAY ALL TAKEN TESTS BELOW]', style: GoogleFonts.nunito(color: Colors.black, fontSize: 20))
                           )
                     ],
                   )),
