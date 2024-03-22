@@ -5,7 +5,7 @@ import 'package:education_app/Pages/LandingPage.dart';
 import 'package:education_app/Pages/AuthenticationPages/LoginPage.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'dart:async';
-import '../openingPage.dart';
+import '../SplashPage.dart';
 
 // Basic color scheme - will come up with one on Friday with Max
 Color primaryColour = Colors.white;
@@ -27,244 +27,180 @@ class _RegistrationPageState extends State<RegistrationPage> {
   Timer? _timer;
 
   @override
-
   void dispose() {
     _timer?.cancel(); // Cancel the timer if it's not null
     super.dispose();
   }
 
+  @override
   Widget build(BuildContext context) {
-    return PopScope(
-      canPop: false, //When false, blocks the current route from being popped
-      child: Scaffold(
-        body: Stack(
-          children: [
-            Container(
-              decoration: BoxDecoration(
-                color: primaryColour,
-              ),
-            child: Center(
-                child: LayoutBuilder(
-                  builder: (BuildContext context, BoxConstraints constraints) {
-                    return Container(
-                      padding: EdgeInsets.all(20.0),
-                      decoration: BoxDecoration(
-                        color: primaryColour,
-                        borderRadius: BorderRadius.circular(15.0),
-                      ),
-                      child: _buildRegistrationForm(),
-                    );
-                  },
-                ),
-              ),
-      ),
-            if (_error) _buildErrorMessage(_errorMessages),
-          ],
-        ),
-      )
-    );
-  }
-
-  Widget _buildRegistrationForm() {
-    return Row(
-      children: [
-        Padding(
-          padding: EdgeInsets.only(left: 170),
-          child: Container(
-              width: 400,
-              height: 400,
-              decoration: BoxDecoration(
-                border: Border.all(color: Colors.black),
-                borderRadius: BorderRadius.circular(15),
-              ),
-              child: Text(
-                '\n \n \n \n       Insert image here :)',
-                style: GoogleFonts.nunito(
-                  fontSize: 30.0,
-                  fontWeight: FontWeight.bold,
-                ),
-              )
+    return Scaffold(
+      body: Center(
+        child: Container(
+          padding: EdgeInsets.all(20.0),
+          decoration: BoxDecoration(
+            color: primaryColour,
+            borderRadius: BorderRadius.circular(15.0),
           ),
-        ),
-        Padding(
-        padding: EdgeInsets.only(left: 50, top: 190),
-        child: Column(
-          children: [
-            SizedBox(
-              child: Text(
-                'Registration',
-                style: GoogleFonts.nunito(
-                  fontSize: 30.0,
-                  fontWeight: FontWeight.bold,
-                  color: secondaryColour,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Container(
+                width: 400,
+                height: 400,
+                // decoration: BoxDecoration(
+                //   border: Border.all(color: Colors.black),
+                //   borderRadius: BorderRadius.circular(15),
+                // ),
+                child: Center(
+                  child: Image.asset(
+                    'images/quiz_app_logo_2.png', // Change to your image asset path
+                    width: 400, // Adjust as needed
+                    height: 400, // Adjust as needed
+                  ),
                 ),
               ),
-            ),
-            const SizedBox(height: 10.0),
-            SizedBox(
-              width: 450, // Set the desired width
-              child: TextFormField(
-                controller: _emailController,
-                decoration: InputDecoration(labelText: 'Email',
-                  contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
-                  focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: secondaryColour),
-                    borderRadius: BorderRadius.circular(30.0),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: secondaryColour),
-                    borderRadius: BorderRadius.circular(30.0),
-                  ),
-                  labelStyle: TextStyle(color: secondaryColour),
-                ),
-                style: GoogleFonts.nunito(
-                  fontSize: 20.0,
-                ),
-                cursorColor: secondaryColour,
-                onEditingComplete: () {
-                  _validateEmail(_emailController.text);
-                },
-              ),
-            ),
-            SizedBox(height: 20.0),
-            // Password text field
-            SizedBox(
-              width: 450,
-              child: TextFormField(
-                controller: _passwordController,
-                obscureText: !_showPassword, // Correct placement of obscureText
-                decoration: InputDecoration(
-                  labelText: 'Password',
-                  contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
-                  focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: secondaryColour),
-                    borderRadius: BorderRadius.circular(30.0),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: secondaryColour),
-                    borderRadius: BorderRadius.circular(30.0),
-                  ),
-                  suffixIcon: Padding(
-                    padding: EdgeInsets.only(right: 8.0), // Adjust the padding as needed
-                    child: IconButton(
-                      icon: Icon(
-                        _showPassword ? Icons.visibility_off : Icons.visibility,
+              SizedBox(width: 40),
+              Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SizedBox(
+                    child: Text(
+                      'Registration',
+                      style: GoogleFonts.nunito(
+                        fontSize: 30.0,
+                        fontWeight: FontWeight.bold,
+                        color: secondaryColour,
                       ),
-                      color: secondaryColour,
-                      onPressed: () {
-                        setState(() {
-                          _showPassword = !_showPassword;
-                        });
+                    ),
+                  ),
+                  const SizedBox(height: 10.0),
+                  SizedBox(
+                    width: 450, // Set the desired width
+                    child: TextFormField(
+                      controller: _emailController,
+                      decoration: InputDecoration(
+                        labelText: 'Email',
+                        contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+                        focusedBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: secondaryColour),
+                          borderRadius: BorderRadius.circular(30.0),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: secondaryColour),
+                          borderRadius: BorderRadius.circular(30.0),
+                        ),
+                        labelStyle: TextStyle(color: secondaryColour),
+                      ),
+                      style: GoogleFonts.nunito(
+                        fontSize: 20.0,
+                      ),
+                      cursorColor: secondaryColour,
+                      onEditingComplete: () {
+                        _validateEmail(_emailController.text);
                       },
                     ),
                   ),
-                  labelStyle: TextStyle(color: secondaryColour),
-                ),
-                style: GoogleFonts.nunito(
-                  fontSize: 20.0,
-                ),
-                cursorColor: secondaryColour,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    setState(() {
-                      _error = true;
-                      _errorMessages.insert(0, "Please enter a password");
-                    });
-                  }
-                  return null;
-                },
-                onEditingComplete: () {
-                  _register();
-                },
-              ),
-            ),
-            SizedBox(height: 20.0),
-            // Register button
-            ElevatedButton(
-              onPressed: () {
-                _register();
-              },
-              style: ElevatedButton.styleFrom(
-                padding: EdgeInsets.symmetric(horizontal: 30, vertical: 15),
-              ),
-              child: Text('Register', style: GoogleFonts.nunito(color: Colors.black, fontSize: 20)),
-            ),
-            SizedBox(height: 20.0),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  'Already have an account? ',
-                  style: GoogleFonts.nunito(color: Colors.black, fontSize: 17.0),
-                ),
-                MouseRegion(
-                  cursor: SystemMouseCursors.click,
-                  child: GestureDetector(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        _createRoute(LoginPage()),
-                      );
-                    },
-                    child: Text(
-                      'Log in',
-                      style: TextStyle(
-                        color: Color(0xFF19c37d),
-                        fontSize: 17.0,
+                  SizedBox(height: 20.0),
+                  // Password text field
+                  SizedBox(
+                    width: 450,
+                    child: TextFormField(
+                      controller: _passwordController,
+                      obscureText: !_showPassword, // Correct placement of obscureText
+                      decoration: InputDecoration(
+                        labelText: 'Password',
+                        contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+                        focusedBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: secondaryColour),
+                          borderRadius: BorderRadius.circular(30.0),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: secondaryColour),
+                          borderRadius: BorderRadius.circular(30.0),
+                        ),
+                        suffixIcon: Padding(
+                          padding: EdgeInsets.only(right: 8.0), // Adjust the padding as needed
+                          child: IconButton(
+                            icon: Icon(
+                              _showPassword ? Icons.visibility_off : Icons.visibility,
+                            ),
+                            color: secondaryColour,
+                            onPressed: () {
+                              setState(() {
+                                _showPassword = !_showPassword;
+                              });
+                            },
+                          ),
+                        ),
+                        labelStyle: TextStyle(color: secondaryColour),
                       ),
+                      style: GoogleFonts.nunito(
+                        fontSize: 20.0,
+                      ),
+                      cursorColor: secondaryColour,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          setState(() {
+                            _error = true;
+                            _errorMessages.insert(0, "Please enter a password");
+                          });
+                        }
+                        return null;
+                      },
+                      onEditingComplete: () {
+                        _register();
+                      },
                     ),
                   ),
-                ),
-              ],
-            )
-          ]
+                  SizedBox(height: 20.0),
+                  // Register button
+                  ElevatedButton(
+                    onPressed: () {
+                      _register();
+                    },
+                    style: ElevatedButton.styleFrom(
+                      padding: EdgeInsets.symmetric(horizontal: 30, vertical: 15),
+                    ),
+                    child: Text('Register', style: GoogleFonts.nunito(color: Colors.black, fontSize: 20)),
+                  ),
+                  SizedBox(height: 20.0),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        'Already have an account? ',
+                        style: GoogleFonts.nunito(color: Colors.black, fontSize: 17.0),
+                      ),
+                      MouseRegion(
+                        cursor: SystemMouseCursors.click,
+                        child: GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              _createRoute(LoginPage()),
+                            );
+                          },
+                          child: Text(
+                            'Log in',
+                            style: TextStyle(
+                              color: Color(0xFF19c37d),
+                              fontSize: 17.0,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  )
+                ],
+              ),
+            ],
+          ),
         ),
-        ),
-      ],
+      ),
     );
-  }
-
-  Future<void> _register() async {
-    try {
-      UserCredential userCredential = await _auth.createUserWithEmailAndPassword(
-        email: _emailController.text,
-        password: _passwordController.text,
-      );
-
-      User? user = userCredential.user;
-
-      if (user != null) {
-        await _createDatabase(user.uid, _emailController.text, "a"); // REPLACE "a" WITH displayName once that page has been has been implemented
-        Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => LandingPage()),
-        );
-    }
-      } catch (e) {
-        setState(() {
-          _error = true;
-          _errorMessages.insert(0, "Please ensure all of your registration details are correct.");
-        });
-      }
-  }
-
-  void _validateEmail(String value) {
-    if (_formKey.currentState!.validate()) {
-      if (value.isEmpty) {
-        setState(() {
-          _error = true;
-          print("You have an email valid error.");
-        });
-      } else if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value)) {
-        setState(() {
-          _error = true;
-        });
-      } else {
-        setState(() {
-          _error = false; // Reset error state
-        });
-      }
-    }
   }
 
   Widget _buildErrorMessage(List<String> errorMessages) {
@@ -303,7 +239,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
 
               Color messageColor = Colors.red; // Default color for error messages
 
-              // Check for different types of error messages and assign colors accordingly
+                            // Check for different types of error messages and assign colors accordingly
 
               return Container(
                 padding: EdgeInsets.symmetric(vertical: 8.0),
@@ -349,6 +285,49 @@ class _RegistrationPageState extends State<RegistrationPage> {
     }
   }
 
+  Future<void> _register() async {
+    try {
+      UserCredential userCredential = await _auth.createUserWithEmailAndPassword(
+        email: _emailController.text,
+        password: _passwordController.text,
+      );
+
+      User? user = userCredential.user;
+
+      if (user != null) {
+        await _createDatabase(user.uid, _emailController.text, "a"); // REPLACE "a" WITH displayName once that page has been has been implemented
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => LandingPage()),
+        );
+      }
+    } catch (e) {
+      setState(() {
+        _error = true;
+        _errorMessages.insert(0, "Please ensure all of your registration details are correct.");
+      });
+    }
+  }
+
+  void _validateEmail(String value) {
+    if (_formKey.currentState!.validate()) {
+      if (value.isEmpty) {
+        setState(() {
+          _error = true;
+          print("You have an email valid error.");
+        });
+      } else if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value)) {
+        setState(() {
+          _error = true;
+        });
+      } else {
+        setState(() {
+          _error = false; // Reset error state
+        });
+      }
+    }
+  }
+
   Future<void> _createDatabase(String uid, String email, String displayName) async {
     try {
       // Reference to the "users" collection
@@ -390,7 +369,6 @@ class _RegistrationPageState extends State<RegistrationPage> {
       // Handle the error accordingly
     }
   }
-
 }
 
 Route _createRoute(Widget page) {
@@ -401,3 +379,4 @@ Route _createRoute(Widget page) {
     },
   );
 }
+
