@@ -54,7 +54,6 @@ class QuizSummaryPage extends StatelessWidget {
                 },
                 child: Text('Back to Quiz'),
               ),
-      ),
             ],
           ),
         ),
