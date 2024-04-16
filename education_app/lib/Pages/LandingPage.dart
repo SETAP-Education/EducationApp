@@ -1,11 +1,11 @@
-
+import 'package:education_app/Pages/QuizPages/HistoryPages/AllQuizzes.dart';
 import 'package:education_app/Pages/QuizBuilder.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:education_app/Pages/AuthenticationPages/LoginPage.dart';
 import 'package:education_app/Pages/QuizPages/QuizPage.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:education_app/Pages/QuizPages/QuizSummaryPage.dart';
+import 'package:education_app/Pages/QuizPages/HistoryPages/QuizSummaryPage.dart';
 import 'package:education_app/Quizzes/quiz.dart';
 import 'package:education_app/Quizzes/quizManager.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -231,10 +231,30 @@ class _LandingPageState extends State<LandingPage> {
                     width: MediaQuery.of(context).size.width * 0.4,
                     height: MediaQuery.of(context).size.height * 0.1,
                     margin: const EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 20.0),
-                    child: Text(
-                      'Welcome, ${_user?.displayName ?? _user?.email ?? _user?.uid}!',
-                      style: const TextStyle(fontSize: 20),
-                    ),
+                    child: FutureBuilder<String?>(
+                    future: getUserDisplayName(_user!.uid),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return Text(
+                          'Welcome, Loading...',
+                          style: const TextStyle(fontSize: 20),
+                        );
+                      } else if (snapshot.hasError) {
+                        return Text(
+                          'Error loading display name',
+                          style: const TextStyle(fontSize: 20),
+                        );
+                      } else {
+                        String? displayName = snapshot.data;
+
+                        return Text(
+                          'Welcome, ${displayName ?? 'User'}!',
+                          style: const TextStyle(fontSize: 20),
+                        );
+                      }
+                    },
+                  ),
+
                   ),
                   Container(
                     alignment: Alignment.topCenter,
@@ -351,106 +371,143 @@ class _LandingPageState extends State<LandingPage> {
                         ),
                       ],
                     ),
-                    child: SingleChildScrollView(
-                      child: Column(
-                        children: [
-                          Container(
-                            margin: const EdgeInsets.fromLTRB(0.0, 20.0, 0.0, 10.0),
-                            child: Text(
-                              'History',
-                              style: GoogleFonts.nunito(color: Colors.black, fontSize: 28),
-                            ),
-                          ),
-                          Text(
-                            'View your recent efforts!',
-                            style: GoogleFonts.nunito(color: Colors.black, fontSize: 20),
-                          ),
-                          const SizedBox(
-                            height: 20,
-                          ),
-                          Container(
-                            alignment: Alignment.center,
-                            height: 400,
-                            width: ((screenWidth / 2) * 5 / 6),
-                            decoration: const BoxDecoration(
-                              color: Colors.transparent,
-                            ),
-                            child: FutureBuilder<List<String>>(
-                              future: getQuizNames(recentQuizzes),
-                              builder: (context, snapshot) {
-                                if (snapshot.connectionState == ConnectionState.waiting) {
-                                  return const CircularProgressIndicator();
-                                } else if (snapshot.hasError) {
-                                  return const Text('Error loading quiz names');
-                                } else {
-                                  List<String> quizNames = snapshot.data ?? [];
+                    child: Stack(
+                      children: [
+                        SingleChildScrollView(
+                          child: Column(
+                            children: [
+                              Container(
+                                margin: const EdgeInsets.fromLTRB(0.0, 20.0, 0.0, 10.0),
+                                child: Text(
+                                  'History',
+                                  style: GoogleFonts.nunito(color: Colors.black, fontSize: 28),
+                                ),
+                              ),
+                              Text(
+                                'View your recent efforts!',
+                                style: GoogleFonts.nunito(color: Colors.black, fontSize: 20),
+                              ),
+                              const SizedBox(
+                                height: 20,
+                              ),
+                              Container(
+                                alignment: Alignment.center,
+                                height: 400,
+                                width: ((screenWidth / 2) * 5 / 6),
+                                decoration: const BoxDecoration(
+                                  color: Colors.transparent,
+                                ),
+                                child: FutureBuilder<List<String>>(
+                                  future: getQuizNames(recentQuizzes),
+                                  builder: (context, snapshot) {
+                                    if (snapshot.connectionState == ConnectionState.waiting) {
+                                      return const CircularProgressIndicator();
+                                    } else if (snapshot.hasError) {
+                                      return const Text('Error loading quiz names');
+                                    } else {
+                                      List<String> quizNames = snapshot.data ?? [];
 
-                                  return SizedBox.expand(
-                                    child: ListView(
-                                      scrollDirection: Axis.horizontal,
-                                      children: List.generate(recentQuizzes.length, (index) {
-                                        return MouseRegion(
-                                          cursor: SystemMouseCursors.click,
-                                          child: InkWell(
-                                            onTap: () async {
-                                              await _getloadedQuestions(recentQuizzes[index]);
-                                              await _loadQuizAttemptData(recentQuizzes[index]);
-                                              _quizSummaryButton(loadedQuestions, quizAttemptData);
-                                            },
-                                            child: Container(
-                                              width: (((screenWidth / 2) * 5 / 6) / 3.2),
-                                              padding: const EdgeInsets.all(20),
-                                              margin: const EdgeInsets.all(10),
-                                              decoration: BoxDecoration(
-                                                borderRadius: BorderRadius.circular(10),
-                                                color: Colors.white,
-                                                boxShadow: [
-                                                  BoxShadow(
-                                                    color: Colors.black.withOpacity(0.2),
-                                                    spreadRadius: 1,
-                                                    blurRadius: 2,
-                                                    offset: const Offset(0, 1),
+                                      return SizedBox.expand(
+                                        child: ListView(
+                                          scrollDirection: Axis.horizontal,
+                                          children: List.generate(recentQuizzes.length, (index) {
+                                            return MouseRegion(
+                                              cursor: SystemMouseCursors.click,
+                                              child: InkWell(
+                                                onTap: () async {
+                                                  await _getloadedQuestions(recentQuizzes[index]);
+                                                  await _loadQuizAttemptData(recentQuizzes[index]);
+                                                  _quizSummaryButton(loadedQuestions, quizAttemptData);
+                                                },
+                                                child: Container(
+                                                  width: (((screenWidth / 2) * 5 / 6) / 3.2),
+                                                  padding: const EdgeInsets.all(20),
+                                                  margin: const EdgeInsets.all(10),
+                                                  decoration: BoxDecoration(
+                                                    borderRadius: BorderRadius.circular(10),
+                                                    color: Colors.white,
+                                                    boxShadow: [
+                                                      BoxShadow(
+                                                        color: Colors.black.withOpacity(0.2),
+                                                        spreadRadius: 1,
+                                                        blurRadius: 2,
+                                                        offset: const Offset(0, 1),
+                                                      ),
+                                                    ],
                                                   ),
-                                                ],
+                                                  child: Column(
+                                                    mainAxisAlignment: MainAxisAlignment.center,
+                                                    children: [
+                                                      const Icon(
+                                                        Icons.history,
+                                                        size: 60,
+                                                        color: Colors.blue,
+                                                      ),
+                                                      const SizedBox(height: 10),
+                                                      Text(
+                                                        'Recent Quiz ${index + 1}: ${quizNames[index]}',
+                                                        style: const TextStyle(fontSize: 16),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ),
                                               ),
-                                              child: Column(
-                                                mainAxisAlignment: MainAxisAlignment.center,
-                                                children: [
-                                                  const Icon(
-                                                    Icons.history,
-                                                    size: 60,
-                                                    color: Colors.blue,
-                                                  ),
-                                                  const SizedBox(height: 10),
-                                                  Text(
-                                                    'Recent Quiz ${index + 1}: ${quizNames[index]}',
-                                                    style: const TextStyle(fontSize: 16),
-                                                  ),
-                                                ],
-                                              ),
-                                            ),
-                                          ),
-                                        );
-                                      }),
-                                    ),
-                                  );
-                                }
-                              },
+                                            );
+                                          }),
+                                        ),
+                                      );
+                                    }
+                                  },
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Positioned(
+                          top: 10,
+                          right: 10,
+                          child: ElevatedButton(
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => QuizHistoryPage(),
+                                ),
+                              );
+                            },
+                            child: const Text(
+                              'View All',
+                              style: TextStyle(color: Colors.black),
                             ),
                           ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
                   ),
                 ],
               ),
             ),
-
-          ],
-        ),
-      ),
+          ]
+        )
+      )
     );
   }
+
+  Future<String?> getUserDisplayName(String userId) async {
+    try {
+      DocumentSnapshot userSnapshot = await FirebaseFirestore.instance.collection('users').doc(userId).get();
+
+      if (userSnapshot.exists) {
+        return userSnapshot.get('displayName');
+      } else {
+        print('User not found in Firestore');
+        return null;
+      }
+    } catch (e) {
+      print('Error retrieving user display name: $e');
+      return null;
+    }
+  } 
 
   void _quizSummaryButton(loadedQuestions, quizData) {
     Navigator.push(

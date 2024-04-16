@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:education_app/Quizzes/quiz.dart';
 import 'package:education_app/Quizzes/quizManager.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:education_app/Pages/QuizPages/QuizSummaryPage.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:education_app/Pages/QuizPages/HistoryPages/QuizSummaryPage.dart';
 
 class QuizPage extends StatefulWidget {
   @override
