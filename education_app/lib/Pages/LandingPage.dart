@@ -189,19 +189,21 @@ class _LandingPageState extends State<LandingPage> {
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        title: const Text('Home'),
+        title: Center(child: const Text('IntelliQuiz')),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.logout),
-            onPressed: () async {
-              await FirebaseAuth.instance.signOut();
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => LoginPage(),
-                ),
-              );
-            },
+          Center(
+            child: IconButton(
+              icon: const Icon(Icons.logout),
+              onPressed: () async {
+                await FirebaseAuth.instance.signOut();
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => LoginPage(),
+                  ),
+                );
+              },
+            ),
           ),
         ],
       ),
@@ -228,8 +230,8 @@ class _LandingPageState extends State<LandingPage> {
                         ),
                       ],
                     ),
-                    width: MediaQuery.of(context).size.width * 0.4,
-                    height: MediaQuery.of(context).size.height * 0.1,
+                    width: MediaQuery.of(context).size.width * 0.5,
+                    height: MediaQuery.of(context).size.height * 0.1, // Controls the height of the top left container
                     margin: const EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 20.0),
                     child: FutureBuilder<String?>(
                     future: getUserDisplayName(_user!.uid),
@@ -258,8 +260,8 @@ class _LandingPageState extends State<LandingPage> {
                   ),
                   Container(
                     alignment: Alignment.topCenter,
-                    width: MediaQuery.of(context).size.width * 0.4,
-                    height: MediaQuery.of(context).size.height * 0.7,
+                    width: MediaQuery.of(context).size.width * 0.5,
+                    height: MediaQuery.of(context).size.height * 0.75, // Controls the height of the bottom left container
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(12),
                       color: const Color(0xFFf3edf6).withOpacity(1),
@@ -293,12 +295,12 @@ class _LandingPageState extends State<LandingPage> {
               margin: const EdgeInsets.all(30.0),
               width: MediaQuery.of(context).size.width * 0.4,
               child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   Container(
                     alignment: Alignment.center,
-                    width: MediaQuery.of(context).size.width * 0.4,
-                    height: MediaQuery.of(context).size.height * 0.1,
-                    margin: const EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 20.0),
+                    height: MediaQuery.of(context).size.height * 0.1, // Controls the height of the top right container
+                    margin: const EdgeInsets.only(bottom: 20.0),
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(12),
                       color: const Color(0xFFf3edf6).withOpacity(1),
@@ -328,7 +330,7 @@ class _LandingPageState extends State<LandingPage> {
                             style: TextStyle(color: Colors.black),
                           ),
                         ),
-                        const SizedBox(height: 20),
+                        const SizedBox(width: 20),
                         ElevatedButton(
                           onPressed: () {
                             Navigator.push(
@@ -343,7 +345,7 @@ class _LandingPageState extends State<LandingPage> {
                             style: TextStyle(color: Colors.black),
                           ),
                         ),
-                        const SizedBox(height: 20), // spacing
+                        const SizedBox(width: 20),
                         ElevatedButton(
                           onPressed: () {
                             _checkQuizHistory();
@@ -356,87 +358,76 @@ class _LandingPageState extends State<LandingPage> {
                       ],
                     ),
                   ),
-                  Container(
-                    width: MediaQuery.of(context).size.width * 0.6,
-                    height: MediaQuery.of(context).size.height * 0.7,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(12),
-                      color: const Color(0xFFf3edf6).withOpacity(1),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.2),
-                          spreadRadius: 5,
-                          blurRadius: 10,
-                          offset: const Offset(0, 3),
-                        ),
-                      ],
-                    ),
-                    child: Stack(
-                      children: [
-                        SingleChildScrollView(
-                          child: Column(
-                            children: [
-                              Container(
-                                margin: const EdgeInsets.fromLTRB(0.0, 20.0, 0.0, 10.0),
-                                child: Text(
-                                  'History',
-                                  style: GoogleFonts.nunito(color: Colors.black, fontSize: 28),
-                                ),
-                              ),
-                              Text(
-                                'View your recent efforts!',
-                                style: GoogleFonts.nunito(color: Colors.black, fontSize: 20),
-                              ),
-                              const SizedBox(
-                                height: 20,
-                              ),
-                              Container(
-                                alignment: Alignment.center,
-                                height: 400,
-                                width: ((screenWidth / 2) * 5 / 6),
-                                decoration: const BoxDecoration(
-                                  color: Colors.transparent,
-                                ),
-                                child: FutureBuilder<List<String>>(
-                                  future: getQuizNames(recentQuizzes),
-                                  builder: (context, snapshot) {
-                                    if (snapshot.connectionState == ConnectionState.waiting) {
-                                      return const CircularProgressIndicator();
-                                    } else if (snapshot.hasError) {
-                                      return const Text('Error loading quiz names');
-                                    } else {
-                                      List<String> quizNames = snapshot.data ?? [];
-
-                                      return SizedBox.expand(
-                                        child: ListView(
-                                          scrollDirection: Axis.horizontal,
-                                          children: List.generate(recentQuizzes.length, (index) {
-                                            return MouseRegion(
-                                              cursor: SystemMouseCursors.click,
-                                              child: InkWell(
-                                                onTap: () async {
-                                                  await _getloadedQuestions(recentQuizzes[index]);
-                                                  await _loadQuizAttemptData(recentQuizzes[index]);
-                                                  _quizSummaryButton(loadedQuestions, quizAttemptData);
-                                                },
-                                                child: Container(
-                                                  width: (((screenWidth / 2) * 5 / 6) / 3.2),
-                                                  padding: const EdgeInsets.all(20),
-                                                  margin: const EdgeInsets.all(10),
-                                                  decoration: BoxDecoration(
-                                                    borderRadius: BorderRadius.circular(10),
-                                                    color: Colors.white,
-                                                    boxShadow: [
-                                                      BoxShadow(
-                                                        color: Colors.black.withOpacity(0.2),
-                                                        spreadRadius: 1,
-                                                        blurRadius: 2,
-                                                        offset: const Offset(0, 1),
-                                                      ),
-                                                    ],
-                                                  ),
+                  Expanded(
+                    child: Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(12),
+                        color: const Color(0xFFf3edf6).withOpacity(1),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.2),
+                            spreadRadius: 5,
+                            blurRadius: 10,
+                            offset: const Offset(0, 3),
+                          ),
+                        ],
+                      ),
+                      child: SingleChildScrollView(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            const SizedBox(height: 20),
+                            Text(
+                              'History',
+                              style: GoogleFonts.nunito(color: Colors.black, fontSize: 28),
+                            ),
+                            Text(
+                              'View your recent efforts!',
+                              style: GoogleFonts.nunito(color: Colors.black, fontSize: 20),
+                            ),
+                            const SizedBox(height: 20),
+                            FutureBuilder<List<String>>(
+                              future: getQuizNames(recentQuizzes),
+                              builder: (context, snapshot) {
+                                if (snapshot.connectionState == ConnectionState.waiting) {
+                                  return Center(child: CircularProgressIndicator());
+                                } else if (snapshot.hasError) {
+                                  return Center(child: Text('Error loading quiz names'));
+                                } else {
+                                  List<String> quizNames = snapshot.data ?? [];
+                                  int numRecentQuizzes = quizNames.length;
+                                  int numQuizzesPerRow = 2;
+                                  int numRows = (numRecentQuizzes / numQuizzesPerRow).ceil();
+                                  List<Widget> rows = List.generate(numRows, (rowIndex) {
+                                    List<Widget> rowChildren = [];
+                                    for (int i = 0; i < numQuizzesPerRow; i++) {
+                                      int index = rowIndex * numQuizzesPerRow + i;
+                                      if (index < numRecentQuizzes) {
+                                        rowChildren.add(
+                                          Expanded(
+                                            child: Padding(
+                                              padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                                              child: Container(
+                                                decoration: BoxDecoration(
+                                                  borderRadius: BorderRadius.circular(10),
+                                                  color: Colors.white,
+                                                  boxShadow: [
+                                                    BoxShadow(
+                                                      color: Colors.black.withOpacity(0.2),
+                                                      spreadRadius: 1,
+                                                      blurRadius: 2,
+                                                      offset: const Offset(0, 1),
+                                                    ),
+                                                  ],
+                                                ),
+                                                child: InkWell(
+                                                  onTap: () async {
+                                                    await _getloadedQuestions(recentQuizzes[index]);
+                                                    await _loadQuizAttemptData(recentQuizzes[index]);
+                                                    _quizSummaryButton(loadedQuestions, quizAttemptData);
+                                                  },
                                                   child: Column(
-                                                    mainAxisAlignment: MainAxisAlignment.center,
+                                                    crossAxisAlignment: CrossAxisAlignment.center,
                                                     children: [
                                                       const Icon(
                                                         Icons.history,
@@ -447,41 +438,52 @@ class _LandingPageState extends State<LandingPage> {
                                                       Text(
                                                         'Recent Quiz ${index + 1}: ${quizNames[index]}',
                                                         style: const TextStyle(fontSize: 16),
+                                                        textAlign: TextAlign.center,
                                                       ),
                                                     ],
                                                   ),
                                                 ),
                                               ),
-                                            );
-                                          }),
-                                        ),
-                                      );
+                                            ),
+                                          ),
+                                        );
+                                      }
                                     }
+                                    return Row(
+                                      children: rowChildren,
+                                    );
+                                  });
+                                  return Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: rows,
+                                  );
+                                }
+                              },
+                            ),
+                            const SizedBox(height: 20),
+                            Align(
+                              alignment: Alignment.topRight,
+                              child: Padding(
+                                padding: const EdgeInsets.only(top: 0.0, right: 20.0),
+                                child: ElevatedButton(
+                                  onPressed: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => QuizHistoryPage(),
+                                      ),
+                                    );
                                   },
+                                  child: const Text(
+                                    'View All',
+                                    style: TextStyle(color: Colors.black),
+                                  ),
                                 ),
                               ),
-                            ],
-                          ),
-                        ),
-                        Positioned(
-                          top: 10,
-                          right: 10,
-                          child: ElevatedButton(
-                            onPressed: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => QuizHistoryPage(),
-                                ),
-                              );
-                            },
-                            child: const Text(
-                              'View All',
-                              style: TextStyle(color: Colors.black),
                             ),
-                          ),
+                          ],
                         ),
-                      ],
+                      ),
                     ),
                   ),
                 ],
@@ -522,37 +524,74 @@ class _LandingPageState extends State<LandingPage> {
   }
 }
 
-
 class QuizListView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder(
-      stream: FirebaseFirestore.instance.collection('quizzes').snapshots(),
-      builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(child: CircularProgressIndicator());
-        }
-        if (snapshot.hasError) {
-          return Center(child: Text('Error: ${snapshot.error}'));
-        }
-        // Extract quiz names from documents
-        final List<String> quizNames = snapshot.data!.docs.map((doc) => doc['name'] as String).toList();
-
-        return ListView.builder(
-          itemCount: quizNames.length,
-          itemBuilder: (context, index) {
-            return ListTile(
-              title: Text(quizNames[index]),
-              onTap: () {
-                print('Quiz ${quizNames[index]} tapped!');
-                // where the quiz will load from
-              },
-            );
-          },
-        );
+    return GridView.builder(
+      padding: const EdgeInsets.all(10.0), // Add padding to move tiles away from the container border
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 2,
+        crossAxisSpacing: 10.0,
+        mainAxisSpacing: 10.0,
+      ),
+      itemCount: 8, // Maximum of 8 tiles (4 high, 2 wide)
+      itemBuilder: (context, index) {
+        return AvailableInterestTile(index: index);
       },
     );
   }
 }
+
+class AvailableInterestTile extends StatelessWidget {
+  final int index;
+
+  const AvailableInterestTile({required this.index});
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: () {
+        // Placeholder for button functionality
+        print('Tile ${index + 1} tapped!');
+        // Add code here to generate quiz based on user's interest
+      },
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(10),
+          color: Colors.white,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.2),
+              spreadRadius: 1,
+              blurRadius: 2,
+              offset: const Offset(0, 1),
+            ),
+          ],
+        ),
+        // height: MediaQuery.of(context).size.height * 1, // Half the height of the screen
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Icon(
+              Icons.history,
+              size: 40, // Reduce the icon size
+              color: Colors.blue,
+            ),
+            const SizedBox(height: 5), // Add some space between the icon and the text
+            Text(
+              'Interest ${index + 1}', // Placeholder for tile name
+              style: const TextStyle(fontSize: 14), // Reduce the font size
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+
+
 
 

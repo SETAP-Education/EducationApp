@@ -1,3 +1,4 @@
+import 'package:education_app/Pages/LandingPage.dart';
 import 'package:flutter/material.dart';
 import 'package:education_app/Quizzes/quiz.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -50,9 +51,17 @@ class QuizSummaryPage extends StatelessWidget {
               SizedBox(height: 16.0),
               ElevatedButton(
                 onPressed: () {
-                  Navigator.pop(context);
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => LandingPage(),
+                    ),
+                  );
                 },
-                child: Text('Back to Quiz'),
+                child: const Text(
+                  'Back to Home',
+                  style: TextStyle(color: Colors.black),
+                ),
               ),
             ],
           ),
