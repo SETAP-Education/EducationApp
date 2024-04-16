@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:education_app/Quizzes/quiz.dart';
 
@@ -94,9 +96,6 @@ class QuizManager {
         questionRef.docs.length, (index) => questionRef.docs[index].data());
   }
 
-  void writeQuizQuestionToDb(QuizQuestion question) {
-    
-  }
 
   // Returns an empty list if no questions that match are found
   // Warning: Don't use this unless you absolutely must
@@ -121,4 +120,91 @@ class QuizManager {
 
     db.collection("questions").doc().set(question.toFirestore());
   }
+
+  static Future<String> addQuizToDatabase(String name, String creator, List<String> questionIds) async {
+
+    var db = FirebaseFirestore.instance;
+
+    Quiz quiz = Quiz();
+    quiz.creator = creator; 
+    quiz.questionIds = questionIds;
+    quiz.name = name;
+    
+    var doc = db.collection("quizzes").doc();
+    quiz.shareCode = doc.path;
+
+    doc.set(quiz.toFirestore());
+
+    return doc.path;
+
+  }
+
+  
+
+  static Future<String> generateQuiz(List<String> tags, int userLevel, int range, int questionCount) async {
+
+    String outputQuizId = "";
+
+    var db = FirebaseFirestore.instance;
+
+    // This returns all questions that fit 
+    var questionRef = await db
+        .collection("questions")
+        .where("tags", arrayContainsAny: tags)
+        .where("difficulty", isGreaterThan: (userLevel - range))
+        .where("difficulty", isLessThan: (userLevel + range))
+        .withConverter(
+            fromFirestore: QuizQuestion.fromFirestore,
+            toFirestore: (QuizQuestion q, _) => q.toFirestore())
+        .get();
+
+    // TODO: make this more efficient
+    var questions = List.generate(
+        questionRef.docs.length, (index) => questionRef.docs[index].data());
+
+    // we have a list of questions that match the parameters 
+    // We want to get a random questions from this list
+
+    List<int> questionNumbers = List.empty(growable: true);
+
+    if (questions.length < questionCount) {
+      // If the questions that match are less than the questionCount we just want to return 
+      // all the questions from the query 
+
+      print("Not enough questions found, just adding the ones we have");
+
+      for (int i = 0; i < questions.length; i++) {
+        questionNumbers.add(i);
+      }
+
+      // Shuffle the questions 
+      questionNumbers.shuffle();
+
+    }
+    else {
+      
+      var rng = Random();
+      for (int i = 0; i < questionCount; i++) {
+        var j = rng.nextInt(questions.length);
+
+        while (questionNumbers.contains(j)) {
+          j = rng.nextInt(questions.length);
+        }
+
+        questionNumbers.add(j);
+      }
+    }
+
+    List<String> questionIds = List.generate(questionNumbers.length, (index) {
+      return questions[questionNumbers[index]].questionId;
+    });
+
+    //print(l.map((e) => e.debugPrint()));
+
+    outputQuizId = await addQuizToDatabase("", "System", questionIds);
+
+
+    return outputQuizId;
+  }
+
 }
