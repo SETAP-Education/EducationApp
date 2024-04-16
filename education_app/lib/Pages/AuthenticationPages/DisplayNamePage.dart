@@ -193,7 +193,7 @@ class _DisplayUser extends State<DisplayUser> {
   }
 
   void _setDisplayName(String userId, String displayName) {
-    final users = FirebaseFirestore.instance.collection('Users');
+    final users = FirebaseFirestore.instance.collection('users');
 
     // Setting the display name for the user
     users.doc(userId).set({
@@ -206,7 +206,7 @@ class _DisplayUser extends State<DisplayUser> {
   }
 
   void _saveInterests(String userId, List<String> interests) {
-    final users = FirebaseFirestore.instance.collection('Users');
+    final users = FirebaseFirestore.instance.collection('users');
 
     // Saving the interests for the user
     users.doc(userId).set({

@@ -94,6 +94,10 @@ class QuizManager {
         questionRef.docs.length, (index) => questionRef.docs[index].data());
   }
 
+  void writeQuizQuestionToDb(QuizQuestion question) {
+    
+  }
+
   // Returns an empty list if no questions that match are found
   // Warning: Don't use this unless you absolutely must
   // This returns all quiz questions in the database
@@ -110,5 +114,11 @@ class QuizManager {
 
     return List.generate(
         questionRef.docs.length, (index) => questionRef.docs[index].data());
+  }
+
+  static void addQuizQuestionToDatabase(QuizQuestion question) {
+    var db = FirebaseFirestore.instance;
+
+    db.collection("questions").doc().set(question.toFirestore());
   }
 }
