@@ -6,6 +6,7 @@ class QuizSummaryPage extends StatelessWidget {
   final List<QuizQuestion> loadedQuestions;
   final Map<String, dynamic> quizAttemptData;
 
+
   QuizSummaryPage({
     required this.loadedQuestions,
     required this.quizAttemptData,
