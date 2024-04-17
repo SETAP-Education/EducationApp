@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 import 'package:education_app/Pages/QuizPages/HistoryPages/AllQuizzes.dart';
@@ -16,6 +17,7 @@ class LandingPage extends StatefulWidget {
 
 class _LandingPageState extends State<LandingPage> {
   User? _user;
+
   List<String> userInterests = [];
   int xpLevel = 0; // Assuming XP level is an integer
   late String _displayName = "Placeholder";
@@ -157,7 +159,7 @@ class _LandingPageState extends State<LandingPage> {
 
       if (loadedQuiz != null) {
         setState(() {
-          quiz = loadedQuiz;
+          _user = user; // Set the current user
         });
 
         List<QuizQuestion> questions = [];
