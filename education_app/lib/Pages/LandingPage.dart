@@ -1,3 +1,4 @@
+import 'package:education_app/Pages/AuthenticationPages/LoginPage.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -288,7 +289,7 @@ class _LandingPageState extends State<LandingPage> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => QuizHistoryPage(),
+                        builder: (context) => LoginPage(),
                       ),
                     );
                   },
