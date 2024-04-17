@@ -1,4 +1,4 @@
-import 'package:education_app/Pages/LandingPageTest.dart';
+import 'package:education_app/Pages/LandingPage.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:education_app/Pages/AuthenticationPages/RegistrationPage.dart';
