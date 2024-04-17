@@ -1,6 +1,6 @@
+import 'package:education_app/Pages/AuthenticationPages/LoginPage.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 import 'package:education_app/Pages/QuizPages/HistoryPages/AllQuizzes.dart';
@@ -17,10 +17,10 @@ class LandingPage extends StatefulWidget {
 
 class _LandingPageState extends State<LandingPage> {
   User? _user;
-
   List<String> userInterests = [];
   int xpLevel = 0; // Assuming XP level is an integer
   late String _displayName = "Placeholder";
+  late List<String> otherTopics = [];
 
   List<String> recentQuizzes = [];
   late List<QuizQuestion> loadedQuestions = [];
@@ -29,15 +29,6 @@ class _LandingPageState extends State<LandingPage> {
   late QuizManager quizManager;
   String quizName = "";
   late Quiz quiz;
-
-  List<String> otherTopics = [
-    'Topic 1',
-    'Topic 2',
-    'Topic 3',
-    'Topic 4',
-    // Add more topics as needed
-  ];
-
 
   @override
   void initState() {
@@ -53,6 +44,7 @@ class _LandingPageState extends State<LandingPage> {
           _user = user;
         });
         if (user != null) {
+          _fetchOtherTopics();
           _getUserInterests(user.uid);
           _getUserXPLevel(user.uid);
           _getUserDisplayName(user.uid); // Call to get user display name
@@ -76,6 +68,36 @@ class _LandingPageState extends State<LandingPage> {
       print('Error fetching user interests: $e');
     }
   }
+
+  void _fetchOtherTopics() async {
+    try {
+      if (_user != null) {
+        // Get user's interests from Firestore
+        DocumentSnapshot userSnapshot = await FirebaseFirestore.instance.collection('users').doc(_user!.uid).get();
+        if (userSnapshot.exists) {
+          List<String> userInterests = List<String>.from(userSnapshot.get('interests'));
+
+          // Query Firestore to get all interests
+          DocumentSnapshot interestsSnapshot = await FirebaseFirestore.instance.collection('interests').doc('interests').get();
+
+          if (interestsSnapshot.exists) {
+            List<String> allInterests = List<String>.from(interestsSnapshot.get('interests'));
+
+            // Extract other topics that are not in the user's interests
+            List<String> remainingInterests = allInterests.where((interest) => !userInterests.contains(interest)).toList();
+
+            // Set the remaining interests as topics
+            setState(() {
+              otherTopics = remainingInterests.map((interest) => 'Topic $interest').toList();
+            });
+          }
+        }
+      }
+    } catch (e) {
+      print('Error fetching other topics: $e');
+    }
+  }
+
 
   void _getUserXPLevel(String uid) async {
     try {
@@ -159,7 +181,7 @@ class _LandingPageState extends State<LandingPage> {
 
       if (loadedQuiz != null) {
         setState(() {
-          _user = user; // Set the current user
+          quiz = loadedQuiz;
         });
 
         List<QuizQuestion> questions = [];
@@ -264,6 +286,12 @@ class _LandingPageState extends State<LandingPage> {
                   icon: Icon(Icons.logout),
                   onPressed: () async {
                     await FirebaseAuth.instance.signOut();
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => LoginPage(),
+                      ),
+                    );
                   },
                 ),
               ]
@@ -393,7 +421,6 @@ class _LandingPageState extends State<LandingPage> {
                                     style: GoogleFonts.nunito(color: Colors.black, fontSize: 28),
                                   ),
                                   const SizedBox(height: 20),
-                                  
                                   FutureBuilder<List<String>>(
                                     future: Future.value(otherTopics), // Assuming otherTopics is a list of other topics
                                     builder: (context, snapshot) {
@@ -402,8 +429,14 @@ class _LandingPageState extends State<LandingPage> {
                                       } else if (snapshot.hasError) {
                                         return Center(child: Text('Error loading topics'));
                                       } else {
+                                        
                                         List<String> topics = snapshot.data ?? [];
-                                        int numTopics = topics.length;
+                                        // Filter out user's interests from the list of other topics
+                                        List<String> remainingTopics = topics.where((topic) => !userInterests.contains(topic)).toList();
+                                        print("All topics: $topics");
+                                        print("Remaining topics: $remainingTopics");
+
+                                        int numTopics = remainingTopics.length;
                                         int numTopicsPerRow = 4; // Adjust the number of topics per row as needed
                                         int numRows = (numTopics / numTopicsPerRow).ceil();
                                         List<Widget> rows = List.generate(numRows, (rowIndex) {
@@ -432,7 +465,7 @@ class _LandingPageState extends State<LandingPage> {
                                                       ),
                                                       child: InkWell(
                                                         onTap: () async {
-                                                          print('Topic ${index + 1}: ${topics[index]} pressed');
+                                                          print('${remainingTopics[index]} pressed');
                                                           // Add functionality here if needed
                                                         },
                                                         child: Center(
@@ -447,7 +480,7 @@ class _LandingPageState extends State<LandingPage> {
                                                               ),
                                                               const SizedBox(height: 10),
                                                               Text(
-                                                                topics[index],
+                                                                remainingTopics[index], // Use remainingTopics instead of topics
                                                                 style: const TextStyle(fontSize: 16),
                                                                 textAlign: TextAlign.center,
                                                               ),
@@ -474,7 +507,6 @@ class _LandingPageState extends State<LandingPage> {
                                       }
                                     },
                                   ),
-
                                 ],
                               ),
                             ),

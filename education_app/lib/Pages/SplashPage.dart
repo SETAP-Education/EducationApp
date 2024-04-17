@@ -68,50 +68,64 @@ class _OpeningPageState extends State<OpeningPage> {
                   ),
                   SizedBox(height: 10),
                   Text(
-                    '     Welcome to Quiz App, \n where we make learning fun!',
+                    'Welcome to Quiz App, \n where we make learning fun!',
                     style: GoogleFonts.nunito(
                       fontSize: 30.0,
                     ),
                   ),
                   SizedBox(height: 25),
-                  ElevatedButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        _createRoute(RegistrationPage()),
-                      );
-                    },
-                    style: ElevatedButton.styleFrom(
-                      padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                    ),
-                    child: Text(
-                      '            New here?            ',
-                      style: GoogleFonts.nunito(
-                        fontSize: 25.0,
+                  Center(
+                    child: SizedBox(
+                      width: 400, // Constant width
+                      child: ElevatedButton(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            _createRoute(RegistrationPage()),
+                          );
+                        },
+                        style: ElevatedButton.styleFrom(
+                          padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          backgroundColor: Colors.white, // Set background color to white
+                        ),
+                        child: Text(
+                          'New here?',
+                          style: GoogleFonts.nunito(
+                            fontSize: 25.0,
+                            color: Colors.black, // Change font color to black
+                          ),
+                        ),
                       ),
                     ),
                   ),
                   SizedBox(height: 17),
-                  ElevatedButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        _createRoute(LoginPage()),
-                      );
-                    },
-                    style: ElevatedButton.styleFrom(
-                      padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                    ),
-                    child: Text(
-                      'Already have an account',
-                      style: GoogleFonts.nunito(
-                        fontSize: 25,
+                  Center(
+                    child: SizedBox(
+                      width: 400, // Constant width
+                      child: ElevatedButton(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            _createRoute(LoginPage()),
+                          );
+                        },
+                        style: ElevatedButton.styleFrom(
+                          padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          backgroundColor: Colors.white, // Set background color to white
+                        ),
+                        child: Text(
+                          'Already have an account',
+                          style: GoogleFonts.nunito(
+                            fontSize: 25.0,
+                            color: Colors.black, // Change font color to black
+                          ),
+                        ),
                       ),
                     ),
                   ),
