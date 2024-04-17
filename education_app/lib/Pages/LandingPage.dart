@@ -285,6 +285,12 @@ class _LandingPageState extends State<LandingPage> {
                   icon: Icon(Icons.logout),
                   onPressed: () async {
                     await FirebaseAuth.instance.signOut();
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => QuizHistoryPage(),
+                      ),
+                    );
                   },
                 ),
               ]
