@@ -1,11 +1,10 @@
-
-import 'package:education_app/Pages/QuizBuilder.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:education_app/Pages/AuthenticationPages/LoginPage.dart';
-import 'package:education_app/Pages/QuizPages/QuizPage.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:education_app/Pages/QuizPages/QuizSummaryPage.dart';
+
+import 'package:education_app/Pages/QuizPages/HistoryPages/AllQuizzes.dart';
+import 'package:education_app/Pages/QuizBuilder.dart';
+import 'package:education_app/Pages/QuizPages/HistoryPages/QuizSummaryPage.dart';
 import 'package:education_app/Quizzes/quiz.dart';
 import 'package:education_app/Quizzes/quizManager.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -17,6 +16,10 @@ class LandingPage extends StatefulWidget {
 
 class _LandingPageState extends State<LandingPage> {
   User? _user;
+  List<String> userInterests = [];
+  int xpLevel = 0; // Assuming XP level is an integer
+  late String _displayName = "Placeholder";
+
   List<String> recentQuizzes = [];
   late List<QuizQuestion> loadedQuestions = [];
   Map<String, dynamic> quizAttemptData = {};
@@ -25,6 +28,15 @@ class _LandingPageState extends State<LandingPage> {
   String quizName = "";
   late Quiz quiz;
 
+  List<String> otherTopics = [
+    'Topic 1',
+    'Topic 2',
+    'Topic 3',
+    'Topic 4',
+    // Add more topics as needed
+  ];
+
+
   @override
   void initState() {
     super.initState();
@@ -32,22 +44,65 @@ class _LandingPageState extends State<LandingPage> {
     quizManager = QuizManager();
   }
 
-  @override
-  void dispose() {
-    super.dispose();
-  }
-
   void _checkAuthState() {
     FirebaseAuth.instance.authStateChanges().listen((User? user) {
       if (mounted) {
         setState(() {
-          _user = user; // Set the current user
+          _user = user;
         });
         if (user != null) {
+          _getUserInterests(user.uid);
+          _getUserXPLevel(user.uid);
+          _getUserDisplayName(user.uid); // Call to get user display name
           _checkQuizHistory();
         }
       }
     });
+  }
+
+  void _getUserInterests(String uid) async {
+    try {
+      DocumentSnapshot userSnapshot =
+          await FirebaseFirestore.instance.collection('users').doc(uid).get();
+
+      if (userSnapshot.exists) {
+        setState(() {
+          userInterests = List<String>.from(userSnapshot.get('interests'));
+        });
+      }
+    } catch (e) {
+      print('Error fetching user interests: $e');
+    }
+  }
+
+  void _getUserXPLevel(String uid) async {
+    try {
+      DocumentSnapshot userSnapshot =
+          await FirebaseFirestore.instance.collection('users').doc(uid).get();
+
+      if (userSnapshot.exists) {
+        setState(() {
+          xpLevel = userSnapshot.get('xpLvl');
+        });
+      }
+    } catch (e) {
+      print('Error fetching user XP level: $e');
+    }
+  }
+
+  void _getUserDisplayName(String uid) async {
+    try {
+      DocumentSnapshot userSnapshot =
+          await FirebaseFirestore.instance.collection('users').doc(uid).get();
+
+      if (userSnapshot.exists) {
+        setState(() {
+          _displayName = userSnapshot.get('displayName');
+        });
+      }
+    } catch (e) {
+      print('Error fetching user display name: $e');
+    }
   }
 
   Future<List<String>> getQuizNames(List<String> quizIds) async {
@@ -182,276 +237,6 @@ class _LandingPageState extends State<LandingPage> {
     };
   }
 
-  @override
-  Widget build(BuildContext context) {
-    double screenWidth = MediaQuery.of(context).size.width;
-
-    return Scaffold(
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        title: const Text('Home'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.logout),
-            onPressed: () async {
-              await FirebaseAuth.instance.signOut();
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => LoginPage(),
-                ),
-              );
-            },
-          ),
-        ],
-      ),
-      body: Center(
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: <Widget>[
-            Container(
-              margin: const EdgeInsets.all(30.0),
-              width: MediaQuery.of(context).size.width * 0.4,
-              child: Column(
-                children: [
-                  Container(
-                    alignment: Alignment.center,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(12),
-                      color: const Color(0xFFf3edf6).withOpacity(1),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.2),
-                          spreadRadius: 5,
-                          blurRadius: 10,
-                          offset: const Offset(0, 3),
-                        ),
-                      ],
-                    ),
-                    width: MediaQuery.of(context).size.width * 0.4,
-                    height: MediaQuery.of(context).size.height * 0.1,
-                    margin: const EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 20.0),
-                    child: Text(
-                      'Welcome, ${_user?.displayName ?? _user?.email ?? _user?.uid}!',
-                      style: const TextStyle(fontSize: 20),
-                    ),
-                  ),
-                  Container(
-                    alignment: Alignment.topCenter,
-                    width: MediaQuery.of(context).size.width * 0.4,
-                    height: MediaQuery.of(context).size.height * 0.7,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(12),
-                      color: const Color(0xFFf3edf6).withOpacity(1),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.2),
-                          spreadRadius: 5,
-                          blurRadius: 10,
-                          offset: const Offset(0, 3),
-                        ),
-                      ],
-                    ),
-                    child: Column(
-                      children: [
-                        Container(
-                          alignment: Alignment.center,
-                          margin: const EdgeInsets.fromLTRB(0.0, 20.0, 0.0, 10.0),
-                          child: Text('Available', style: GoogleFonts.nunito(color: Colors.black, fontSize: 28)),
-                        ),
-                        Text('Test yourself!', style: GoogleFonts.nunito(color: Colors.black, fontSize: 20)),
-                        Expanded(
-                          child: QuizListView(), // quizListView widget to display quizzes
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            Container(
-              margin: const EdgeInsets.all(30.0),
-              width: MediaQuery.of(context).size.width * 0.4,
-              child: Column(
-                children: [
-                  Container(
-                    alignment: Alignment.center,
-                    width: MediaQuery.of(context).size.width * 0.4,
-                    height: MediaQuery.of(context).size.height * 0.1,
-                    margin: const EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 20.0),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(12),
-                      color: const Color(0xFFf3edf6).withOpacity(1),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.2),
-                          spreadRadius: 5,
-                          blurRadius: 10,
-                          offset: const Offset(0, 3),
-                        ),
-                      ],
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        ElevatedButton(
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => QuizPage(),
-                              ),
-                            );
-                          },
-                          child: const Text(
-                            'Take Quiz',
-                            style: TextStyle(color: Colors.black),
-                          ),
-                        ),
-                        const SizedBox(height: 20),
-                        ElevatedButton(
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => const QuizBuilder(),
-                              ),
-                            );
-                          },
-                          child: const Text(
-                            'Quiz Builder',
-                            style: TextStyle(color: Colors.black),
-                          ),
-                        ),
-                        const SizedBox(height: 20), // spacing
-                        ElevatedButton(
-                          onPressed: () {
-                            _checkQuizHistory();
-                          },
-                          child: const Text(
-                            'Check Quiz History',
-                            style: TextStyle(color: Colors.black),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  Container(
-                    width: MediaQuery.of(context).size.width * 0.6,
-                    height: MediaQuery.of(context).size.height * 0.7,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(12),
-                      color: const Color(0xFFf3edf6).withOpacity(1),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.2),
-                          spreadRadius: 5,
-                          blurRadius: 10,
-                          offset: const Offset(0, 3),
-                        ),
-                      ],
-                    ),
-                    child: SingleChildScrollView(
-                      child: Column(
-                        children: [
-                          Container(
-                            margin: const EdgeInsets.fromLTRB(0.0, 20.0, 0.0, 10.0),
-                            child: Text(
-                              'History',
-                              style: GoogleFonts.nunito(color: Colors.black, fontSize: 28),
-                            ),
-                          ),
-                          Text(
-                            'View your recent efforts!',
-                            style: GoogleFonts.nunito(color: Colors.black, fontSize: 20),
-                          ),
-                          const SizedBox(
-                            height: 20,
-                          ),
-                          Container(
-                            alignment: Alignment.center,
-                            height: 400,
-                            width: ((screenWidth / 2) * 5 / 6),
-                            decoration: const BoxDecoration(
-                              color: Colors.transparent,
-                            ),
-                            child: FutureBuilder<List<String>>(
-                              future: getQuizNames(recentQuizzes),
-                              builder: (context, snapshot) {
-                                if (snapshot.connectionState == ConnectionState.waiting) {
-                                  return const CircularProgressIndicator();
-                                } else if (snapshot.hasError) {
-                                  return const Text('Error loading quiz names');
-                                } else {
-                                  List<String> quizNames = snapshot.data ?? [];
-
-                                  return SizedBox.expand(
-                                    child: ListView(
-                                      scrollDirection: Axis.horizontal,
-                                      children: List.generate(recentQuizzes.length, (index) {
-                                        return MouseRegion(
-                                          cursor: SystemMouseCursors.click,
-                                          child: InkWell(
-                                            onTap: () async {
-                                              await _getloadedQuestions(recentQuizzes[index]);
-                                              await _loadQuizAttemptData(recentQuizzes[index]);
-                                              _quizSummaryButton(loadedQuestions, quizAttemptData);
-                                            },
-                                            child: Container(
-                                              width: (((screenWidth / 2) * 5 / 6) / 3.2),
-                                              padding: const EdgeInsets.all(20),
-                                              margin: const EdgeInsets.all(10),
-                                              decoration: BoxDecoration(
-                                                borderRadius: BorderRadius.circular(10),
-                                                color: Colors.white,
-                                                boxShadow: [
-                                                  BoxShadow(
-                                                    color: Colors.black.withOpacity(0.2),
-                                                    spreadRadius: 1,
-                                                    blurRadius: 2,
-                                                    offset: const Offset(0, 1),
-                                                  ),
-                                                ],
-                                              ),
-                                              child: Column(
-                                                mainAxisAlignment: MainAxisAlignment.center,
-                                                children: [
-                                                  const Icon(
-                                                    Icons.history,
-                                                    size: 60,
-                                                    color: Colors.blue,
-                                                  ),
-                                                  const SizedBox(height: 10),
-                                                  Text(
-                                                    'Recent Quiz ${index + 1}: ${quizNames[index]}',
-                                                    style: const TextStyle(fontSize: 16),
-                                                  ),
-                                                ],
-                                              ),
-                                            ),
-                                          ),
-                                        );
-                                      }),
-                                    ),
-                                  );
-                                }
-                              },
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-
-          ],
-        ),
-      ),
-    );
-  }
-
   void _quizSummaryButton(loadedQuestions, quizData) {
     Navigator.push(
       context,
@@ -463,39 +248,465 @@ class _LandingPageState extends State<LandingPage> {
       ),
     );
   }
-}
 
-
-class QuizListView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder(
-      stream: FirebaseFirestore.instance.collection('quizzes').snapshots(),
-      builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(child: CircularProgressIndicator());
-        }
-        if (snapshot.hasError) {
-          return Center(child: Text('Error: ${snapshot.error}'));
-        }
-        // Extract quiz names from documents
-        final List<String> quizNames = snapshot.data!.docs.map((doc) => doc['name'] as String).toList();
+    return Scaffold(
+      appBar: AppBar(
+        automaticallyImplyLeading: false,
+        centerTitle: true,
+        title: Text('Quiz App'),
+        actions: _user != null
+            ? [
+                IconButton(
+                  icon: Icon(Icons.logout),
+                  onPressed: () async {
+                    await FirebaseAuth.instance.signOut();
+                  },
+                ),
+              ]
+            : null,
+      ),
+      body: _user != null
+          ? Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(
+                  flex: 2,
+                  child: Container(
+                    height: MediaQuery.of(context).size.height,
+                    margin: const EdgeInsets.all(30.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Expanded(
+                          child: Container(
+                            width: MediaQuery.of(context).size.width * 2 / 3,
+                            padding: EdgeInsets.all(16.0),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(12),
+                              color: const Color(0xFFf3edf6).withOpacity(1),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.2),
+                                  spreadRadius: 5,
+                                  blurRadius: 10,
+                                  offset: const Offset(0, 3),
+                                ),
+                              ],
+                            ),
+                            child: SingleChildScrollView(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  const SizedBox(height: 20),
+                                  Text(
+                                    'Your Interests',
+                                    style: GoogleFonts.nunito(color: Colors.black, fontSize: 28),
+                                  ),
+                                  const SizedBox(height: 20),
+                                  FutureBuilder<List<String>>(
+                                    future: Future.value(userInterests),
+                                    builder: (context, snapshot) {
+                                      if (snapshot.connectionState == ConnectionState.waiting) {
+                                        return Center(child: CircularProgressIndicator());
+                                      } else if (snapshot.hasError) {
+                                        return Center(child: Text('Error loading interests'));
+                                      } else {
+                                        List<String> interests = snapshot.data ?? [];
+                                        int numInterests = interests.length;
+                                        int numInterestsPerRow = 4; // Adjust the number of interests per row as needed
+                                        int numRows = (numInterests / numInterestsPerRow).ceil();
+                                        List<Widget> rows = List.generate(numRows, (rowIndex) {
+                                          List<Widget> rowChildren = [];
+                                          for (int i = 0; i < numInterestsPerRow; i++) {
+                                            int index = rowIndex * numInterestsPerRow + i;
+                                            const SizedBox(height: 10);
+                                            if (index < numInterests) {
+                                              rowChildren.add(
+                                                Flexible(
+                                                  child: Padding(
+                                                    padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 10),
+                                                    child: Container(
+                                                      height: 200,
+                                                      decoration: BoxDecoration(
+                                                        borderRadius: BorderRadius.circular(10),
+                                                        color: Colors.white,
+                                                        boxShadow: [
+                                                          BoxShadow(
+                                                            color: Colors.black.withOpacity(0.2),
+                                                            spreadRadius: 1,
+                                                            blurRadius: 2,
+                                                            offset: const Offset(0, 1),
+                                                          ),
+                                                        ],
+                                                      ),
+                                                      child: InkWell(
+                                                        onTap: () async {
+                                                          print('Interest ${index + 1}: ${interests[index]} pressed');
+                                                          // Add functionality here if needed
+                                                        },
+                                                        child: Center(
+                                                          child: Column(
+                                                            mainAxisAlignment: MainAxisAlignment.center,
+                                                            crossAxisAlignment: CrossAxisAlignment.center,
+                                                            children: [
+                                                              const Icon(
+                                                                Icons.history,
+                                                                size: 60,
+                                                                color: Colors.blue,
+                                                              ),
+                                                              const SizedBox(height: 10),
+                                                              Text(
+                                                                interests[index],
+                                                                style: const TextStyle(fontSize: 16),
+                                                                textAlign: TextAlign.center,
+                                                              ),
+                                                            ],
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
+                                              );
+                                            } else {
+                                              rowChildren.add(Flexible(child: SizedBox())); // Add an empty Flexible widget for even distribution
+                                            }
+                                          }
+                                          return Row(
+                                            children: rowChildren,
+                                          );
+                                        });
+                                        return Column(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: rows,
+                                        );
+                                      }
+                                    },
+                                  ),
+                                  const SizedBox(height: 20),
+                                  Text(
+                                    'Other Topics',
+                                    style: GoogleFonts.nunito(color: Colors.black, fontSize: 28),
+                                  ),
+                                  const SizedBox(height: 20),
+                                  
+                                  FutureBuilder<List<String>>(
+                                    future: Future.value(otherTopics), // Assuming otherTopics is a list of other topics
+                                    builder: (context, snapshot) {
+                                      if (snapshot.connectionState == ConnectionState.waiting) {
+                                        return Center(child: CircularProgressIndicator());
+                                      } else if (snapshot.hasError) {
+                                        return Center(child: Text('Error loading topics'));
+                                      } else {
+                                        List<String> topics = snapshot.data ?? [];
+                                        int numTopics = topics.length;
+                                        int numTopicsPerRow = 4; // Adjust the number of topics per row as needed
+                                        int numRows = (numTopics / numTopicsPerRow).ceil();
+                                        List<Widget> rows = List.generate(numRows, (rowIndex) {
+                                          List<Widget> rowChildren = [];
+                                          for (int i = 0; i < numTopicsPerRow; i++) {
+                                            int index = rowIndex * numTopicsPerRow + i;
+                                            const SizedBox(height: 10);
+                                            if (index < numTopics) {
+                                              rowChildren.add(
+                                                Flexible(
+                                                  child: Padding(
+                                                    padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 10),
+                                                    child: Container(
+                                                      height: 200,
+                                                      decoration: BoxDecoration(
+                                                        borderRadius: BorderRadius.circular(10),
+                                                        color: Colors.white,
+                                                        boxShadow: [
+                                                          BoxShadow(
+                                                            color: Colors.black.withOpacity(0.2),
+                                                            spreadRadius: 1,
+                                                            blurRadius: 2,
+                                                            offset: const Offset(0, 1),
+                                                          ),
+                                                        ],
+                                                      ),
+                                                      child: InkWell(
+                                                        onTap: () async {
+                                                          print('Topic ${index + 1}: ${topics[index]} pressed');
+                                                          // Add functionality here if needed
+                                                        },
+                                                        child: Center(
+                                                          child: Column(
+                                                            mainAxisAlignment: MainAxisAlignment.center,
+                                                            crossAxisAlignment: CrossAxisAlignment.center,
+                                                            children: [
+                                                              const Icon(
+                                                                Icons.topic, // Replace with appropriate icon
+                                                                size: 60,
+                                                                color: Colors.blue,
+                                                              ),
+                                                              const SizedBox(height: 10),
+                                                              Text(
+                                                                topics[index],
+                                                                style: const TextStyle(fontSize: 16),
+                                                                textAlign: TextAlign.center,
+                                                              ),
+                                                            ],
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
+                                              );
+                                            } else {
+                                              rowChildren.add(Flexible(child: SizedBox())); // Add an empty Flexible widget for even distribution
+                                            }
+                                          }
+                                          return Row(
+                                            children: rowChildren,
+                                          );
+                                        });
+                                        return Column(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: rows,
+                                        );
+                                      }
+                                    },
+                                  ),
 
-        return ListView.builder(
-          itemCount: quizNames.length,
-          itemBuilder: (context, index) {
-            return ListTile(
-              title: Text(quizNames[index]),
-              onTap: () {
-                print('Quiz ${quizNames[index]} tapped!');
-                // where the quiz will load from
-              },
-            );
-          },
-        );
-      },
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                Expanded(
+                  flex: 1,
+                  child: Container(
+                    height: MediaQuery.of(context).size.height,
+                    width: MediaQuery.of(context).size.width * 1 / 3,
+                    margin: const EdgeInsets.fromLTRB(0, 30, 30, 30),
+                    child: Column(
+                      children: [
+                        Expanded(
+                          child: Container(
+                            padding: EdgeInsets.all(16.0),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(12),
+                              color: const Color(0xFFf3edf6).withOpacity(1),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.2),
+                                  spreadRadius: 5,
+                                  blurRadius: 10,
+                                  offset: const Offset(0, 3),
+                                ),
+                              ],
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(
+                                  'XP Level',
+                                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                                ),
+                                SizedBox(height: 10),
+                                Container(
+                                  width: double.infinity,
+                                  height: 40,
+                                  decoration: BoxDecoration(
+                                    border: Border.all(color: Colors.black),
+                                    borderRadius: BorderRadius.circular(20),
+                                  ),
+                                  child: Stack(
+                                    children: [
+                                      FractionallySizedBox(
+                                        widthFactor: xpLevel / 100,
+                                        child: Container(
+                                          decoration: BoxDecoration(
+                                            color: Colors.blue,
+                                            borderRadius: BorderRadius.circular(20),
+                                          ),
+                                          alignment: Alignment.center,
+                                          child: Text(
+                                            '$xpLevel XP - ${_getXPLevelDescription(xpLevel)}',
+                                            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                SizedBox(height: 10),
+                              ],
+                            ),
+                          ),
+                        ),
+                        SizedBox(height: 30),
+                        Expanded(
+                          flex: 7,
+                          child: Container(
+                            width: MediaQuery.of(context).size.width * 1 / 3,
+                            padding: EdgeInsets.all(16.0),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(12),
+                              color: const Color(0xFFf3edf6).withOpacity(1),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.2),
+                                  spreadRadius: 5,
+                                  blurRadius: 10,
+                                  offset: const Offset(0, 3),
+                                ),
+                              ],
+                            ),
+                            child: SingleChildScrollView(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  const SizedBox(height: 20),
+                                  Row(
+                                    children: [
+                                      Spacer(),
+                                      Text(
+                                        'Quiz History',
+                                        style: GoogleFonts.nunito(color: Colors.black, fontSize: 28),
+                                      ),
+                                      SizedBox(width: MediaQuery.of(context).size.width * 1/12), // Adjust the width as needed
+                                      ElevatedButton(
+                                        onPressed: () {
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) => QuizHistoryPage(),
+                                            ),
+                                          );
+                                        },
+                                        child: const Text(
+                                          'View All',
+                                          style: TextStyle(color: Colors.black),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 20),
+                                  FutureBuilder<List<String>>(
+                                    future: getQuizNames(recentQuizzes),
+                                    builder: (context, snapshot) {
+                                      if (snapshot.connectionState == ConnectionState.waiting) {
+                                        return Center(child: CircularProgressIndicator());
+                                      } else if (snapshot.hasError) {
+                                        return Center(child: Text('Error loading quiz names'));
+                                      } else {
+                                        List<String> quizNames = snapshot.data ?? [];
+                                        int numRecentQuizzes = quizNames.length;
+                                        int numQuizzesPerRow = 2;
+                                        int numRows = (numRecentQuizzes / numQuizzesPerRow).ceil();
+                                        List<Widget> rows = List.generate(numRows, (rowIndex) {
+                                          List<Widget> rowChildren = [];
+                                          for (int i = 0; i < numQuizzesPerRow; i++) {
+                                            int index = rowIndex * numQuizzesPerRow + i;
+                                            const SizedBox(height: 10);
+                                            if (index < numRecentQuizzes) {
+                                              rowChildren.add(
+                                                Expanded(
+                                                  child: Padding(
+                                                    padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 10),
+                                                    child: Container(
+                                                      height: 200,
+                                                      decoration: BoxDecoration(
+                                                        borderRadius: BorderRadius.circular(10),
+                                                        color: Colors.white,
+                                                        boxShadow: [
+                                                          BoxShadow(
+                                                            color: Colors.black.withOpacity(0.2),
+                                                            spreadRadius: 1,
+                                                            blurRadius: 2,
+                                                            offset: const Offset(0, 1),
+                                                          ),
+                                                        ],
+                                                      ),
+                                                      child: InkWell(
+                                                        onTap: () async {
+                                                          await _getloadedQuestions(recentQuizzes[index]);
+                                                          await _loadQuizAttemptData(recentQuizzes[index]);
+                                                          _quizSummaryButton(loadedQuestions, quizAttemptData);
+                                                        },
+                                                        child: Center(
+                                                          child: Column(
+                                                            mainAxisAlignment: MainAxisAlignment.center,
+                                                            crossAxisAlignment: CrossAxisAlignment.center,
+                                                            children: [
+                                                              const Icon(
+                                                                Icons.history,
+                                                                size: 60,
+                                                                color: Colors.blue,
+                                                              ),
+                                                              const SizedBox(height: 10),
+                                                              Text(
+                                                                'Recent Quiz ${index + 1}: ${quizNames[index]}',
+                                                                style: const TextStyle(fontSize: 16),
+                                                                textAlign: TextAlign.center,
+                                                              ),
+                                                            ],
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
+                                              );
+                                            }
+                                          }
+                                          return Row(
+                                            children: rowChildren,
+                                          );
+                                        });
+                                        return Column(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: rows,
+                                        );
+                                      }
+                                    },
+                                  ),
+                                  const SizedBox(height: 20),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            )
+          : Center(
+              child: ElevatedButton(
+                onPressed: () {
+                  // Navigate to login page
+                },
+                child: Text('Login'),
+              ),
+            ),
     );
   }
+
+
+  String _getXPLevelDescription(int xp) {
+    if (xp >= 0 && xp <= 20) {
+      return 'Beginner';
+    } else if (xp >= 21 && xp <= 40) {
+      return 'Intermediate';
+    } else if (xp >= 41 && xp <= 60) {
+      return 'Advanced';
+    } else if (xp >= 61 && xp <= 80) {
+      return 'Expert';
+    } else {
+      return 'Master';
+    }
+  }
 }
-
-
