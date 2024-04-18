@@ -1,4 +1,5 @@
 import 'package:education_app/Pages/AuthenticationPages/LoginPage.dart';
+import 'package:education_app/Pages/QuizPages/QuizPage.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -376,7 +377,11 @@ class _LandingPageState extends State<LandingPage> {
                                                           print('Interest ${index + 1}: ${interests[index]} pressed');
 
                                                           // Generate a new quiz
-                                                          quizManager.generateQuiz([ interests[index] ], 30, 20, 5);
+                                                          String id = await quizManager.generateQuiz([ interests[index] ], 30, 20, 5);
+                                                          
+                                                          Navigator.push(context, MaterialPageRoute(builder:(context) {
+                                                            return QuizPage(quizId: id);
+                                                          },));
                                                         },
                                                         child: Center(
                                                           child: Column(
@@ -469,6 +474,13 @@ class _LandingPageState extends State<LandingPage> {
                                                         onTap: () async {
                                                           print('${remainingTopics[index]} pressed');
                                                           // Add functionality here if needed
+
+                                                          // Generate a new quiz
+                                                          String id = await quizManager.generateQuiz([ remainingTopics[index] ], 30, 20, 5);
+                                                          
+                                                          Navigator.push(context, MaterialPageRoute(builder:(context) {
+                                                            return QuizPage(quizId: id);
+                                                          },));
                                                         },
                                                         child: Center(
                                                           child: Column(

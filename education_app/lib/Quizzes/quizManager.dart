@@ -210,7 +210,7 @@ class QuizManager {
 
     //print(l.map((e) => e.debugPrint()));
 
-    outputQuizId = await addQuizToDatabase("", "System", questionIds);
+    outputQuizId = await addQuizToDatabase(tags.toString(), "System", questionIds);
 
     print(outputQuizId);
 
