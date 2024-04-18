@@ -335,7 +335,7 @@ class _QuizPageState extends State<QuizPage> {
         if (question.type == QuestionType.multipleChoice)
           buildMultipleChoiceQuestion(question.answer as QuestionMultipleChoice),
         if (question.type == QuestionType.fillInTheBlank)
-          buildFillInTheBlankQuestion(question.answer as QuestionFillInTheBlank),
+          buildFillInTheBlankQuestion(question.answer as QuestionFillInTheBlank, question.key),
         // if (question.type == QuestionType.dragAndDrop) 
           // buildDragAndDropQuestion(question.answer as DragAndDropQuestion, context),
           // buildDragAndDropQuestion(question.answer as DragAndDropQuestion, context),
@@ -387,10 +387,12 @@ class _QuizPageState extends State<QuizPage> {
     );
   }
 
-  Widget buildFillInTheBlankQuestion(QuestionFillInTheBlank question) {
+  Widget buildFillInTheBlankQuestion(QuestionFillInTheBlank question, GlobalKey key) {
     return Container(
       width: 500,
       child: TextField(
+        controller: question.controller,
+        key: key,
         onChanged: (text) {
           setState(() {
             question.userResponse = text;

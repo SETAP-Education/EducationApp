@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
 
 enum QuestionType {
   none, 
@@ -74,6 +75,9 @@ class QuestionFillInTheBlank extends QuestionAnswer {
 
   String correctAnswer;
   String userResponse;
+
+  // Used for the actual question 
+  TextEditingController controller = TextEditingController();
 
   @override
   void debugPrint() {
@@ -272,6 +276,8 @@ class QuizQuestion {
   List<String> tags = List.empty(growable: true);
 
   QuestionAnswer answer = QuestionAnswer();
+
+  GlobalKey key = GlobalKey();
 
 
   Map<String, dynamic> toFirestore() {
