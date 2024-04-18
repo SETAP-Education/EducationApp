@@ -1,13 +1,14 @@
-import 'package:education_app/Pages/QuizBuilder.dart';
+import 'package:education_app/Pages/AuthenticationPages/LoginPage.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:education_app/Pages/AuthenticationPages/LoginPage.dart';
-import 'package:education_app/Pages/QuizPages/QuizPage.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:education_app/Pages/QuizPages/QuizSummaryPage.dart';
+
+import 'package:education_app/Pages/QuizPages/HistoryPages/AllQuizzes.dart';
+import 'package:education_app/Pages/QuizBuilder.dart';
+import 'package:education_app/Pages/QuizPages/HistoryPages/QuizSummaryPage.dart';
 import 'package:education_app/Quizzes/quiz.dart';
 import 'package:education_app/Quizzes/quizManager.dart';
-
+import 'package:google_fonts/google_fonts.dart';
 
 class LandingPage extends StatefulWidget {
   @override
@@ -16,6 +17,11 @@ class LandingPage extends StatefulWidget {
 
 class _LandingPageState extends State<LandingPage> {
   User? _user;
+  List<String> userInterests = [];
+  int xpLevel = 0; // Assuming XP level is an integer
+  late String _displayName = "Placeholder";
+  late List<String> otherTopics = [];
+
   List<String> recentQuizzes = [];
   late List<QuizQuestion> loadedQuestions = [];
   Map<String, dynamic> quizAttemptData = {};
@@ -30,26 +36,98 @@ class _LandingPageState extends State<LandingPage> {
     _checkAuthState();
     quizManager = QuizManager();
   }
-  
-  @override
-  void dispose() {
-    super.dispose();
-  }
 
   void _checkAuthState() {
-      FirebaseAuth.instance.authStateChanges().listen((User? user) {
-        if (mounted) {
-          setState(() {
-            _user = user; // Set the current user
-          });
-          if (user != null) {
-            _checkQuizHistory();
+    FirebaseAuth.instance.authStateChanges().listen((User? user) {
+      if (mounted) {
+        setState(() {
+          _user = user;
+        });
+        if (user != null) {
+          _fetchOtherTopics();
+          _getUserInterests(user.uid);
+          _getUserXPLevel(user.uid);
+          _getUserDisplayName(user.uid); // Call to get user display name
+          _checkQuizHistory();
+        }
+      }
+    });
+  }
+
+  void _getUserInterests(String uid) async {
+    try {
+      DocumentSnapshot userSnapshot =
+          await FirebaseFirestore.instance.collection('users').doc(uid).get();
+
+      if (userSnapshot.exists) {
+        setState(() {
+          userInterests = List<String>.from(userSnapshot.get('interests'));
+        });
+      }
+    } catch (e) {
+      print('Error fetching user interests: $e');
+    }
+  }
+
+  void _fetchOtherTopics() async {
+    try {
+      if (_user != null) {
+        // Get user's interests from Firestore
+        DocumentSnapshot userSnapshot = await FirebaseFirestore.instance.collection('users').doc(_user!.uid).get();
+        if (userSnapshot.exists) {
+          List<String> userInterests = List<String>.from(userSnapshot.get('interests'));
+
+          // Query Firestore to get all interests
+          DocumentSnapshot interestsSnapshot = await FirebaseFirestore.instance.collection('interests').doc('interests').get();
+
+          if (interestsSnapshot.exists) {
+            List<String> allInterests = List<String>.from(interestsSnapshot.get('interests'));
+
+            // Extract other topics that are not in the user's interests
+            List<String> remainingInterests = allInterests.where((interest) => !userInterests.contains(interest)).toList();
+
+            // Set the remaining interests as topics
+            setState(() {
+              otherTopics = remainingInterests.map((interest) => 'Topic $interest').toList();
+            });
           }
         }
       }
-    );
+    } catch (e) {
+      print('Error fetching other topics: $e');
+    }
   }
 
+
+  void _getUserXPLevel(String uid) async {
+    try {
+      DocumentSnapshot userSnapshot =
+          await FirebaseFirestore.instance.collection('users').doc(uid).get();
+
+      if (userSnapshot.exists) {
+        setState(() {
+          xpLevel = userSnapshot.get('xpLvl');
+        });
+      }
+    } catch (e) {
+      print('Error fetching user XP level: $e');
+    }
+  }
+
+  void _getUserDisplayName(String uid) async {
+    try {
+      DocumentSnapshot userSnapshot =
+          await FirebaseFirestore.instance.collection('users').doc(uid).get();
+
+      if (userSnapshot.exists) {
+        setState(() {
+          _displayName = userSnapshot.get('displayName');
+        });
+      }
+    } catch (e) {
+      print('Error fetching user display name: $e');
+    }
+  }
 
   Future<List<String>> getQuizNames(List<String> quizIds) async {
     try {
@@ -70,21 +148,16 @@ class _LandingPageState extends State<LandingPage> {
   void _checkQuizHistory() async {
     if (_user != null) {
       try {
-        final CollectionReference userCollection =
-            FirebaseFirestore.instance.collection('users');
+        final CollectionReference userCollection = FirebaseFirestore.instance.collection('users');
         final DocumentReference userDoc = userCollection.doc(_user!.uid);
 
-        final CollectionReference quizHistoryCollection =
-            userDoc.collection('quizHistory');
+        final CollectionReference quizHistoryCollection = userDoc.collection('quizHistory');
 
-        final QuerySnapshot quizHistorySnapshot =
-            await quizHistoryCollection.orderBy('timestamp', descending: true).limit(3).get();
+        final QuerySnapshot quizHistorySnapshot = await quizHistoryCollection.orderBy('timestamp', descending: true).limit(3).get();
 
         if (quizHistorySnapshot.docs.isNotEmpty) {
           // Quiz history exists, get the three most recent quiz IDs
-          final recentQuizIds = quizHistorySnapshot.docs
-              .map((doc) => doc.id)
-              .toList();
+          final recentQuizIds = quizHistorySnapshot.docs.map((doc) => doc.id).toList();
 
           setState(() {
             recentQuizzes = recentQuizIds;
@@ -97,7 +170,6 @@ class _LandingPageState extends State<LandingPage> {
       }
     }
   }
-
 
   Future<void> _getloadedQuestions(String quizId) async {
     // int currentQuestionIndex = 0;
@@ -112,24 +184,12 @@ class _LandingPageState extends State<LandingPage> {
           quiz = loadedQuiz;
         });
 
-        // Print quiz details
-        // print("Loaded quiz: ${quiz.name}");
-        // print("Question IDs: ${quiz.questionIds}");
-
         List<QuizQuestion> questions = [];
         for (String questionId in quiz.questionIds) {
-
-          // Fetch the question document directly from Firestore using QuizManager instead
-          QuizQuestion? question =
-              await QuizManager().getQuizQuestionById(questionId);
+          QuizQuestion? question = await QuizManager().getQuizQuestionById(questionId);
 
           if (question != null) {
             questions.add(question);
-
-            // Print question type
-            // print("Question Text: ${question.questionText}");
-            // print("Question Type: ${question.type}");
-
           } else {
             // Handle case where question doesn't exist
           }
@@ -140,20 +200,6 @@ class _LandingPageState extends State<LandingPage> {
             loadedQuestions = questions;
           });
         }
-
-        // print("Current Question Index: $currentQuestionIndex...");
-        // print("loadedQuestions: $loadedQuestions");
-        // print("loadedQuestions: ${loadedQuestions[currentQuestionIndex].questionText}");
-
-        // if (currentQuestionIndex < loadedQuestions.length) {
-        //   print(
-        //       "Current Question ID: ${loadedQuestions[currentQuestionIndex].questionText}");
-        // } else {
-        //   print(
-        //       "Error: Index out of range - Current Question Index: $currentQuestionIndex");
-        // }
-
-        // displayQuestion(currentQuestionIndex, quiz.questionIds);
       }
     } else {
       // Handle the case where the quiz is not found
@@ -165,33 +211,23 @@ class _LandingPageState extends State<LandingPage> {
   Future<void> _loadQuizAttemptData(String quizId) async {
     if (_user != null && mounted) {
       try {
-        final CollectionReference userCollection =
-            FirebaseFirestore.instance.collection('users');
+        final CollectionReference userCollection = FirebaseFirestore.instance.collection('users');
         final DocumentReference userDoc = userCollection.doc(_user!.uid);
 
-        final CollectionReference quizHistoryCollection =
-            userDoc.collection('quizHistory').doc(quizId).collection('attempts');
+        final CollectionReference quizHistoryCollection = userDoc.collection('quizHistory').doc(quizId).collection('attempts');
 
-        final QuerySnapshot attemptsSnapshot =
-            await quizHistoryCollection.orderBy('timestamp', descending: true).limit(1).get();
+        final QuerySnapshot attemptsSnapshot = await quizHistoryCollection.orderBy('timestamp', descending: true).limit(1).get();
 
         if (attemptsSnapshot.docs.isNotEmpty && mounted) {
           final attemptData = attemptsSnapshot.docs.first.data();
           setState(() {
-            // Check if attemptData is not null
             if (attemptData != null) {
-              // Explicitly cast attemptData to Map<String, dynamic>
               Map<String, dynamic> attemptDataMap = attemptData as Map<String, dynamic>;
-
-              // Extracting relevant data from the attemptData map
               Map<String, dynamic> userResults = attemptDataMap['userResults'];
               Map<String, dynamic> userSummary = attemptDataMap['userSummary'];
               Timestamp? timestamp = attemptDataMap['timestamp'];
 
-              // print("67 LANDING PAGE USER SUMMARY: $userSummary");
-
               if (userResults.isNotEmpty && userSummary.isNotEmpty && timestamp != null) {
-                // Formatting the quizAttemptData
                 quizAttemptData = {
                   'timestamp': FieldValue.serverTimestamp(),
                   'userResults': {
@@ -200,14 +236,9 @@ class _LandingPageState extends State<LandingPage> {
                   },
                   'userSummary': userSummary,
                 };
-                // print("53 user summary: $userSummary");
-                // print("54 quiz summary: $quizAttemptData");
               }
             }
           });
-
-          // Print the retrieved attemptData for debugging
-          // print("Attempt Data: $attemptData");
         } else {
           print('No attempts found for quiz $quizId');
         }
@@ -217,154 +248,18 @@ class _LandingPageState extends State<LandingPage> {
     }
   }
 
-
   Map<String, dynamic> createQuizAttemptData(Map<String, dynamic> userSummary) {
     int quizTotal = loadedQuestions.length;
 
     return {
       'timestamp': FieldValue.serverTimestamp(),
       'userResults': {
-        'quizTotal': quizTotal,  // Update this with the actual maximum points
+        'quizTotal': quizTotal,
         'userTotal': -1,
       },
       'userSummary': userSummary,
     };
   }
-
-  @override
-Widget build(BuildContext context) {
-  double screenWidth = MediaQuery.of(context).size.width;
-
-  return Scaffold(
-    appBar: AppBar(
-      automaticallyImplyLeading: false,
-      title: Text('Landing Page'),
-      actions: [
-        IconButton(
-          icon: Icon(Icons.logout),
-          onPressed: () async {
-            // Sign out the user
-            await FirebaseAuth.instance.signOut();
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => LoginPage(),
-              ),
-            ); // Go back to the login page
-          },
-        ),
-      ],
-    ),
-    body: Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text(
-            'Welcome, ${_user?.displayName ?? _user?.email ?? _user?.uid}!',
-            style: TextStyle(fontSize: 20),
-          ),
-          SizedBox(height: 20),
-          ElevatedButton(
-            onPressed: () {
-              // Navigate to the quiz page when the button is pressed
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => QuizPage(),
-                ),
-              ); // Replace QuizPage with your actual quiz page
-            },
-            child: Text('Take Quiz'),
-          ),
-          SizedBox(height: 20),
-           ElevatedButton(
-            onPressed: () {
-              // Check quiz history when the button is pressed
-              Navigator.push(context, MaterialPageRoute(
-                  builder: (context) => QuizBuilder(),
-                ));
-            },
-            child: Text('Quiz Builder'),
-          ),
-          SizedBox(height: 20),
-          ElevatedButton(
-            onPressed: () {
-              // Check quiz history when the button is pressed
-              _checkQuizHistory();
-            },
-            child: Text('Check Quiz History'),
-          ),
-          SizedBox(height: 20),
-          Container(
-  height: 400,
-  width: ((screenWidth / 2) * 5 / 6),
-  decoration: BoxDecoration(
-    color: Colors.transparent,
-    border: Border.all(color: Colors.black),
-    borderRadius: BorderRadius.circular(10),
-  ),
-  child: FutureBuilder<List<String>>(
-    future: getQuizNames(recentQuizzes),
-    builder: (context, snapshot) {
-      if (snapshot.connectionState == ConnectionState.waiting) {
-        return CircularProgressIndicator();
-      } else if (snapshot.hasError) {
-        return Text('Error loading quiz names');
-      } else {
-        List<String> quizNames = snapshot.data ?? [];
-
-        return SizedBox.expand(
-          child: ListView(
-            scrollDirection: Axis.horizontal,
-            children: List.generate(recentQuizzes.length, (index) {
-              return MouseRegion(
-                cursor: SystemMouseCursors.click,
-                child: InkWell(
-                  onTap: () async {
-                    await _getloadedQuestions(recentQuizzes[index]);
-                    await _loadQuizAttemptData(recentQuizzes[index]);
-                    _quizSummaryButton(loadedQuestions, quizAttemptData);
-                  },
-                  child: Container(
-                    width: (((screenWidth / 2) * 5 / 6) / 3.2), // Adjust the width as needed
-                    padding: EdgeInsets.all(20),
-                    margin: EdgeInsets.all(10),
-                    decoration: BoxDecoration(
-                      // border: Border.all(color: Colors.black),
-                      // borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          Icons.history,
-                          size: 60, // Adjust the size as needed
-                          color: Colors.blue, // Highlight color
-                        ),
-                        SizedBox(height: 10),
-                        Text(
-                          'Recent Quiz ${index + 1}: ${quizNames[index]}',
-                          style: TextStyle(fontSize: 16),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              );
-            }),
-          ),
-        );
-      }
-    },
-  ),
-),
-        ],
-      ),
-    ),
-  );
-}
-
-
 
   void _quizSummaryButton(loadedQuestions, quizData) {
     Navigator.push(
@@ -376,5 +271,476 @@ Widget build(BuildContext context) {
         ),
       ),
     );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        automaticallyImplyLeading: false,
+        centerTitle: true,
+        title: Text('Quiz App'),
+        actions: _user != null
+            ? [
+                IconButton(
+                  icon: Icon(Icons.logout),
+                  onPressed: () async {
+                    await FirebaseAuth.instance.signOut();
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => LoginPage(),
+                      ),
+                    );
+                  },
+                ),
+              ]
+            : null,
+      ),
+      body: _user != null
+          ? Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(
+                  flex: 2,
+                  child: Container(
+                    height: MediaQuery.of(context).size.height,
+                    margin: const EdgeInsets.all(30.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Expanded(
+                          child: Container(
+                            width: MediaQuery.of(context).size.width * 2 / 3,
+                            padding: EdgeInsets.all(16.0),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(12),
+                              color: const Color(0xFFf3edf6).withOpacity(1),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.2),
+                                  spreadRadius: 5,
+                                  blurRadius: 10,
+                                  offset: const Offset(0, 3),
+                                ),
+                              ],
+                            ),
+                            child: SingleChildScrollView(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  const SizedBox(height: 20),
+                                  Text(
+                                    'Your Interests',
+                                    style: GoogleFonts.nunito(color: Colors.black, fontSize: 28),
+                                  ),
+                                  const SizedBox(height: 20),
+                                  FutureBuilder<List<String>>(
+                                    future: Future.value(userInterests),
+                                    builder: (context, snapshot) {
+                                      if (snapshot.connectionState == ConnectionState.waiting) {
+                                        return Center(child: CircularProgressIndicator());
+                                      } else if (snapshot.hasError) {
+                                        return Center(child: Text('Error loading interests'));
+                                      } else {
+                                        List<String> interests = snapshot.data ?? [];
+                                        int numInterests = interests.length;
+                                        int numInterestsPerRow = 4; // Adjust the number of interests per row as needed
+                                        int numRows = (numInterests / numInterestsPerRow).ceil();
+                                        List<Widget> rows = List.generate(numRows, (rowIndex) {
+                                          List<Widget> rowChildren = [];
+                                          for (int i = 0; i < numInterestsPerRow; i++) {
+                                            int index = rowIndex * numInterestsPerRow + i;
+                                            const SizedBox(height: 10);
+                                            if (index < numInterests) {
+                                              rowChildren.add(
+                                                Flexible(
+                                                  child: Padding(
+                                                    padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 10),
+                                                    child: Container(
+                                                      height: 200,
+                                                      decoration: BoxDecoration(
+                                                        borderRadius: BorderRadius.circular(10),
+                                                        color: Colors.white,
+                                                        boxShadow: [
+                                                          BoxShadow(
+                                                            color: Colors.black.withOpacity(0.2),
+                                                            spreadRadius: 1,
+                                                            blurRadius: 2,
+                                                            offset: const Offset(0, 1),
+                                                          ),
+                                                        ],
+                                                      ),
+                                                      child: InkWell(
+                                                        onTap: () async {
+                                                          print('Interest ${index + 1}: ${interests[index]} pressed');
+                                                          // Add functionality here if needed
+                                                        },
+                                                        child: Center(
+                                                          child: Column(
+                                                            mainAxisAlignment: MainAxisAlignment.center,
+                                                            crossAxisAlignment: CrossAxisAlignment.center,
+                                                            children: [
+                                                              const Icon(
+                                                                Icons.history,
+                                                                size: 60,
+                                                                color: Colors.blue,
+                                                              ),
+                                                              const SizedBox(height: 10),
+                                                              Text(
+                                                                interests[index],
+                                                                style: const TextStyle(fontSize: 16),
+                                                                textAlign: TextAlign.center,
+                                                              ),
+                                                            ],
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
+                                              );
+                                            } else {
+                                              rowChildren.add(Flexible(child: SizedBox())); // Add an empty Flexible widget for even distribution
+                                            }
+                                          }
+                                          return Row(
+                                            children: rowChildren,
+                                          );
+                                        });
+                                        return Column(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: rows,
+                                        );
+                                      }
+                                    },
+                                  ),
+                                  const SizedBox(height: 20),
+                                  Text(
+                                    'Other Topics',
+                                    style: GoogleFonts.nunito(color: Colors.black, fontSize: 28),
+                                  ),
+                                  const SizedBox(height: 20),
+                                  FutureBuilder<List<String>>(
+                                    future: Future.value(otherTopics), // Assuming otherTopics is a list of other topics
+                                    builder: (context, snapshot) {
+                                      if (snapshot.connectionState == ConnectionState.waiting) {
+                                        return Center(child: CircularProgressIndicator());
+                                      } else if (snapshot.hasError) {
+                                        return Center(child: Text('Error loading topics'));
+                                      } else {
+                                        
+                                        List<String> topics = snapshot.data ?? [];
+                                        // Filter out user's interests from the list of other topics
+                                        List<String> remainingTopics = topics.where((topic) => !userInterests.contains(topic)).toList();
+                                        print("All topics: $topics");
+                                        print("Remaining topics: $remainingTopics");
+
+                                        int numTopics = remainingTopics.length;
+                                        int numTopicsPerRow = 4; // Adjust the number of topics per row as needed
+                                        int numRows = (numTopics / numTopicsPerRow).ceil();
+                                        List<Widget> rows = List.generate(numRows, (rowIndex) {
+                                          List<Widget> rowChildren = [];
+                                          for (int i = 0; i < numTopicsPerRow; i++) {
+                                            int index = rowIndex * numTopicsPerRow + i;
+                                            const SizedBox(height: 10);
+                                            if (index < numTopics) {
+                                              rowChildren.add(
+                                                Flexible(
+                                                  child: Padding(
+                                                    padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 10),
+                                                    child: Container(
+                                                      height: 200,
+                                                      decoration: BoxDecoration(
+                                                        borderRadius: BorderRadius.circular(10),
+                                                        color: Colors.white,
+                                                        boxShadow: [
+                                                          BoxShadow(
+                                                            color: Colors.black.withOpacity(0.2),
+                                                            spreadRadius: 1,
+                                                            blurRadius: 2,
+                                                            offset: const Offset(0, 1),
+                                                          ),
+                                                        ],
+                                                      ),
+                                                      child: InkWell(
+                                                        onTap: () async {
+                                                          print('${remainingTopics[index]} pressed');
+                                                          // Add functionality here if needed
+                                                        },
+                                                        child: Center(
+                                                          child: Column(
+                                                            mainAxisAlignment: MainAxisAlignment.center,
+                                                            crossAxisAlignment: CrossAxisAlignment.center,
+                                                            children: [
+                                                              const Icon(
+                                                                Icons.topic, // Replace with appropriate icon
+                                                                size: 60,
+                                                                color: Colors.blue,
+                                                              ),
+                                                              const SizedBox(height: 10),
+                                                              Text(
+                                                                remainingTopics[index], // Use remainingTopics instead of topics
+                                                                style: const TextStyle(fontSize: 16),
+                                                                textAlign: TextAlign.center,
+                                                              ),
+                                                            ],
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
+                                              );
+                                            } else {
+                                              rowChildren.add(Flexible(child: SizedBox())); // Add an empty Flexible widget for even distribution
+                                            }
+                                          }
+                                          return Row(
+                                            children: rowChildren,
+                                          );
+                                        });
+                                        return Column(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: rows,
+                                        );
+                                      }
+                                    },
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                Expanded(
+                  flex: 1,
+                  child: Container(
+                    height: MediaQuery.of(context).size.height,
+                    width: MediaQuery.of(context).size.width * 1 / 3,
+                    margin: const EdgeInsets.fromLTRB(0, 30, 30, 30),
+                    child: Column(
+                      children: [
+                        Expanded(
+                          child: Container(
+                            padding: EdgeInsets.all(16.0),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(12),
+                              color: const Color(0xFFf3edf6).withOpacity(1),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.2),
+                                  spreadRadius: 5,
+                                  blurRadius: 10,
+                                  offset: const Offset(0, 3),
+                                ),
+                              ],
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(
+                                  'XP Level',
+                                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                                ),
+                                SizedBox(height: 10),
+                                Container(
+                                  width: double.infinity,
+                                  height: 40,
+                                  decoration: BoxDecoration(
+                                    border: Border.all(color: Colors.black),
+                                    borderRadius: BorderRadius.circular(20),
+                                  ),
+                                  child: Stack(
+                                    children: [
+                                      FractionallySizedBox(
+                                        widthFactor: xpLevel / 100,
+                                        child: Container(
+                                          decoration: BoxDecoration(
+                                            color: Colors.blue,
+                                            borderRadius: BorderRadius.circular(20),
+                                          ),
+                                          alignment: Alignment.center,
+                                          child: Text(
+                                            '$xpLevel XP - ${_getXPLevelDescription(xpLevel)}',
+                                            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                SizedBox(height: 10),
+                              ],
+                            ),
+                          ),
+                        ),
+                        SizedBox(height: 30),
+                        Expanded(
+                          flex: 7,
+                          child: Container(
+                            width: MediaQuery.of(context).size.width * 1 / 3,
+                            padding: EdgeInsets.all(16.0),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(12),
+                              color: const Color(0xFFf3edf6).withOpacity(1),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.2),
+                                  spreadRadius: 5,
+                                  blurRadius: 10,
+                                  offset: const Offset(0, 3),
+                                ),
+                              ],
+                            ),
+                            child: SingleChildScrollView(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  const SizedBox(height: 20),
+                                  Row(
+                                    children: [
+                                      Spacer(),
+                                      Text(
+                                        'Quiz History',
+                                        style: GoogleFonts.nunito(color: Colors.black, fontSize: 28),
+                                      ),
+                                      SizedBox(width: MediaQuery.of(context).size.width * 1/12), // Adjust the width as needed
+                                      ElevatedButton(
+                                        onPressed: () {
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) => QuizHistoryPage(),
+                                            ),
+                                          );
+                                        },
+                                        child: const Text(
+                                          'View All',
+                                          style: TextStyle(color: Colors.black),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 20),
+                                  FutureBuilder<List<String>>(
+                                    future: getQuizNames(recentQuizzes),
+                                    builder: (context, snapshot) {
+                                      if (snapshot.connectionState == ConnectionState.waiting) {
+                                        return Center(child: CircularProgressIndicator());
+                                      } else if (snapshot.hasError) {
+                                        return Center(child: Text('Error loading quiz names'));
+                                      } else {
+                                        List<String> quizNames = snapshot.data ?? [];
+                                        int numRecentQuizzes = quizNames.length;
+                                        int numQuizzesPerRow = 2;
+                                        int numRows = (numRecentQuizzes / numQuizzesPerRow).ceil();
+                                        List<Widget> rows = List.generate(numRows, (rowIndex) {
+                                          List<Widget> rowChildren = [];
+                                          for (int i = 0; i < numQuizzesPerRow; i++) {
+                                            int index = rowIndex * numQuizzesPerRow + i;
+                                            const SizedBox(height: 10);
+                                            if (index < numRecentQuizzes) {
+                                              rowChildren.add(
+                                                Expanded(
+                                                  child: Padding(
+                                                    padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 10),
+                                                    child: Container(
+                                                      height: 200,
+                                                      decoration: BoxDecoration(
+                                                        borderRadius: BorderRadius.circular(10),
+                                                        color: Colors.white,
+                                                        boxShadow: [
+                                                          BoxShadow(
+                                                            color: Colors.black.withOpacity(0.2),
+                                                            spreadRadius: 1,
+                                                            blurRadius: 2,
+                                                            offset: const Offset(0, 1),
+                                                          ),
+                                                        ],
+                                                      ),
+                                                      child: InkWell(
+                                                        onTap: () async {
+                                                          await _getloadedQuestions(recentQuizzes[index]);
+                                                          await _loadQuizAttemptData(recentQuizzes[index]);
+                                                          _quizSummaryButton(loadedQuestions, quizAttemptData);
+                                                        },
+                                                        child: Center(
+                                                          child: Column(
+                                                            mainAxisAlignment: MainAxisAlignment.center,
+                                                            crossAxisAlignment: CrossAxisAlignment.center,
+                                                            children: [
+                                                              const Icon(
+                                                                Icons.history,
+                                                                size: 60,
+                                                                color: Colors.blue,
+                                                              ),
+                                                              const SizedBox(height: 10),
+                                                              Text(
+                                                                'Recent Quiz ${index + 1}: ${quizNames[index]}',
+                                                                style: const TextStyle(fontSize: 16),
+                                                                textAlign: TextAlign.center,
+                                                              ),
+                                                            ],
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
+                                              );
+                                            }
+                                          }
+                                          return Row(
+                                            children: rowChildren,
+                                          );
+                                        });
+                                        return Column(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: rows,
+                                        );
+                                      }
+                                    },
+                                  ),
+                                  const SizedBox(height: 20),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            )
+          : Center(
+              child: ElevatedButton(
+                onPressed: () {
+                  // Navigate to login page
+                },
+                child: Text('Login'),
+              ),
+            ),
+    );
+  }
+
+
+  String _getXPLevelDescription(int xp) {
+    if (xp >= 0 && xp <= 20) {
+      return 'Beginner';
+    } else if (xp >= 21 && xp <= 40) {
+      return 'Intermediate';
+    } else if (xp >= 41 && xp <= 60) {
+      return 'Advanced';
+    } else if (xp >= 61 && xp <= 80) {
+      return 'Expert';
+    } else {
+      return 'Master';
+    }
   }
 }
