@@ -133,15 +133,17 @@ class QuizManager {
     var doc = db.collection("quizzes").doc();
     quiz.shareCode = doc.path;
 
-    doc.set(quiz.toFirestore());
+    await doc.set(quiz.toFirestore());
 
-    return doc.path;
+    return doc.id;
 
   }
 
   
 
-  static Future<String> generateQuiz(List<String> tags, int userLevel, int range, int questionCount) async {
+   Future<String> generateQuiz(List<String> tags, int userLevel, int range, int questionCount) async {
+
+    print("Quiz Generating...");
 
     String outputQuizId = "";
 
@@ -161,6 +163,10 @@ class QuizManager {
     // TODO: make this more efficient
     var questions = List.generate(
         questionRef.docs.length, (index) => questionRef.docs[index].data());
+
+   
+
+    print("Number of questions found: ${questions.length}");
 
     // we have a list of questions that match the parameters 
     // We want to get a random questions from this list
@@ -182,6 +188,8 @@ class QuizManager {
 
     }
     else {
+
+      print("Randomly picking Questions");
       
       var rng = Random();
       for (int i = 0; i < questionCount; i++) {
@@ -191,6 +199,7 @@ class QuizManager {
           j = rng.nextInt(questions.length);
         }
 
+        print("Added question ${j}");
         questionNumbers.add(j);
       }
     }
@@ -203,6 +212,7 @@ class QuizManager {
 
     outputQuizId = await addQuizToDatabase("", "System", questionIds);
 
+    print(outputQuizId);
 
     return outputQuizId;
   }

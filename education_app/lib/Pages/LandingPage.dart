@@ -374,7 +374,9 @@ class _LandingPageState extends State<LandingPage> {
                                                       child: InkWell(
                                                         onTap: () async {
                                                           print('Interest ${index + 1}: ${interests[index]} pressed');
-                                                          // Add functionality here if needed
+
+                                                          // Generate a new quiz
+                                                          quizManager.generateQuiz([ interests[index] ], 30, 20, 5);
                                                         },
                                                         child: Center(
                                                           child: Column(
