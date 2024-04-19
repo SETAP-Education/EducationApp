@@ -250,7 +250,7 @@ class QuizSummaryPage extends StatelessWidget {
 
     Color backgroundColour = userResponse.isEmpty
         ? Colors.transparent
-        : (question.userResponse.toLowerCase() == question.correctAnswer.toLowerCase())
+        : (userResponse.toLowerCase() == question.correctAnswer.toLowerCase())
             ? Colors.green
             : Colors.red;
 
