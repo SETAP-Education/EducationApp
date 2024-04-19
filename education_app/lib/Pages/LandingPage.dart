@@ -1,3 +1,4 @@
+
 import 'package:education_app/Pages/QuizBuilder.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -396,38 +397,38 @@ class _LandingPageState extends State<LandingPage> {
                                               await _loadQuizAttemptData(recentQuizzes[index]);
                                               _quizSummaryButton(loadedQuestions, quizAttemptData);
                                             },
-                                              child: Container(
-                                                width: (((screenWidth / 2) * 5 / 6) / 3.2),
-                                                padding: const EdgeInsets.all(20),
-                                                margin: const EdgeInsets.all(10),
-                                                decoration: BoxDecoration(
-                                                  borderRadius: BorderRadius.circular(10),
-                                                  color: Colors.white,
-                                                  boxShadow: [
+                                            child: Container(
+                                              width: (((screenWidth / 2) * 5 / 6) / 3.2),
+                                              padding: const EdgeInsets.all(20),
+                                              margin: const EdgeInsets.all(10),
+                                              decoration: BoxDecoration(
+                                                borderRadius: BorderRadius.circular(10),
+                                                color: Colors.white,
+                                                boxShadow: [
                                                   BoxShadow(
                                                     color: Colors.black.withOpacity(0.2),
-                                                       spreadRadius: 1,
-                                                       blurRadius: 2,
-                                                       offset: const Offset(0, 1),
-                                                     ),
-                                                   ],
-                                                ),
-                                                child: Column(
-                                                  mainAxisAlignment: MainAxisAlignment.center,
-                                                  children: [
-                                                    const Icon(
-                                                      Icons.history,
-                                                      size: 60,
-                                                      color: Colors.blue,
-                                                    ),
-                                                    const SizedBox(height: 10),
-                                                    Text(
-                                                      'Recent Quiz ${index + 1}: ${quizNames[index]}',
-                                                      style: const TextStyle(fontSize: 16),
-                                                    ),
-                                                  ],
-                                                ),
+                                                    spreadRadius: 1,
+                                                    blurRadius: 2,
+                                                    offset: const Offset(0, 1),
+                                                  ),
+                                                ],
                                               ),
+                                              child: Column(
+                                                mainAxisAlignment: MainAxisAlignment.center,
+                                                children: [
+                                                  const Icon(
+                                                    Icons.history,
+                                                    size: 60,
+                                                    color: Colors.blue,
+                                                  ),
+                                                  const SizedBox(height: 10),
+                                                  Text(
+                                                    'Recent Quiz ${index + 1}: ${quizNames[index]}',
+                                                    style: const TextStyle(fontSize: 16),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
                                           ),
                                         );
                                       }),

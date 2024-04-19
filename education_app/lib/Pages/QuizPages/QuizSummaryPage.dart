@@ -21,7 +21,6 @@ class QuizSummaryPage extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Quiz Summary'),
       ),
       body: Center(
         child: SingleChildScrollView(
@@ -128,18 +127,13 @@ class QuizSummaryPage extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
-                'Quiz Results',
+                'Quiz overview',
                 style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),
               ),
-              SizedBox(height: 8.0),
+              SizedBox(height: 5.0),
               Text(
-                "Quiz Total: $quizTotal",
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-              ),
-              SizedBox(height: 8.0),
-              Text(
-                'Your Score: $userTotal',
-                style: TextStyle(fontSize: 16.0),
+                "                   ${(userTotal / quizTotal) * 100}% \n $userTotal / $quizTotal answered correctly ",
+                style: TextStyle(fontSize: 17.0),
               ),
             ],
           ),
