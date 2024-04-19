@@ -538,59 +538,58 @@ class _LandingPageState extends State<LandingPage> {
                     margin: const EdgeInsets.fromLTRB(0, 30, 30, 30),
                     child: Column(
                       children: [
-                        Expanded(
-                          child: Container(
-                            padding: EdgeInsets.all(16.0),
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(12),
-                              color: const Color(0xFFf3edf6).withOpacity(1),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withOpacity(0.2),
-                                  spreadRadius: 5,
-                                  blurRadius: 10,
-                                  offset: const Offset(0, 3),
+                        Container(
+                          height: 125,
+                          padding: EdgeInsets.all(16.0),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(12),
+                            color: const Color(0xFFf3edf6).withOpacity(1),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.2),
+                                spreadRadius: 5,
+                                blurRadius: 10,
+                                offset: const Offset(0, 3),
+                              ),
+                            ],
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                'XP Level',
+                                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                              ),
+                              SizedBox(height: 10),
+                              Container(
+                                width: double.infinity,
+                                height: 40,
+                                decoration: BoxDecoration(
+                                  border: Border.all(color: Colors.black),
+                                  borderRadius: BorderRadius.circular(20),
                                 ),
-                              ],
-                            ),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Text(
-                                  'XP Level',
-                                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                                ),
-                                SizedBox(height: 10),
-                                Container(
-                                  width: double.infinity,
-                                  height: 40,
-                                  decoration: BoxDecoration(
-                                    border: Border.all(color: Colors.black),
-                                    borderRadius: BorderRadius.circular(20),
-                                  ),
-                                  child: Stack(
-                                    children: [
-                                      FractionallySizedBox(
-                                        widthFactor: xpLevel / 100,
-                                        child: Container(
-                                          decoration: BoxDecoration(
-                                            color: Colors.blue,
-                                            borderRadius: BorderRadius.circular(20),
-                                          ),
-                                          alignment: Alignment.center,
-                                          child: Text(
-                                            '$xpLevel XP - ${_getXPLevelDescription(xpLevel)}',
-                                            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                                          ),
+                                child: Stack(
+                                  children: [
+                                    FractionallySizedBox(
+                                      widthFactor: xpLevel / 100,
+                                      child: Container(
+                                        decoration: BoxDecoration(
+                                          color: Colors.blue,
+                                          borderRadius: BorderRadius.circular(20),
+                                        ),
+                                        alignment: Alignment.center,
+                                        child: Text(
+                                          '$xpLevel XP - ${_getXPLevelDescription(xpLevel)}',
+                                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                                         ),
                                       ),
-                                    ],
-                                  ),
+                                    ),
+                                  ],
                                 ),
-                                SizedBox(height: 10),
-                              ],
-                            ),
+                              ),
+                              SizedBox(height: 10),
+                            ],
                           ),
                         ),
                         SizedBox(height: 30),
@@ -660,7 +659,7 @@ class _LandingPageState extends State<LandingPage> {
                                             const SizedBox(height: 10);
                                             if (index < numRecentQuizzes) {
                                               rowChildren.add(
-                                                Expanded(
+                                                Flexible(
                                                   child: Padding(
                                                     padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 10),
                                                     child: Container(
