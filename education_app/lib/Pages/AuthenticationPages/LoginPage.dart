@@ -5,6 +5,7 @@ import 'package:education_app/Pages/AuthenticationPages/RegistrationPage.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'dart:async';
 import '../SplashPage.dart';
+import 'package:education_app/Pages/AuthenticationPages/DisplayNamePage.dart';
 
 // basic colour scheme - will come up with one on friday with max
 Color primaryColour = Colors.white;
@@ -72,229 +73,229 @@ class _LoginPageState extends State<LoginPage> {
 
 
   Widget _buildLoginForm() {
-  return Center(
-    child: Form(
-      key: _formKey,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Padding(
-            padding: EdgeInsets.only(left: 10),
-            child: Container(
-              width: 400,
-              height: 400,
-              // decoration: BoxDecoration(
-              //   border: Border.all(color: Colors.black),
-              //   borderRadius: BorderRadius.circular(15),
-              // ),
-              child: Center(
-                child: Image.asset(
-                  'images/quiz_app_logo_2.png', // Change to your image asset path
-                  width: 400, // Adjust as needed
-                  height: 400, // Adjust as needed
+    return Center(
+      child: Form(
+        key: _formKey,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Padding(
+              padding: EdgeInsets.only(left: 10),
+              child: Container(
+                width: 400,
+                height: 400,
+                // decoration: BoxDecoration(
+                //   border: Border.all(color: Colors.black),
+                //   borderRadius: BorderRadius.circular(15),
+                // ),
+                child: Center(
+                  child: Image.asset(
+                    'images/quiz_app_logo_2.png', // Change to your image asset path
+                    width: 400, // Adjust as needed
+                    height: 400, // Adjust as needed
+                  ),
                 ),
               ),
             ),
-          ),
-          Padding(
-            padding: EdgeInsets.only(left: 50, top: 50),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                SizedBox(
-                  child: Text(
-                    'Login',
-                    style: GoogleFonts.nunito(
-                      fontSize: 30.0,
-                      fontWeight: FontWeight.bold,
-                      color: secondaryColour,
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 10.0),
-                SizedBox(
-                  width: 450, // Set the desired width
-                  child: TextFormField(
-                    controller: _emailController,
-                    decoration: InputDecoration(
-                      labelText: 'Email',
-                      contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
-                      focusedBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: secondaryColour),
-                        borderRadius: BorderRadius.circular(30.0),
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: secondaryColour),
-                        borderRadius: BorderRadius.circular(30.0),
-                      ),
-                      labelStyle: TextStyle(color: secondaryColour),
-                    ),
-                    style: GoogleFonts.nunito(
-                      fontSize: 20.0,
-                    ),
-                    cursorColor: secondaryColour,
-                    onEditingComplete: () {
-                      _validateEmail(_emailController.text);
-                    },
-                  ),
-                ),
-                const SizedBox(height: 20.0),
-                // password textfield
-                SizedBox(
-                  width: 450,
-                  child: TextFormField(
-                    controller: _passwordController,
-                    obscureText: !_showPassword, // Correct placement of obscureText
-                    decoration: InputDecoration(
-                      labelText: 'Password',
-                      contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
-                      focusedBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: secondaryColour),
-                        borderRadius: BorderRadius.circular(30.0),
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: secondaryColour),
-                        borderRadius: BorderRadius.circular(30.0),
-                      ),
-                      suffixIcon: Padding(
-                        padding: EdgeInsets.only(right: 8.0), // Adjust the padding as needed
-                        child: IconButton(
-                          icon: Icon(
-                            _showPassword ? Icons.visibility_off : Icons.visibility,
+            Padding(
+                padding: EdgeInsets.only(left: 50, top: 50),
+                child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      SizedBox(
+                        child: Text(
+                          'Login',
+                          style: GoogleFonts.nunito(
+                            fontSize: 30.0,
+                            fontWeight: FontWeight.bold,
+                            color: secondaryColour,
                           ),
-                          color: secondaryColour,
-                          onPressed: () {
-                            setState(() {
-                              _showPassword = !_showPassword;
-                            });
+                        ),
+                      ),
+                      const SizedBox(height: 10.0),
+                      SizedBox(
+                        width: 450, // Set the desired width
+                        child: TextFormField(
+                          controller: _emailController,
+                          decoration: InputDecoration(
+                            labelText: 'Email',
+                            contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+                            focusedBorder: OutlineInputBorder(
+                              borderSide: BorderSide(color: secondaryColour),
+                              borderRadius: BorderRadius.circular(30.0),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderSide: BorderSide(color: secondaryColour),
+                              borderRadius: BorderRadius.circular(30.0),
+                            ),
+                            labelStyle: TextStyle(color: secondaryColour),
+                          ),
+                          style: GoogleFonts.nunito(
+                            fontSize: 20.0,
+                          ),
+                          cursorColor: secondaryColour,
+                          onEditingComplete: () {
+                            _validateEmail(_emailController.text);
                           },
                         ),
                       ),
-                      labelStyle: TextStyle(color: secondaryColour),
-                    ),
-                    style: GoogleFonts.nunito(
-                      fontSize: 20.0,
-                    ),
-                    cursorColor: secondaryColour,
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        setState(() {
-                          _error = true;
-                          _errorMessages.insert(0, "Please enter your password");
-                        });
-                      }
-                      return null;
-                    },
-                    onEditingComplete: () {
-                      _login();
-                    },
-                  ),
-                ),
-                const SizedBox(height: 20.0),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    GestureDetector(
-                      onTap: () async {
-                        final email = _emailController.text.trim();
-                        if (email.isNotEmpty) {
-                          try {
-                            var user = await FirebaseAuth.instance.fetchSignInMethodsForEmail(email);
-                            if (user.isNotEmpty) {
-                              await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
+                      const SizedBox(height: 20.0),
+                      // password textfield
+                      SizedBox(
+                        width: 450,
+                        child: TextFormField(
+                          controller: _passwordController,
+                          obscureText: !_showPassword, // Correct placement of obscureText
+                          decoration: InputDecoration(
+                            labelText: 'Password',
+                            contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+                            focusedBorder: OutlineInputBorder(
+                              borderSide: BorderSide(color: secondaryColour),
+                              borderRadius: BorderRadius.circular(30.0),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderSide: BorderSide(color: secondaryColour),
+                              borderRadius: BorderRadius.circular(30.0),
+                            ),
+                            suffixIcon: Padding(
+                              padding: EdgeInsets.only(right: 8.0), // Adjust the padding as needed
+                              child: IconButton(
+                                icon: Icon(
+                                  _showPassword ? Icons.visibility_off : Icons.visibility,
+                                ),
+                                color: secondaryColour,
+                                onPressed: () {
+                                  setState(() {
+                                    _showPassword = !_showPassword;
+                                  });
+                                },
+                              ),
+                            ),
+                            labelStyle: TextStyle(color: secondaryColour),
+                          ),
+                          style: GoogleFonts.nunito(
+                            fontSize: 20.0,
+                          ),
+                          cursorColor: secondaryColour,
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
                               setState(() {
                                 _error = true;
-                                _errorMessages.insert(0, "Password reset email sent to $email real");
-                              });
-                            } else {
-                              setState(() {
-                                _error = true;
-                                _errorMessages.insert(0, "Password reset email sent to $email not real");
+                                _errorMessages.insert(0, "Please enter your password");
                               });
                             }
-                          } catch (e) {
-                            print('Error: $e');
-                          }
-                        } else {
-                          setState(() {
-                            _error = true;
-                            _errorMessages.insert(0, "Please enter an email");
-                          });
-                        }
-                      },
-                      child: Text(
-                        'Forgot Password?',
-                        style: TextStyle(
-                          color: Color(0xFF19c37d),
+                            return null;
+                          },
+                          onEditingComplete: () {
+                            _login();
+                          },
                         ),
                       ),
-                    ),
-                  ],
-                ),
-                SizedBox(height: 10,),
-                // login button
-                ElevatedButton(
-                  onPressed: () {
-                    _login();
-                  },
-                  style: ElevatedButton.styleFrom(
-                    padding: EdgeInsets.symmetric(horizontal: 30, vertical: 15),
-                  ),
-                  child: Text('Log in', style: GoogleFonts.nunito(color: Colors.black, fontSize: 20)),
-                ),
-                ElevatedButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => LandingPage(),
+                      const SizedBox(height: 20.0),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          GestureDetector(
+                            onTap: () async {
+                              final email = _emailController.text.trim();
+                              if (email.isNotEmpty) {
+                                try {
+                                  var user = await FirebaseAuth.instance.fetchSignInMethodsForEmail(email);
+                                  if (user.isNotEmpty) {
+                                    await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
+                                    setState(() {
+                                      _error = true;
+                                      _errorMessages.insert(0, "Password reset email sent to $email real");
+                                    });
+                                  } else {
+                                    setState(() {
+                                      _error = true;
+                                      _errorMessages.insert(0, "Password reset email sent to $email not real");
+                                    });
+                                  }
+                                } catch (e) {
+                                  print('Error: $e');
+                                }
+                              } else {
+                                setState(() {
+                                  _error = true;
+                                  _errorMessages.insert(0, "Please enter an email");
+                                });
+                              }
+                            },
+                            child: Text(
+                              'Forgot Password?',
+                              style: TextStyle(
+                                color: Color(0xFF19c37d),
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
-                    );
-                  },
-                  child: Text('Bypass', style: TextStyle(color: Colors.white)),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Color(0xFF19c37d),
-                  ),
-                ),
-                const SizedBox(height: 20.0),
-                // sign up text and button
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      'Don\'t have an account? ',
-                      style: GoogleFonts.nunito(color: Colors.black, fontSize: 17.0),
-                    ),
-                    // when user hovers over the sign up text, cursor changes
-                    MouseRegion(
-                      cursor: SystemMouseCursors.click,
-                      child: GestureDetector(
-                        onTap: () {
+                      SizedBox(height: 10,),
+                      // login button
+                      ElevatedButton(
+                        onPressed: () {
+                          _login();
+                        },
+                        style: ElevatedButton.styleFrom(
+                          padding: EdgeInsets.symmetric(horizontal: 30, vertical: 15),
+                        ),
+                        child: Text('Log in', style: GoogleFonts.nunito(color: Colors.black, fontSize: 20)),
+                      ),
+                      ElevatedButton(
+                        onPressed: () {
                           Navigator.push(
                             context,
-                            _createRoute(RegistrationPage()),
+                            MaterialPageRoute(
+                              builder: (context) => LandingPage(),
+                            ),
                           );
                         },
-                        child: Text(
-                          'Sign up',
-                          style: GoogleFonts.nunito(
-                            color: Color(0xFF19c37d),
-                            fontSize: 17.0,
-                          ),
+                        child: Text('Bypass', style: TextStyle(color: Colors.white)),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Color(0xFF19c37d),
                         ),
                       ),
-                    ),
-                  ],
-                ),
-              ]
-            )
-          ),
-        ],
+                      const SizedBox(height: 20.0),
+                      // sign up text and button
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            'Don\'t have an account? ',
+                            style: GoogleFonts.nunito(color: Colors.black, fontSize: 17.0),
+                          ),
+                          // when user hovers over the sign up text, cursor changes
+                          MouseRegion(
+                            cursor: SystemMouseCursors.click,
+                            child: GestureDetector(
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  _createRoute(RegistrationPage()),
+                                );
+                              },
+                              child: Text(
+                                'Sign up',
+                                style: GoogleFonts.nunito(
+                                  color: Color(0xFF19c37d),
+                                  fontSize: 17.0,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ]
+                )
+            ),
+          ],
+        ),
       ),
-    ),
-  );
-}
+    );
+  }
 
 
   Widget _buildErrorMessage(List<String> errorMessages) {
