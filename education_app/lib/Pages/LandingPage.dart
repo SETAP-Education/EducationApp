@@ -3,9 +3,7 @@ import 'package:education_app/Pages/QuizPages/QuizPage.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-
 import 'package:education_app/Pages/QuizPages/HistoryPages/AllQuizzes.dart';
-import 'package:education_app/Pages/QuizBuilder.dart';
 import 'package:education_app/Pages/QuizPages/HistoryPages/QuizSummaryPage.dart';
 import 'package:education_app/Quizzes/quiz.dart';
 import 'package:education_app/Quizzes/quizManager.dart';
