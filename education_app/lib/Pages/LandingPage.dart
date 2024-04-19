@@ -89,7 +89,7 @@ class _LandingPageState extends State<LandingPage> {
 
             // Set the remaining interests as topics
             setState(() {
-              otherTopics = remainingInterests.map((interest) => 'Topic $interest').toList();
+              otherTopics = remainingInterests.map((interest) => '$interest').toList();
             });
           }
         }
@@ -563,31 +563,35 @@ class _LandingPageState extends State<LandingPage> {
                               ),
                               SizedBox(height: 10),
                               Container(
-                                width: double.infinity,
-                                height: 40,
-                                decoration: BoxDecoration(
-                                  border: Border.all(color: Colors.black),
-                                  borderRadius: BorderRadius.circular(20),
-                                ),
-                                child: Stack(
-                                  children: [
-                                    FractionallySizedBox(
-                                      widthFactor: xpLevel / 100,
-                                      child: Container(
-                                        decoration: BoxDecoration(
-                                          color: Colors.blue,
-                                          borderRadius: BorderRadius.circular(20),
-                                        ),
-                                        alignment: Alignment.center,
-                                        child: Text(
-                                          '$xpLevel XP - ${_getXPLevelDescription(xpLevel)}',
-                                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
+    width: double.infinity,
+    height: 40,
+    decoration: BoxDecoration(
+        border: Border.all(color: Colors.black),
+        borderRadius: BorderRadius.circular(20),
+    ),
+    child: Stack(
+        children: [
+            // Inner Container with FractionallySizedBox
+            FractionallySizedBox(
+                widthFactor: xpLevel / 100,
+                child: Container(
+                    decoration: BoxDecoration(
+                        color: Colors.blue,
+                        borderRadius: BorderRadius.circular(20),
+                    ),
+                ),
+            ),
+            // Text widget aligned in the center
+            Center(
+                child: Text(
+                    '$xpLevel XP - ${_getXPLevelDescription(xpLevel)}',
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                ),
+            ),
+        ],
+    ),
+),
+
                               SizedBox(height: 10),
                             ],
                           ),
@@ -693,11 +697,6 @@ class _LandingPageState extends State<LandingPage> {
                                                                 color: Colors.blue,
                                                               ),
                                                               const SizedBox(height: 10),
-                                                              Text(
-                                                                'Recent Quiz ${index + 1}: ${quizNames[index]}',
-                                                                style: const TextStyle(fontSize: 16),
-                                                                textAlign: TextAlign.center,
-                                                              ),
                                                             ],
                                                           ),
                                                         ),
