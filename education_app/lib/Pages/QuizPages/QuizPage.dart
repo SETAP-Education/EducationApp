@@ -6,6 +6,12 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:education_app/Pages/QuizPages/HistoryPages/QuizSummaryPage.dart';
 
 class QuizPage extends StatefulWidget {
+
+  QuizPage({ required this.quizId });
+
+  String quizId = ""; 
+
+
   @override
   _QuizPageState createState() => _QuizPageState();
 }
@@ -20,14 +26,13 @@ class _QuizPageState extends State<QuizPage> {
   Map<String, dynamic> userSummary = {};
   bool quizSubmitted = false;
   // Replace the quizId being passed in, it is static for testing purposes.
-  String quizId = 'yKExulogYwk65MqHrFMN';
   Map<String, dynamic> quizAttemptData = {};
 
   @override
   void initState() {
     super.initState();
     quizManager = QuizManager();
-    loadQuiz(quizId);
+    loadQuiz(widget.quizId);
     fillInTheBlankController = TextEditingController();
   }
 
@@ -330,7 +335,7 @@ class _QuizPageState extends State<QuizPage> {
         if (question.type == QuestionType.multipleChoice)
           buildMultipleChoiceQuestion(question.answer as QuestionMultipleChoice),
         if (question.type == QuestionType.fillInTheBlank)
-          buildFillInTheBlankQuestion(question.answer as QuestionFillInTheBlank),
+          buildFillInTheBlankQuestion(question.answer as QuestionFillInTheBlank, question.key),
         // if (question.type == QuestionType.dragAndDrop) 
           // buildDragAndDropQuestion(question.answer as DragAndDropQuestion, context),
           // buildDragAndDropQuestion(question.answer as DragAndDropQuestion, context),
@@ -382,10 +387,12 @@ class _QuizPageState extends State<QuizPage> {
     );
   }
 
-  Widget buildFillInTheBlankQuestion(QuestionFillInTheBlank question) {
+  Widget buildFillInTheBlankQuestion(QuestionFillInTheBlank question, GlobalKey key) {
     return Container(
       width: 500,
       child: TextField(
+        controller: question.controller,
+        key: key,
         onChanged: (text) {
           setState(() {
             question.userResponse = text;
@@ -590,16 +597,16 @@ class _QuizPageState extends State<QuizPage> {
       }
 
       String userId = user.uid;
-      Quiz? loadedQuiz2 = await quizManager.getQuizWithId(quizId);
+      Quiz? loadedQuiz2 = await quizManager.getQuizWithId(widget.quizId);
 
       if (loadedQuiz2 == null) {
-        print("Quiz not found with ID: $quizId");
+        print("Quiz not found with ID: ${widget.quizId}");
         return;
       }
 
       CollectionReference usersCollection = FirebaseFirestore.instance.collection('users');
       DocumentReference userDocument = usersCollection.doc(userId);
-      CollectionReference quizHistoryCollection = userDocument.collection('quizHistory').doc(quizId).collection('attempts');
+      CollectionReference quizHistoryCollection = userDocument.collection('quizHistory').doc(widget.quizId).collection('attempts');
 
       String quizAttemptId = DateTime.now().toUtc().toIso8601String();
       DocumentReference quizAttemptDocument = quizHistoryCollection.doc(quizAttemptId);
@@ -620,7 +627,7 @@ class _QuizPageState extends State<QuizPage> {
       await quizAttemptDocument.set(quizAttemptData);
 
       // Now, update the timestamp field in the quizId2 document
-      await FirebaseFirestore.instance.collection('users').doc(userId).collection('quizHistory').doc(quizId).set({
+      await FirebaseFirestore.instance.collection('users').doc(userId).collection('quizHistory').doc(widget.quizId).set({
         'timestamp': FieldValue.serverTimestamp(),
       }, SetOptions(merge: true));
 
