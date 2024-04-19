@@ -230,7 +230,7 @@ class QuizSummaryPage extends StatelessWidget {
             borderRadius: BorderRadius.circular(8),
             border: Border.all(
               color: borderColour,
-              width: 1,
+              width: 2,
             ),
           ),
           child: Text(
@@ -267,7 +267,7 @@ class QuizSummaryPage extends StatelessWidget {
         color: backgroundColour,
         border: Border.all(
           color: borderColour,
-          width: 1,
+          width: 2,
         ),
         borderRadius: BorderRadius.circular(8),
       ),
