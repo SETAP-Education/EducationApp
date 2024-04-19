@@ -1,7 +1,7 @@
-import 'package:education_app/QuizPage.dart';
+import 'package:education_app/Pages/QuizPages/QuizPage.dart';
 import 'package:flutter/material.dart';
-import 'package:education_app/Pages/AuthenticationPages/LoginPageLogic.dart';
-import 'package:education_app/Pages/AuthenticationPages/RegistrationPageUI.dart';
+import 'package:education_app/Pages/AuthenticationPages/LoginPage.dart';
+import 'package:education_app/Pages/AuthenticationPages/RegistrationPage.dart';
 
 class LoginPageUI extends StatelessWidget {
   final TextEditingController _emailController = TextEditingController();
@@ -31,7 +31,7 @@ class LoginPageUI extends StatelessWidget {
             SizedBox(height: 24.0),
             ElevatedButton(
               onPressed: () {
-                LoginPageLogic().login(
+                LoginPage().login(
                   context,
                   _emailController.text,
                   _passwordController.text,
@@ -52,8 +52,8 @@ class LoginPageUI extends StatelessWidget {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => RegistrationPageUI(
-                          emailFromLogin: _emailController.text,
+                        builder: (context) => RegistrationPage(
+                          email: _emailController.text,
                         ),
                       ),
                     );
@@ -67,18 +67,6 @@ class LoginPageUI extends StatelessWidget {
                 ),
               ],
             ),
-            Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  ElevatedButton(
-                    onPressed: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => const QuizPage()));},
-                    child: const Text('PLACEHOLDER TO QUIZ PAGE'),
-                  )
-                ]
-            )
           ],
         ),
       ),

@@ -526,7 +526,7 @@ class _LandingPageState extends State<LandingPage> {
                       children: [
                         Expanded(
                           child: Container(
-                            padding: EdgeInsets.all(16.0),
+                            padding: const EdgeInsets.all(16.0),
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(12),
                               color: const Color(0xFFf3edf6).withOpacity(1),
@@ -543,11 +543,11 @@ class _LandingPageState extends State<LandingPage> {
                               crossAxisAlignment: CrossAxisAlignment.center,
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                Text(
+                                const Text(
                                   'XP Level',
                                   style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                                 ),
-                                SizedBox(height: 10),
+                                const SizedBox(height: 10),
                                 Container(
                                   width: double.infinity,
                                   height: 40,
@@ -567,24 +567,24 @@ class _LandingPageState extends State<LandingPage> {
                                           alignment: Alignment.center,
                                           child: Text(
                                             '$xpLevel XP - ${_getXPLevelDescription(xpLevel)}',
-                                            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                                            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                                           ),
                                         ),
                                       ),
                                     ],
                                   ),
                                 ),
-                                SizedBox(height: 10),
+                                const SizedBox(height: 10),
                               ],
                             ),
                           ),
                         ),
-                        SizedBox(height: 30),
+                        const SizedBox(height: 30),
                         Expanded(
                           flex: 7,
                           child: Container(
                             width: MediaQuery.of(context).size.width * 1 / 3,
-                            padding: EdgeInsets.all(16.0),
+                            padding: const EdgeInsets.all(16.0),
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(12),
                               color: const Color(0xFFf3edf6).withOpacity(1),
@@ -601,7 +601,7 @@ class _LandingPageState extends State<LandingPage> {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
-                                  const SizedBox(height: 20),
+                                  const SizedBox(height: 5),
                                   Row(
                                     children: [
                                       Spacer(),
