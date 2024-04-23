@@ -1,3 +1,4 @@
+import 'package:education_app/Widgets/Button.dart';
 import 'package:flutter/material.dart';
 import '../Pages/AuthenticationPages/LoginPage.dart';
 import 'package:education_app/Pages/AuthenticationPages/RegistrationPage.dart';
@@ -77,25 +78,20 @@ class _OpeningPageState extends State<OpeningPage> {
                   Center(
                     child: SizedBox(
                       width: 400, // Constant width
-                      child: ElevatedButton(
-                        onPressed: () {
+                      child: Button(
+                        onClick: () {
                           Navigator.push(
                             context,
                             _createRoute(RegistrationPage()),
                           );
                         },
-                        style: ElevatedButton.styleFrom(
-                          padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          backgroundColor: Colors.white, // Set background color to white
-                        ),
+                        important: true,
                         child: Text(
                           'New here?',
                           style: GoogleFonts.nunito(
-                            fontSize: 25.0,
-                            color: Colors.black, // Change font color to black
+                            fontSize: 20.0,
+                            color: Colors.white, 
+                            fontWeight: FontWeight.bold
                           ),
                         ),
                       ),
@@ -105,25 +101,20 @@ class _OpeningPageState extends State<OpeningPage> {
                   Center(
                     child: SizedBox(
                       width: 400, // Constant width
-                      child: ElevatedButton(
-                        onPressed: () {
+                      child: Button(
+                        onClick: () {
                           Navigator.push(
                             context,
                             _createRoute(LoginPage()),
                           );
                         },
-                        style: ElevatedButton.styleFrom(
-                          padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          backgroundColor: Colors.white, // Set background color to white
-                        ),
+                        important: true,
                         child: Text(
                           'Already have an account',
                           style: GoogleFonts.nunito(
-                            fontSize: 25.0,
-                            color: Colors.black, // Change font color to black
+                            fontSize: 20.0,
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold
                           ),
                         ),
                       ),
