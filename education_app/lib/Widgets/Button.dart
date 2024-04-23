@@ -15,7 +15,12 @@ class Button extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: () => onClick,
+      onTap: () => { 
+
+        if (onClick != null) {
+          onClick!() 
+        }
+      },
       borderRadius: BorderRadius.circular(100),
       child: Ink(
         decoration: BoxDecoration(
