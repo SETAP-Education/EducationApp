@@ -1,5 +1,6 @@
 import 'package:education_app/Pages/AuthenticationPages/AuthPageForm.dart';
 import 'package:education_app/Pages/AuthenticationPages/ErrorDisplayer.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:education_app/Pages/LandingPage.dart';
@@ -20,6 +21,7 @@ class RegistrationPage extends StatefulWidget {
 class _RegistrationPageState extends State<RegistrationPage> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+   final TextEditingController _confirmPasswordController = TextEditingController();
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final _formKey = GlobalKey<FormState>();
   final int minCharacters = 8; 
@@ -76,45 +78,69 @@ class _RegistrationPageState extends State<RegistrationPage> {
             ),
             SizedBox(height: 20.0),
             // Password text field
-            Container(
+            SizedBox(
               width: 450,
-              child: Row(
-                children: [
-                  Expanded(
-                    child: TextField(
-                      controller: _passwordController,
-                      obscureText: true,
-                      decoration: InputDecoration(labelText: 'Password',
-                        contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
-                        focusedBorder: OutlineInputBorder(
-                          borderSide: BorderSide(color: secondaryColour),
-                          borderRadius: BorderRadius.circular(30.0),
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderSide: BorderSide(color: secondaryColour),
-                          borderRadius: BorderRadius.circular(30.0),
-                        ),
-                        labelStyle: TextStyle(color: secondaryColour),
-                      ),
-                      style: GoogleFonts.nunito(
-                        fontSize: 20.0,
-                      ),
-
-                      onChanged: (value) {
-                        // This is hacky...
-                        setState(() {
-                          
-                        });
-                      },
-                    ),
+              child: TextField(
+                controller: _passwordController,
+                obscureText: true,
+                decoration: InputDecoration(labelText: 'Password',
+                  contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: secondaryColour),
+                    borderRadius: BorderRadius.circular(30.0),
                   ),
-                ],
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: secondaryColour),
+                    borderRadius: BorderRadius.circular(30.0),
+                  ),
+                  labelStyle: TextStyle(color: secondaryColour),
+                ),
+                style: GoogleFonts.nunito(
+                  fontSize: 20.0,
+                ),
+
+                onChanged: (value) {
+                  // This is hacky...
+                  // Set the state so it recalcs the password requirements
+                  setState(() {
+                    
+                  });
+                },
               ),
             ),
 
             SizedBox(height: 10.0),
 
             _passwordRequirements(_passwordController.text),
+
+            SizedBox(height: 10.0),
+
+            SizedBox(
+              width: 450,
+              child: TextField(
+                controller: _confirmPasswordController,
+                obscureText: true,
+                decoration: InputDecoration(labelText: 'Confirm Password',
+                  contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: secondaryColour),
+                    borderRadius: BorderRadius.circular(30.0),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: secondaryColour),
+                    borderRadius: BorderRadius.circular(30.0),
+                  ),
+                  labelStyle: TextStyle(color: secondaryColour),
+                ),
+                style: GoogleFonts.nunito(
+                  fontSize: 20.0,
+                ),
+
+                onChanged: (value) {
+                  
+                },
+              ),
+            ),
 
             SizedBox(height: 20.0),
             // Register button
@@ -175,6 +201,11 @@ class _RegistrationPageState extends State<RegistrationPage> {
         return; 
       }
 
+      if (_passwordController.text != _confirmPasswordController.text) {
+        globalErrorManager.pushError("Password mismatch between password and confirm password");
+        return; 
+      }
+
       UserCredential userCredential = await _auth.createUserWithEmailAndPassword(
         email: _emailController.text,
         password: _passwordController.text,
@@ -191,12 +222,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
       }
     } catch (e) {
       print("Registration failed: $e");
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text("Registration failed. Please try again."),
-          duration: Duration(seconds: 3),
-        ),
-      );
+      globalErrorManager.pushError("Registration Failed please try again");
     }
   }
 

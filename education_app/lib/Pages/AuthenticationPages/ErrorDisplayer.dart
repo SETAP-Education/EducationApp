@@ -96,21 +96,24 @@ class _ErrorDisplayerState extends State<ErrorDisplayer> {
                         ),
                       ),
                     ),
-                    GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          globalErrorManager.errors.removeAt(index);
-                          
-                        });
-                      },
-                      child: Padding(
-                        padding: const EdgeInsets.all(4.0),
-                        child: Icon(
-                          Icons.close,
-                          color: Colors.white,
-                          size: 18.0,
+                    MouseRegion(
+                      cursor: SystemMouseCursors.click,
+                      child: GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            globalErrorManager.errors.removeAt(index);
+                            
+                          });
+                        },
+                        child: Padding(
+                          padding: const EdgeInsets.all(4.0),
+                          child: Icon(
+                            Icons.close,
+                            color: Colors.white,
+                            size: 18.0,
+                          ),
                         ),
-                      ),
+                      )
                     ),
                   ],
                 ),
