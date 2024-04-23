@@ -26,6 +26,9 @@ class _RegistrationPageState extends State<RegistrationPage> {
   final _formKey = GlobalKey<FormState>();
   final int minCharacters = 8; 
 
+  bool _showPassword = false; 
+  bool _showConfirmPassword = false; 
+
   @override
   Widget build(BuildContext context) {
     return PopScope(
@@ -82,7 +85,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
               width: 450,
               child: TextField(
                 controller: _passwordController,
-                obscureText: true,
+                obscureText: !_showPassword,
                 decoration: InputDecoration(labelText: 'Password',
                   contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
                   focusedBorder: OutlineInputBorder(
@@ -94,6 +97,20 @@ class _RegistrationPageState extends State<RegistrationPage> {
                     borderRadius: BorderRadius.circular(30.0),
                   ),
                   labelStyle: TextStyle(color: secondaryColour),
+                  suffixIcon: Padding(
+                    padding: EdgeInsets.only(right: 8.0), // Adjust the padding as needed
+                    child: IconButton(
+                      icon: Icon(
+                        _showPassword ? Icons.visibility_off : Icons.visibility,
+                      ),
+                      color: secondaryColour,
+                      onPressed: () {
+                        setState(() {
+                          _showPassword = !_showPassword;
+                        });
+                      },
+                    ),
+                  )
                 ),
                 style: GoogleFonts.nunito(
                   fontSize: 20.0,
@@ -119,7 +136,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
               width: 450,
               child: TextField(
                 controller: _confirmPasswordController,
-                obscureText: true,
+                obscureText: !_showConfirmPassword,
                 decoration: InputDecoration(labelText: 'Confirm Password',
                   contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
                   focusedBorder: OutlineInputBorder(
@@ -131,6 +148,20 @@ class _RegistrationPageState extends State<RegistrationPage> {
                     borderRadius: BorderRadius.circular(30.0),
                   ),
                   labelStyle: TextStyle(color: secondaryColour),
+                  suffixIcon: Padding(
+                    padding: EdgeInsets.only(right: 8.0), // Adjust the padding as needed
+                    child: IconButton(
+                      icon: Icon(
+                        _showConfirmPassword ? Icons.visibility_off : Icons.visibility,
+                      ),
+                      color: secondaryColour,
+                      onPressed: () {
+                        setState(() {
+                          _showConfirmPassword = !_showConfirmPassword;
+                        });
+                      },
+                    ),
+                  )
                 ),
                 style: GoogleFonts.nunito(
                   fontSize: 20.0,
