@@ -74,17 +74,17 @@ class _RegistrationPageState extends State<RegistrationPage> {
           child: TextField(
             controller: _emailController,
             decoration: InputDecoration(labelText: 'Email',
-                  contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
-                  focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: secondaryColour),
-                    borderRadius: BorderRadius.circular(30.0),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: secondaryColour),
-                    borderRadius: BorderRadius.circular(30.0),
-                  ),
-                  labelStyle: TextStyle(color: secondaryColour),
-                ),
+              contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+              focusedBorder: OutlineInputBorder(
+                borderSide: BorderSide(color: secondaryColour),
+                borderRadius: BorderRadius.circular(30.0),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderSide: BorderSide(color: secondaryColour),
+                borderRadius: BorderRadius.circular(30.0),
+              ),
+              labelStyle: TextStyle(color: secondaryColour),
+            ),
             style: GoogleFonts.nunito(
               fontSize: 20.0,
             ),
@@ -164,6 +164,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
       ],
     );
   }
+
 
   Future<void> _register() async {
     try {
