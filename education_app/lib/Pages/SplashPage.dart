@@ -42,28 +42,28 @@ class _OpeningPageState extends State<OpeningPage> {
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       Text(
-                        'Quiz App',
+                        'Quiz App 🎓',
                         style: GoogleFonts.nunito(
                           fontSize: 60.0,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                      SizedBox(width: 10),
-                      Container(
-                        width: 50,
-                        height: 50,
-                        // decoration: BoxDecoration(
-                        //   border: Border.all(color: Colors.black),
-                        //   borderRadius: BorderRadius.circular(15),
-                        // ),
-                        child: Center(
-                          child: Image.asset(
-                            'images/quiz_logo.png', // Change to your image asset path
-                            width: 50, // Adjust as needed
-                            height: 50, // Adjust as needed
-                          ),
-                        ),
-                      ),
+                      // SizedBox(width: 10),
+                      // Container(
+                      //   width: 50,
+                      //   height: 50,
+                      //   // decoration: BoxDecoration(
+                      //   //   border: Border.all(color: Colors.black),
+                      //   //   borderRadius: BorderRadius.circular(15),
+                      //   // ),
+                      //   child: Center(
+                      //     child: Image.asset(
+                      //       'images/quiz_logo.png', // Change to your image asset path
+                      //       width: 50, // Adjust as needed
+                      //       height: 50, // Adjust as needed
+                      //     ),
+                      //   ),
+                      // ),
                     ]
                   ),
                   SizedBox(height: 10),
