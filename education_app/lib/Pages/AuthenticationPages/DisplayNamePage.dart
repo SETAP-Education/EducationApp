@@ -69,7 +69,8 @@ Widget build(BuildContext context) {
         ),
       ],
     ),
-    body: Center(
+    // On devices where it doesn't all fit. It scrolls 
+    body: SingleChildScrollView(child: Center(
       child: Container(
         width: 600,
         padding: EdgeInsets.all(8),
@@ -77,11 +78,21 @@ Widget build(BuildContext context) {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
+            
             Center(
-              child: Text(
-                'Hey there! What should we call you?',
-                style: TextStyle(fontSize: 20),
-              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Text("Hey There!! ", style: GoogleFonts.nunito(fontSize: 38, fontWeight: FontWeight.bold, fontStyle: FontStyle.italic)),
+                      Text("👋", style: TextStyle(fontSize:  38 ),)
+                  ]),
+                  Text("What should we call you?",  style: GoogleFonts.nunito(fontSize: 26, fontWeight: FontWeight.w600))
+                ],
+              )
             ),
             SizedBox(height: 20),
             Center(
@@ -90,6 +101,7 @@ Widget build(BuildContext context) {
                 child: TextFormField(
                   controller: _nameController,
                   decoration: InputDecoration(
+                    
                     labelText: 'Display Name',
                     hintText: _user?.displayName,
                     contentPadding: EdgeInsets.symmetric(
@@ -112,55 +124,71 @@ Widget build(BuildContext context) {
                 ),
               ),
             ),
-            SizedBox(height: 20),
+            SizedBox(height: 30),
             Text(
-              'Interests',
+              'What do you wanna learn?',
               style: GoogleFonts.nunito(
-                fontSize: 20.0,
+                fontSize: 26.0,
+                fontWeight: FontWeight.w600
               ),
             ),
-            SizedBox(height: 10),
+            Text(
+              'psst. Don\'t worry you can still access the others later!',
+              style: GoogleFonts.nunito(
+                fontSize: 16.0,
+                fontWeight: FontWeight.w600,
+                fontStyle: FontStyle.italic
+              ),
+            ),
+            SizedBox(height: 16),
             Container(
-              height: 300,
-              child: GridView.builder(
+              width: 400,
+              child: ListView.builder(
                 shrinkWrap: true,
                 itemCount: _interestsList.length,
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 4,
-                  crossAxisSpacing: 1,
-                  mainAxisSpacing: 1,
-                ),
+                
                 itemBuilder: (context, index) {
                   final interest = _interestsList[index];
-                  return InkWell(
-                    onTap: () {
-                      setState(() {
-                        if (_selectedInterests.contains(interest)) {
-                          _selectedInterests.remove(interest);
-                        } else {
-                          _selectedInterests.add(interest);
-                        }
-                      });
-                    },
-                    child: Container(
-                      padding: EdgeInsets.all(8),
-                      decoration: BoxDecoration(
-                        color: _selectedInterests.contains(interest)
-                            ? Color(0xFF19c37d)
-                            : Colors.grey[300],
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                      child: Center(
-                        child: Text(
-                          interest,
-                          style: TextStyle(
-                            color: _selectedInterests.contains(interest)
-                                ? Colors.white
-                                : Colors.black,
+                  return Padding(
+                    padding: const EdgeInsets.only(bottom: 16.0),
+                    child: InkWell(
+                      splashColor: !_selectedInterests.contains(interest)
+                              ? Color(0xFF19c37d)
+                              : Colors.grey[200],
+                      borderRadius: BorderRadius.circular(24),
+                      onTap: () {
+                        setState(() {
+                          if (_selectedInterests.contains(interest)) {
+                            _selectedInterests.remove(interest);
+                          } else {
+                            _selectedInterests.add(interest);
+                          }
+                        });
+                      },
+                      child: Ink(
+                        height: 94,
+                        padding: EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: _selectedInterests.contains(interest)
+                              ? Color(0xFF19c37d)
+                              : Colors.grey[200],
+                          borderRadius: BorderRadius.circular(24),
+                         
+                        ),
+                        child: Center(
+                          child: Text(
+                            interest,
+                            style: GoogleFonts.nunito(
+                              fontSize: 18, 
+                              fontWeight: FontWeight.bold,
+                              color: _selectedInterests.contains(interest)
+                                  ? Colors.white
+                                  : Colors.black,
+                            ),
                           ),
                         ),
                       ),
-                    ),
+                    )
                   );
                 },
               ),
@@ -168,6 +196,9 @@ Widget build(BuildContext context) {
             SizedBox(height: 20),
             Center(
               child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  padding: EdgeInsets.symmetric(horizontal: 30, vertical: 15),
+                ),
                 onPressed: () {
                   // Get the entered display name
                   String displayName = _nameController.text.trim();
@@ -199,7 +230,7 @@ Widget build(BuildContext context) {
         ),
       ),
     ),
-  );
+  ));
 }
 
 
