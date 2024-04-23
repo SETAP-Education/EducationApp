@@ -19,6 +19,8 @@ class _RegistrationPageState extends State<RegistrationPage> {
   final TextEditingController _passwordController = TextEditingController();
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
+  final int minCharacters = 8; 
+
   @override
   Widget build(BuildContext context) {
     return PopScope(
@@ -72,6 +74,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
         Container(
           width: 600,
           child: TextField(
+            
             controller: _emailController,
             decoration: InputDecoration(labelText: 'Email',
                   contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
@@ -85,6 +88,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
                   ),
                   labelStyle: TextStyle(color: secondaryColour),
                 ),
+                
             style: GoogleFonts.nunito(
               fontSize: 20.0,
             ),
@@ -115,11 +119,23 @@ class _RegistrationPageState extends State<RegistrationPage> {
                   style: GoogleFonts.nunito(
                     fontSize: 20.0,
                   ),
+
+                  onChanged: (value) {
+                    // This is hacky...
+                    setState(() {
+                      
+                    });
+                  },
                 ),
               ),
             ],
           ),
         ),
+
+        SizedBox(height: 10.0),
+
+        _passwordRequirements(_passwordController.text),
+
         SizedBox(height: 20.0),
         // Register button
         ElevatedButton(
@@ -165,6 +181,24 @@ class _RegistrationPageState extends State<RegistrationPage> {
 
   Future<void> _register() async {
     try {
+
+      bool satisfysMinCharacters = _passwordController.text.length >= minCharacters;
+      bool hasOneNumber = _passwordController.text.contains(RegExp(r'[0-9]'));
+
+      if (!satisfysMinCharacters || !hasOneNumber) {
+        // Password does not satisfy constraints 
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text("Password does not fit minimum requirements"),
+            duration: Duration(seconds: 3),
+          ),
+        );
+
+        // Break out
+        return; 
+      }
+
       UserCredential userCredential = await _auth.createUserWithEmailAndPassword(
         email: _emailController.text,
         password: _passwordController.text,
@@ -195,11 +229,43 @@ class _RegistrationPageState extends State<RegistrationPage> {
   }
 
   Route _createRoute(Widget page) {
-  return PageRouteBuilder(
-    pageBuilder: (context, animation, secondaryAnimation) => page,
-    transitionsBuilder: (context, animation, secondaryAnimation, child) {
-      return child;
-    },
-  );
-}
+    return PageRouteBuilder(
+      pageBuilder: (context, animation, secondaryAnimation) => page,
+      transitionsBuilder: (context, animation, secondaryAnimation, child) {
+        return child;
+      },
+    );
+  }
+
+  Widget _buildPasswordRequirement(String text, bool satisfied) {
+    return Row(
+      children: [
+        satisfied ? Icon(Icons.done, color: Colors.green,) : Icon(Icons.close, color: Colors.red),
+        const SizedBox(width: 8.0),
+        Text(text, style: GoogleFonts.nunito(color: satisfied ? Colors.grey : Colors.black, fontSize: 18, decoration: satisfied ?  TextDecoration.lineThrough : TextDecoration.none),)
+      ]
+    );
+  }
+
+  Widget _passwordRequirements(String currentPassword) {
+
+    bool satisfysMinCharacters = currentPassword.length >= minCharacters;
+    bool hasOneNumber = currentPassword.contains(RegExp(r'[0-9]'));
+    
+    return Container(
+      padding: const EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 8.0),
+      decoration: BoxDecoration(
+        border: Border.all(),
+        borderRadius: BorderRadius.circular(25)
+      ),
+
+      child: Column(
+        children: [
+          _buildPasswordRequirement("Minimum of 8 characters", satisfysMinCharacters),
+          _buildPasswordRequirement("Contains a number", hasOneNumber)
+        ],
+      )
+
+    );
+  }
 }
