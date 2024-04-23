@@ -145,9 +145,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
                 onTap: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(
-                      builder: (context) => LoginPage(),
-                    ),
+                  _createRoute(LoginPage()),
                   );
                 },
                 child: Text(
@@ -195,4 +193,13 @@ class _RegistrationPageState extends State<RegistrationPage> {
   Future<void> _createDatabase() async {
     // Database creation logic...
   }
+
+  Route _createRoute(Widget page) {
+  return PageRouteBuilder(
+    pageBuilder: (context, animation, secondaryAnimation) => page,
+    transitionsBuilder: (context, animation, secondaryAnimation, child) {
+      return child;
+    },
+  );
+}
 }
