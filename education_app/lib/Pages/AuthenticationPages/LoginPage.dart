@@ -1,6 +1,7 @@
 import 'package:education_app/Pages/AuthenticationPages/AuthPageForm.dart';
 import 'package:education_app/Pages/AuthenticationPages/ErrorDisplayer.dart';
 import 'package:education_app/Pages/LandingPage.dart';
+import 'package:education_app/Widgets/Button.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:education_app/Pages/AuthenticationPages/RegistrationPage.dart';
@@ -10,7 +11,6 @@ import '../SplashPage.dart';
 import 'package:education_app/Pages/AuthenticationPages/DisplayNamePage.dart';
 
 // basic colour scheme - will come up with one on friday with max
-Color primaryColour = Colors.white;
 Color secondaryColour = Colors.black;
 
 class LoginPage extends StatefulWidget {
@@ -28,6 +28,7 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
+
     return PopScope(
       canPop: false, //When false, blocks the current route from being popped
       child: Scaffold(
@@ -174,29 +175,28 @@ class _LoginPageState extends State<LoginPage> {
             
             SizedBox(height: 10,),
             // login button
-            ElevatedButton(
-              onPressed: () {
+            Button(
+              important: true,
+              onClick: () {
                 _login();
               },
-              style: ElevatedButton.styleFrom(
-                padding: EdgeInsets.symmetric(horizontal: 30, vertical: 15),
-              ),
-              child: Text('Log in', style: GoogleFonts.nunito(color: Colors.black, fontSize: 20)),
+             
+              child: Text('Log in', style: GoogleFonts.nunito(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
             ),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => DisplayUser(),
-                  ),
-                );
-              },
-              child: Text('Bypass', style: TextStyle(color: Colors.white)),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Color(0xFF19c37d),
-              ),
-            ),
+            // ElevatedButton(
+            //   onPressed: () {
+            //     Navigator.push(
+            //       context,
+            //       MaterialPageRoute(
+            //         builder: (context) => DisplayUser(),
+            //       ),
+            //     );
+            //   },
+            //   child: Text('Bypass', style: TextStyle(color: Colors.white)),
+            //   style: ElevatedButton.styleFrom(
+            //     backgroundColor: Color(0xFF19c37d),
+            //   ),
+            // ),
             const SizedBox(height: 20.0),
             // sign up text and button
             Row(

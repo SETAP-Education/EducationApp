@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:education_app/Widgets/Button.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:education_app/Pages/AuthenticationPages/LoginPage.dart';
@@ -154,7 +155,7 @@ Widget build(BuildContext context) {
                     child: InkWell(
                       splashColor: !_selectedInterests.contains(interest)
                               ? Color(0xFF19c37d)
-                              : Colors.grey[200],
+                              : Colors.white,
                       borderRadius: BorderRadius.circular(24),
                       onTap: () {
                         setState(() {
@@ -171,7 +172,7 @@ Widget build(BuildContext context) {
                         decoration: BoxDecoration(
                           color: _selectedInterests.contains(interest)
                               ? Color(0xFF19c37d)
-                              : Colors.grey[200],
+                              : Colors.white,
                           borderRadius: BorderRadius.circular(24),
                          
                         ),
@@ -195,35 +196,34 @@ Widget build(BuildContext context) {
             ),
             SizedBox(height: 20),
             Center(
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  padding: EdgeInsets.symmetric(horizontal: 30, vertical: 15),
-                ),
-                onPressed: () {
-                  // Get the entered display name
-                  String displayName = _nameController.text.trim();
+              child: Button(
+                width: 400, 
+                important: true,
+                onClick: () {
+                    // Get the entered display name
+                    String displayName = _nameController.text.trim();
 
-                  if (displayName.isNotEmpty) {
-                    // Set the display name in Firebase database
-                    _setDisplayName(_user!.uid, displayName);
+                    if (displayName.isNotEmpty) {
+                      // Set the display name in Firebase database
+                      _setDisplayName(_user!.uid, displayName);
 
-                    // Save selected interests to Firestore
-                    _saveInterests(_user!.uid, _selectedInterests);
+                      // Save selected interests to Firestore
+                      _saveInterests(_user!.uid, _selectedInterests);
 
-                    // Navigate to the landing page
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => LandingPage()),
-                    );
-                  } else {
-                    // Show an error message or handle empty display name
-                    print('Display name cannot be empty');
-                  }
-                },
-                child: Text('Continue',
-                    style: GoogleFonts.nunito(
-                        color: Colors.black, fontSize: 17)),
+                      // Navigate to the landing page
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => LandingPage()),
+                      );
+                    } else {
+                      // Show an error message or handle empty display name
+                      print('Display name cannot be empty');
+                    }
+                  },
+                  child: Text('Let\'s go!',
+                      style: GoogleFonts.nunito(
+                          color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
               ),
             )
           ],

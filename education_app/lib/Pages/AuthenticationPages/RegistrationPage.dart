@@ -1,5 +1,6 @@
 import 'package:education_app/Pages/AuthenticationPages/AuthPageForm.dart';
 import 'package:education_app/Pages/AuthenticationPages/ErrorDisplayer.dart';
+import 'package:education_app/Widgets/Button.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -175,14 +176,14 @@ class _RegistrationPageState extends State<RegistrationPage> {
 
             SizedBox(height: 20.0),
             // Register button
-            ElevatedButton(
-              onPressed: () {
+            Button(
+              important: true,
+              width: 450,
+              onClick: () {
                 _register();
               },
-              style: ElevatedButton.styleFrom(
-                padding: EdgeInsets.symmetric(horizontal: 30, vertical: 15),
-              ),
-              child: Text('Register', style: GoogleFonts.nunito(color: Colors.black, fontSize: 17)),
+           
+              child: Text('Register', style: GoogleFonts.nunito(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
             ),
             SizedBox(height: 20.0),
             Row(

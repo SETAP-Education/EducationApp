@@ -28,9 +28,7 @@ class _AuthPageFormState extends State<AuthPageForm> {
     return Stack(
           children: [
             Container(
-              decoration: BoxDecoration(
-                color: primaryColour,
-              ),
+             
               child: Center( // Center widget added here
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center, // Align the column content vertically centered
@@ -40,7 +38,7 @@ class _AuthPageFormState extends State<AuthPageForm> {
                         return Container(
                           padding: const EdgeInsets.all(20.0),
                           decoration: BoxDecoration(
-                            color: primaryColour,
+                           
                             borderRadius: BorderRadius.circular(15.0),
                           ),
                           child: _buildFormBase(),

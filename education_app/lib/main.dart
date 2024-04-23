@@ -25,6 +25,7 @@ class MyApp extends StatelessWidget {
       title: 'SETaP Education Project',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
+        scaffoldBackgroundColor: const Color.fromARGB(255, 241, 247, 252),
         useMaterial3: true,
       ),
       home: OpeningPage(),
