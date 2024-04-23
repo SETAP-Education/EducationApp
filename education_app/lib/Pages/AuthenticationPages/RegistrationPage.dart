@@ -41,9 +41,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
           mainAxisAlignment: MainAxisAlignment.center,
           // crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            SizedBox(
-              width: 450, // Set the desired width
-              child: Text(
+            Text(
                 'User Registration',
                 style: GoogleFonts.nunito(
                   fontSize: 30.0,
@@ -51,7 +49,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
                   color: secondaryColour,
                 ),
               ),
-            ),
+            
             const SizedBox(height: 10.0),
             SizedBox(
               width: 450,
