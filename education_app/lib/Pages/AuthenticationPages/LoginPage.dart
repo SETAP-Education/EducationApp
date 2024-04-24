@@ -6,6 +6,9 @@ import 'package:google_fonts/google_fonts.dart';
 import 'dart:async';
 import '../SplashPage.dart';
 import 'package:education_app/Pages/AuthenticationPages/DisplayNamePage.dart';
+import 'package:education_app/Theme/ThemeNotifier.dart';
+import 'package:provider/provider.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 // basic colour scheme - will come up with one on friday with max
 Color primaryColour = Colors.white;
@@ -410,6 +413,10 @@ class _LoginPageState extends State<LoginPage> {
           password: _passwordController.text,
         );
         if (userCredential.user != null) {
+          bool isDarkMode = await _fetchThemePreference(userCredential.user!.uid);
+          print("Dark Mode: $isDarkMode");
+          _setTheme(isDarkMode, context);
+
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(builder: (context) => LandingPage()),
@@ -423,6 +430,32 @@ class _LoginPageState extends State<LoginPage> {
       }
     }
   }
+
+  Future<bool> _fetchThemePreference(String userId) async {
+    try {
+      // Retrieve theme preference from Firestore
+      DocumentSnapshot documentSnapshot = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(userId)
+          .get();
+
+      if (documentSnapshot.exists) {
+        return documentSnapshot['darkMode'] ?? false;
+      }
+
+      // Default to light mode if not specified
+      return false;
+    } catch (e) {
+      print('Error fetching theme preference: $e');
+      // Default to light mode in case of error
+      return false;
+    }
+  }
+
+  void _setTheme(bool isDarkMode, BuildContext context) {
+    context.read<ThemeNotifier>().setTheme(isDarkMode);
+  }
+
 }
 
 Route _createRoute(Widget page) {
