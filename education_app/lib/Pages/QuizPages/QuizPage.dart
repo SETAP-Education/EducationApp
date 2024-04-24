@@ -628,14 +628,29 @@ class _QuizPageState extends State<QuizPage> {
 
       // Calculate the User XP to add
 
-      // Add up all the question difficulties they got right divide by total number of questions
-      // Then multiply by a multiplier
+
+      int xpGain = calculateXpGain(userSummary, 0.5);
 
       // Now, update the timestamp field in the quizId2 document
       await FirebaseFirestore.instance.collection('users').doc(userId).collection('quizHistory').doc(widget.quizId).set({
         'timestamp': FieldValue.serverTimestamp(),
-        'xpGain': calculateXpGain(userSummary, 0.5),
+        'xpGain': xpGain,
       }, SetOptions(merge: true));
+
+      // We want to add xp to user now
+      var userDoc = await FirebaseFirestore.instance.collection("users").doc(userId).get();
+      int currentXp = 0; 
+
+      if (userDoc.data() != null) {
+        if (userDoc.data()!.containsKey("xpLvl")) {
+          currentXp = userDoc.data()!["xpLvl"];
+        }
+      }
+
+      currentXp += xpGain;
+
+      FirebaseFirestore.instance.collection("users").doc(userId).update({ "xpLvl": currentXp }, );
+
 
       // Print success message
       print("User answers and summary stored successfully!");
