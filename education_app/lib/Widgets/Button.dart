@@ -24,7 +24,7 @@ class Button extends StatelessWidget {
       borderRadius: BorderRadius.circular(100),
       child: Ink(
         decoration: BoxDecoration(
-          color: important ? const Color(0xFF19c37d) : Colors.white,
+          color: important ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.primaryContainer,
           borderRadius: BorderRadius.circular(100),
         ),
         width: width,

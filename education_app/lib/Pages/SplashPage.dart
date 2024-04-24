@@ -39,11 +39,9 @@ class _OpeningPageState extends State<OpeningPage> {
   @override
   Widget build(BuildContext context) {
 
-    Color primaryColour = Theme.of(context).colorScheme.primary;
     Color secondaryColour = Theme.of(context).colorScheme.secondary;
 
     return Scaffold(
-      backgroundColor: primaryColour,
       appBar: AppTheme.buildAppBar(context, 'Quiz App', false, "Welcome to our quiz app", Text(
         'Hi there! This is the landing page for AMT. '
         )),
