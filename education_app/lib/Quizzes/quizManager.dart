@@ -252,7 +252,7 @@ class QuizManager {
         recentQuiz.id = id; 
         recentQuiz.name = q.name;
         recentQuiz.timestamp = data["timestamp"];
-        recentQuiz.xpEarned = 0;
+        recentQuiz.xpEarned = data.containsKey("xpGain") ? data["xpGain"] : 0;
         
         recent.add(recentQuiz);
 

@@ -626,9 +626,15 @@ class _QuizPageState extends State<QuizPage> {
       // Store data in Firebase
       await quizAttemptDocument.set(quizAttemptData);
 
+      // Calculate the User XP to add
+
+      // Add up all the question difficulties they got right divide by total number of questions
+      // Then multiply by a multiplier
+
       // Now, update the timestamp field in the quizId2 document
       await FirebaseFirestore.instance.collection('users').doc(userId).collection('quizHistory').doc(widget.quizId).set({
         'timestamp': FieldValue.serverTimestamp(),
+        'xpGain': calculateXpGain(userSummary, 0.5),
       }, SetOptions(merge: true));
 
       // Print success message
@@ -668,5 +674,22 @@ class _QuizPageState extends State<QuizPage> {
     });
 
     return userTotal;
+  }
+
+  int calculateXpGain(Map<String, dynamic> userSummary, double multiplier) {
+    int xp = 0; 
+
+    userSummary.forEach((questionId, details) {
+      if (details['correctIncorrect'] == 'Correct') {
+        var q = loadedQuestions.where((element)  { return element.questionId == questionId; });
+        xp +=  q.first.difficulty;
+      }
+    });
+
+    xp = xp ~/ loadedQuestions.length;
+
+    xp = (xp.toDouble() * multiplier).toInt();
+
+    return xp;
   }
 }

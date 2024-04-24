@@ -612,12 +612,12 @@ class _LandingPageState extends State<LandingPage> {
                                       } else {
                                         List<RecentQuiz> quizzes = snapshot.data! ?? [];
                                         int numRecentQuizzes = quizzes.length;
-                                        int numQuizzesPerRow = 2;
+                                        int numQuizzesPerRow = 1;
                                         int numRows = (numRecentQuizzes / numQuizzesPerRow).ceil();
                                         List<Widget> rows = List.generate(numRows, (rowIndex) {
                                           List<Widget> rowChildren = [];
                                           for (int i = 0; i < numQuizzesPerRow; i++) {
-                                            int index = rowIndex * numQuizzesPerRow + i;
+                                            int index = numRecentQuizzes - ( rowIndex * numQuizzesPerRow + i + 1);
                                             const SizedBox(height: 10);
                                             if (index < numRecentQuizzes) {
                                               rowChildren.add(
