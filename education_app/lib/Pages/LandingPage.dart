@@ -89,7 +89,7 @@ class _LandingPageState extends State<LandingPage> {
 
             // Set the remaining interests as topics
             setState(() {
-              otherTopics = remainingInterests.map((interest) => 'Topic $interest').toList();
+              otherTopics = remainingInterests.map((interest) => '$interest').toList();
             });
           }
         }

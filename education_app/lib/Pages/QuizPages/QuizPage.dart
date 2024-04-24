@@ -189,7 +189,6 @@ class _QuizPageState extends State<QuizPage> {
     print("Question Index: $currentQuestionIndex");
   }
 
-
   Map<String, dynamic> createQuizAttemptData(Map<String, dynamic> userSummary) {
     int quizTotal = loadedQuestions.length;
 
@@ -328,6 +327,7 @@ class _QuizPageState extends State<QuizPage> {
         Text(
           question.questionText,
           style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
+          textAlign: TextAlign.center,
         ),
         SizedBox(height: 45),
         //This is where the question will be asked / written to the page. The question format for posing the question is universal for all question types thus doesn't need to be type specific.
