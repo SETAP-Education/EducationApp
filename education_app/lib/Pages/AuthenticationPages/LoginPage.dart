@@ -4,15 +4,10 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:education_app/Pages/AuthenticationPages/RegistrationPage.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'dart:async';
-import '../SplashPage.dart';
-import 'package:education_app/Pages/AuthenticationPages/DisplayNamePage.dart';
 import 'package:education_app/Theme/ThemeNotifier.dart';
 import 'package:provider/provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-
-// basic colour scheme - will come up with one on friday with max
-Color primaryColour = Colors.white;
-Color secondaryColour = Colors.black;
+import 'package:education_app/Theme/AppTheme.dart';
 
 class LoginPage extends StatefulWidget {
   @override
@@ -29,7 +24,6 @@ class _LoginPageState extends State<LoginPage> {
   List<String> _errorMessages = [];
   Timer? _timer;
 
-
   @override
   void dispose() {
     _timer?.cancel(); // Cancel the timer if it's not null
@@ -38,9 +32,18 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
+
+    // basic colour scheme - will come up with one on friday with max
+    Color primaryColour = Theme.of(context).colorScheme.primary;
+    Color secondaryColour = Theme.of(context).colorScheme.secondary;
+
     return PopScope(
       canPop: false, //When false, blocks the current route from being popped
       child: Scaffold(
+        backgroundColor: primaryColour,
+        appBar: AppTheme.buildAppBar(context, 'Quiz App', false, "Welcome to our quiz app", Text(
+        'Hi there! This is the landing page for AMT. '
+        )),
         body: Stack(
           children: [
             Container(

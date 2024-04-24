@@ -10,14 +10,14 @@ class AppTheme {
 
   static ThemeData lightTheme = ThemeData(
     colorScheme: const ColorScheme.light(
-      background: Color(0xF7F7F7F7),
+      background: Colors.transparent,
       // background: Color.fromRGBO(240, 98, 146, 1),
       primary: Color(0xFFE7E7E7),
       secondary: Color(0xFF333333),
       tertiary: Color(0xFF19c37d),
       error: Colors.orange,
     ),
-    scaffoldBackgroundColor: Colors.transparent,
+    // scaffoldBackgroundColor: Colors.orange,
     textTheme: const TextTheme(
       bodyMedium: TextStyle(color: Color(0xFF333333)),
     ),
@@ -29,14 +29,14 @@ class AppTheme {
 
   static ThemeData darkTheme = ThemeData(
     colorScheme: const ColorScheme.dark(
-      background: Color(0xff343541),
+      background: Colors.transparent,
       // background: Colors.transparent,
       primary: Color(0xFF40414f),
       secondary: Color(0xFFE7E7E7),
       tertiary: Color(0xFF19c37d),
       error: Colors.orange,
     ),
-    scaffoldBackgroundColor: Colors.transparent,
+    // scaffoldBackgroundColor: Colors.transparent,
     textTheme: const TextTheme(
       bodyMedium: TextStyle(color: Color(0xFFE7E7E7)),
     ),
@@ -66,12 +66,6 @@ class AppTheme {
       letterSpacing: -1.5,
       color: Theme.of(context).colorScheme.secondary,
     );
-    // return TextStyle(
-    //   fontSize: 40,
-    //   fontWeight: FontWeight.w300,
-    //   letterSpacing: -0.5,
-    //   color: Theme.of(context).colorScheme.secondary,
-    // );
   }
 
   static TextStyle defaultBodyText(BuildContext context) {

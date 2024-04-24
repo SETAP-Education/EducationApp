@@ -4,6 +4,7 @@ import 'package:education_app/Pages/LandingPage.dart';
 import 'package:education_app/Pages/AuthenticationPages/LoginPage.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:education_app/Pages/AuthenticationPages/DisplayNamePage.dart';
+import 'package:education_app/Theme/AppTheme.dart';
 
 // Basic color scheme - will come up with one on Friday with Max
 Color primaryColour = Colors.white;
@@ -21,9 +22,17 @@ class _RegistrationPageState extends State<RegistrationPage> {
 
   @override
   Widget build(BuildContext context) {
+
+    Color primaryColour = Theme.of(context).colorScheme.primary;
+    Color secondaryColour = Theme.of(context).colorScheme.secondary;
+
     return PopScope(
       canPop: false, //When false, blocks the current route from being popped
       child: Scaffold(
+        backgroundColor: primaryColour,
+        appBar: AppTheme.buildAppBar(context, '', false, "Welcome to our quiz app", Text(
+        'Hi there! This is the landing page for AMT. '
+        )),
         body: Stack(
           children: [
             Container(

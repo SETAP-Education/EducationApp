@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../Pages/AuthenticationPages/LoginPage.dart';
 import 'package:education_app/Pages/AuthenticationPages/RegistrationPage.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:education_app/Theme/AppTheme.dart';
 
 class OpeningPage extends StatefulWidget {
   @override
@@ -11,7 +12,15 @@ class OpeningPage extends StatefulWidget {
 class _OpeningPageState extends State<OpeningPage> {
   @override
   Widget build(BuildContext context) {
+
+    Color primaryColour = Theme.of(context).colorScheme.primary;
+    Color secondaryColour = Theme.of(context).colorScheme.secondary;
+
     return Scaffold(
+      backgroundColor: primaryColour,
+      appBar: AppTheme.buildAppBar(context, 'Quiz App', false, "Welcome to our quiz app", Text(
+        'Hi there! This is the landing page for AMT. '
+        )),
       body: Center(
         child: Container(
           child: Row(
@@ -46,6 +55,7 @@ class _OpeningPageState extends State<OpeningPage> {
                         style: GoogleFonts.nunito(
                           fontSize: 60.0,
                           fontWeight: FontWeight.bold,
+                          color: secondaryColour
                         ),
                       ),
                       SizedBox(width: 10),
@@ -68,9 +78,10 @@ class _OpeningPageState extends State<OpeningPage> {
                   ),
                   SizedBox(height: 10),
                   Text(
-                    'Welcome to Quiz App, \n where we make learning fun!',
+                    'Welcome to Quiz App, \nwhere we make learning fun!',
                     style: GoogleFonts.nunito(
                       fontSize: 30.0,
+                      color: secondaryColour
                     ),
                   ),
                   SizedBox(height: 25),
@@ -89,13 +100,13 @@ class _OpeningPageState extends State<OpeningPage> {
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(20),
                           ),
-                          backgroundColor: Colors.white, // Set background color to white
+                          backgroundColor: secondaryColour, // Set background color to white
                         ),
                         child: Text(
                           'New here?',
                           style: GoogleFonts.nunito(
                             fontSize: 25.0,
-                            color: Colors.black, // Change font color to black
+                            color: primaryColour, // Change font color to black
                           ),
                         ),
                       ),
@@ -117,13 +128,13 @@ class _OpeningPageState extends State<OpeningPage> {
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(20),
                           ),
-                          backgroundColor: Colors.white, // Set background color to white
+                          backgroundColor: secondaryColour, // Set background color to white
                         ),
                         child: Text(
                           'Already have an account',
                           style: GoogleFonts.nunito(
                             fontSize: 25.0,
-                            color: Colors.black, // Change font color to black
+                            color: primaryColour, // Change font color to black
                           ),
                         ),
                       ),
