@@ -298,7 +298,7 @@ class _LandingPageState extends State<LandingPage> {
                             padding: EdgeInsets.all(16.0),
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(12),
-                              color: const Color(0xFFf3edf6).withOpacity(1),
+                              color: Theme.of(context).colorScheme.primaryContainer,
                               boxShadow: [
                                 BoxShadow(
                                   color: Colors.black.withOpacity(0.2),
@@ -315,7 +315,7 @@ class _LandingPageState extends State<LandingPage> {
                                   const SizedBox(height: 20),
                                   Text(
                                     'Your Interests',
-                                    style: GoogleFonts.nunito(color: Colors.black, fontSize: 28),
+                                    style: GoogleFonts.nunito(fontSize: 28),
                                   ),
                                   const SizedBox(height: 20),
                                   FutureBuilder<List<String>>(
@@ -407,7 +407,7 @@ class _LandingPageState extends State<LandingPage> {
                                   const SizedBox(height: 20),
                                   Text(
                                     'Other Topics',
-                                    style: GoogleFonts.nunito(color: Colors.black, fontSize: 28),
+                                    style: GoogleFonts.nunito(fontSize: 28),
                                   ),
                                   const SizedBox(height: 20),
                                   FutureBuilder<List<String>>(
@@ -525,7 +525,7 @@ class _LandingPageState extends State<LandingPage> {
                           padding: EdgeInsets.all(16.0),
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(12),
-                            color: const Color(0xFFf3edf6).withOpacity(1),
+                            color: Theme.of(context).colorScheme.primaryContainer,
                             boxShadow: [
                               BoxShadow(
                                 color: Colors.black.withOpacity(0.2),
@@ -586,7 +586,7 @@ class _LandingPageState extends State<LandingPage> {
                             padding: EdgeInsets.all(16.0),
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(12),
-                              color: const Color(0xFFf3edf6).withOpacity(1),
+                              color: Theme.of(context).colorScheme.primaryContainer,
                               boxShadow: [
                                 BoxShadow(
                                   color: Colors.black.withOpacity(0.2),
@@ -606,7 +606,7 @@ class _LandingPageState extends State<LandingPage> {
                                       Spacer(),
                                       Text(
                                         'Quiz History',
-                                        style: GoogleFonts.nunito(color: Colors.black, fontSize: 28),
+                                        style: GoogleFonts.nunito(fontSize: 28),
                                       ),
                                       SizedBox(width: MediaQuery.of(context).size.width * 1/12), // Adjust the width as needed
                                       ElevatedButton(

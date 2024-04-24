@@ -13,8 +13,7 @@ import 'package:provider/provider.dart';
 import '../SplashPage.dart';
 import 'package:education_app/Pages/AuthenticationPages/DisplayNamePage.dart';
 
-// basic colour scheme - will come up with one on friday with max
-Color secondaryColour = Colors.black;
+
 
 class LoginPage extends StatefulWidget {
   @override
@@ -62,6 +61,9 @@ class _LoginPageState extends State<LoginPage> {
 
 
   Widget _buildLoginForm() {
+
+    Color? textColour = Theme.of(context).textTheme.bodyMedium!.color;
+
     return Form( 
       key: _formKey,
       child: SizedBox(
@@ -75,7 +77,6 @@ class _LoginPageState extends State<LoginPage> {
                 style: GoogleFonts.nunito(
                   fontSize: 30.0,
                   fontWeight: FontWeight.bold,
-                  color: secondaryColour,
                 ),
               ),
             ),
@@ -88,19 +89,19 @@ class _LoginPageState extends State<LoginPage> {
                   labelText: 'Email',
                   contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
                   focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: secondaryColour),
+                    borderSide: BorderSide(color: textColour!),
                     borderRadius: BorderRadius.circular(30.0),
                   ),
                   enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: secondaryColour),
+                    borderSide: BorderSide(color: textColour),
                     borderRadius: BorderRadius.circular(30.0),
                   ),
-                  labelStyle: TextStyle(color: secondaryColour),
+                  labelStyle: TextStyle(color: textColour),
                 ),
                 style: GoogleFonts.nunito(
                   fontSize: 20.0,
                 ),
-                cursorColor: secondaryColour,
+                cursorColor: textColour,
                 onEditingComplete: () {
                   _validateEmail(_emailController.text);
                 },
@@ -117,11 +118,11 @@ class _LoginPageState extends State<LoginPage> {
                   labelText: 'Password',
                   contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
                   focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: secondaryColour),
+                    borderSide: BorderSide(color: textColour),
                     borderRadius: BorderRadius.circular(30.0),
                   ),
                   enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: secondaryColour),
+                    borderSide: BorderSide(color: textColour),
                     borderRadius: BorderRadius.circular(30.0),
                   ),
                   suffixIcon: Padding(
@@ -130,7 +131,7 @@ class _LoginPageState extends State<LoginPage> {
                       icon: Icon(
                         _showPassword ? Icons.visibility_off : Icons.visibility,
                       ),
-                      color: secondaryColour,
+                      color: textColour,
                       onPressed: () {
                         setState(() {
                           _showPassword = !_showPassword;
@@ -138,12 +139,12 @@ class _LoginPageState extends State<LoginPage> {
                       },
                     ),
                   ),
-                  labelStyle: TextStyle(color: secondaryColour),
+                  labelStyle: TextStyle(color: textColour),
                 ),
                 style: GoogleFonts.nunito(
                   fontSize: 20.0,
                 ),
-                cursorColor: secondaryColour,
+                cursorColor: textColour,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     globalErrorManager.pushError("Please enter your password");
@@ -227,7 +228,7 @@ class _LoginPageState extends State<LoginPage> {
               children: [
                 Text(
                   'Don\'t have an account? ',
-                  style: GoogleFonts.nunito(color: Colors.black, fontSize: 17.0),
+                  style: GoogleFonts.nunito(fontSize: 17.0),
                 ),
                 // when user hovers over the sign up text, cursor changes
                 MouseRegion(

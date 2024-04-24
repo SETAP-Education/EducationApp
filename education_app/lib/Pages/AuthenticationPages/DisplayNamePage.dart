@@ -109,13 +109,13 @@ Widget build(BuildContext context) {
                     contentPadding: EdgeInsets.symmetric(
                         horizontal: 20, vertical: 15),
                     focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: secondaryColour),
+                      borderSide: BorderSide(color: Theme.of(context).textTheme.bodyMedium!.color!),
                       borderRadius: BorderRadius.circular(30.0),
                     )),
                     style: GoogleFonts.nunito(
                       fontSize: 20.0,
                     ),
-                    cursorColor: secondaryColour,
+                    cursorColor: Theme.of(context).textTheme.bodyMedium!.color!,
                     onEditingComplete: () {},
                   
                 ),
