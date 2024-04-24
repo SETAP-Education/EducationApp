@@ -211,7 +211,8 @@ Widget build(BuildContext context) {
     // Setting the display name for the user
     users.doc(userId).set({
       'displayName': displayName,
-      'xpLvl': 0
+      'xpLvl': 0,
+      'darkMode': true,
     }).then((_) {
       print('Display Name set successfully!');
     }).catchError((error) {

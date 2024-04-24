@@ -3,13 +3,13 @@ import 'package:education_app/Pages/QuizPages/QuizPage.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-
 import 'package:education_app/Pages/QuizPages/HistoryPages/AllQuizzes.dart';
 import 'package:education_app/Pages/QuizBuilder.dart';
 import 'package:education_app/Pages/QuizPages/HistoryPages/QuizSummaryPage.dart';
 import 'package:education_app/Quizzes/quiz.dart';
 import 'package:education_app/Quizzes/quizManager.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:education_app/Theme/AppTheme.dart';
 
 class LandingPage extends StatefulWidget {
   @override
@@ -277,27 +277,9 @@ class _LandingPageState extends State<LandingPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        centerTitle: true,
-        title: Text('Quiz App'),
-        actions: _user != null
-            ? [
-                IconButton(
-                  icon: Icon(Icons.logout),
-                  onPressed: () async {
-                    await FirebaseAuth.instance.signOut();
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => LoginPage(),
-                      ),
-                    );
-                  },
-                ),
-              ]
-            : null,
-      ),
+      appBar: AppTheme.buildAppBar(context, 'Quiz App', true, "Welcome to our quiz app", Text(
+        'Hi there! This is the landing page for AMT. '
+        )),
       body: _user != null
           ? Row(
               crossAxisAlignment: CrossAxisAlignment.start,
