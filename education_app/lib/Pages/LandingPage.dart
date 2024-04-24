@@ -89,7 +89,7 @@ class _LandingPageState extends State<LandingPage> {
 
             // Set the remaining interests as topics
             setState(() {
-              otherTopics = remainingInterests.map((interest) => 'Topic $interest').toList();
+              otherTopics = remainingInterests.map((interest) => '$interest').toList();
             });
           }
         }
@@ -538,67 +538,70 @@ class _LandingPageState extends State<LandingPage> {
                     margin: const EdgeInsets.fromLTRB(0, 30, 30, 30),
                     child: Column(
                       children: [
-                        Expanded(
-                          child: Container(
-                            padding: const EdgeInsets.all(16.0),
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(12),
-                              color: const Color(0xFFf3edf6).withOpacity(1),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withOpacity(0.2),
-                                  spreadRadius: 5,
-                                  blurRadius: 10,
-                                  offset: const Offset(0, 3),
-                                ),
-                              ],
-                            ),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                const Text(
-                                  'XP Level',
-                                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                                ),
-                                const SizedBox(height: 10),
-                                Container(
-                                  width: double.infinity,
-                                  height: 40,
-                                  decoration: BoxDecoration(
-                                    border: Border.all(color: Colors.black),
-                                    borderRadius: BorderRadius.circular(20),
-                                  ),
-                                  child: Stack(
-                                    children: [
-                                      FractionallySizedBox(
-                                        widthFactor: xpLevel / 100,
-                                        child: Container(
-                                          decoration: BoxDecoration(
-                                            color: Colors.blue,
-                                            borderRadius: BorderRadius.circular(20),
-                                          ),
-                                          alignment: Alignment.center,
-                                          child: Text(
-                                            '$xpLevel XP - ${_getXPLevelDescription(xpLevel)}',
-                                            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                const SizedBox(height: 10),
-                              ],
-                            ),
+                        Container(
+                          height: 125,
+                          padding: EdgeInsets.all(16.0),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(12),
+                            color: const Color(0xFFf3edf6).withOpacity(1),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.2),
+                                spreadRadius: 5,
+                                blurRadius: 10,
+                                offset: const Offset(0, 3),
+                              ),
+                            ],
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                'XP Level',
+                                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                              ),
+                              SizedBox(height: 10),
+                              Container(
+    width: double.infinity,
+    height: 40,
+    decoration: BoxDecoration(
+        border: Border.all(color: Colors.black),
+        borderRadius: BorderRadius.circular(20),
+    ),
+    child: Stack(
+        children: [
+            // Inner Container with FractionallySizedBox
+            FractionallySizedBox(
+                widthFactor: xpLevel / 100,
+                child: Container(
+                    decoration: BoxDecoration(
+                        color: Colors.blue,
+                        borderRadius: BorderRadius.circular(20),
+                    ),
+                ),
+            ),
+            // Text widget aligned in the center
+            Center(
+                child: Text(
+                    '$xpLevel XP - ${_getXPLevelDescription(xpLevel)}',
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                ),
+            ),
+        ],
+    ),
+),
+
+                              SizedBox(height: 10),
+                            ],
                           ),
                         ),
-                        const SizedBox(height: 30),
+                        SizedBox(height: 30),
                         Expanded(
                           flex: 7,
                           child: Container(
                             width: MediaQuery.of(context).size.width * 1 / 3,
-                            padding: const EdgeInsets.all(16.0),
+                            padding: EdgeInsets.all(16.0),
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(12),
                               color: const Color(0xFFf3edf6).withOpacity(1),
@@ -615,7 +618,7 @@ class _LandingPageState extends State<LandingPage> {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
-                                  const SizedBox(height: 5),
+                                  const SizedBox(height: 20),
                                   Row(
                                     children: [
                                       Spacer(),
@@ -660,7 +663,7 @@ class _LandingPageState extends State<LandingPage> {
                                             const SizedBox(height: 10);
                                             if (index < numRecentQuizzes) {
                                               rowChildren.add(
-                                                Expanded(
+                                                Flexible(
                                                   child: Padding(
                                                     padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 10),
                                                     child: Container(
@@ -694,11 +697,6 @@ class _LandingPageState extends State<LandingPage> {
                                                                 color: Colors.blue,
                                                               ),
                                                               const SizedBox(height: 10),
-                                                              Text(
-                                                                'Recent Quiz ${index + 1}: ${quizNames[index]}',
-                                                                style: const TextStyle(fontSize: 16),
-                                                                textAlign: TextAlign.center,
-                                                              ),
                                                             ],
                                                           ),
                                                         ),
