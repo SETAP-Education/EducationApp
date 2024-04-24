@@ -190,7 +190,7 @@ class _LoginPageState extends State<LoginPage> {
                   child: Text(
                     'Forgot Password?',
                     style: TextStyle(
-                      color: Color(0xFF19c37d),
+                      color: Theme.of(context).colorScheme.primary,
                     ),
                   ),
                 ),
@@ -205,7 +205,7 @@ class _LoginPageState extends State<LoginPage> {
                 _login();
               },
              
-              child: Text('Log in', style: GoogleFonts.nunito(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
+              child: Text('Log in', style: GoogleFonts.nunito(color: Theme.of(context).colorScheme.secondary, fontSize: 18, fontWeight: FontWeight.bold)),
             ),
             // ElevatedButton(
             //   onPressed: () {
@@ -243,7 +243,7 @@ class _LoginPageState extends State<LoginPage> {
                     child: Text(
                       'Sign up',
                       style: GoogleFonts.nunito(
-                        color: Color(0xFF19c37d),
+                        color: Theme.of(context).colorScheme.secondary,
                         fontSize: 17.0,
                       ),
                     ),

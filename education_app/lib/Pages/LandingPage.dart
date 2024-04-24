@@ -274,7 +274,7 @@ class _LandingPageState extends State<LandingPage> {
                             padding: EdgeInsets.all(16.0),
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(12),
-                              color: Theme.of(context).colorScheme.primary,
+                              color: Theme.of(context).colorScheme.primaryContainer,
                               boxShadow: [
                                 BoxShadow(
                                   color: Colors.black.withOpacity(0.2),
@@ -320,7 +320,7 @@ class _LandingPageState extends State<LandingPage> {
                                                       height: 200,
                                                       decoration: BoxDecoration(
                                                         borderRadius: BorderRadius.circular(10),
-                                                        color: Theme.of(context).colorScheme.primary,
+                                                        color: Theme.of(context).colorScheme.secondaryContainer,
                                                         boxShadow: [
                                                           BoxShadow(
                                                             color: Colors.black.withOpacity(0.2),
@@ -418,7 +418,7 @@ class _LandingPageState extends State<LandingPage> {
                                                       height: 200,
                                                       decoration: BoxDecoration(
                                                         borderRadius: BorderRadius.circular(10),
-                                                        color: Theme.of(context).colorScheme.primary,
+                                                        color: Theme.of(context).colorScheme.secondaryContainer,
                                                         boxShadow: [
                                                           BoxShadow(
                                                             color: Colors.black.withOpacity(0.2),
@@ -501,7 +501,7 @@ class _LandingPageState extends State<LandingPage> {
                           padding: EdgeInsets.all(16.0),
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(12),
-                            color: Theme.of(context).colorScheme.primary,
+                            color: Theme.of(context).colorScheme.primaryContainer,
                             boxShadow: [
                               BoxShadow(
                                 color: Colors.black.withOpacity(0.2),
@@ -561,7 +561,7 @@ class _LandingPageState extends State<LandingPage> {
                             padding: EdgeInsets.all(16.0),
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(12),
-                              color: Theme.of(context).colorScheme.primary,
+                              color: Theme.of(context).colorScheme.primaryContainer,
                               boxShadow: [
                                 BoxShadow(
                                   color: Colors.black.withOpacity(0.2),
@@ -632,7 +632,7 @@ class _LandingPageState extends State<LandingPage> {
                                                       height: 100,
                                                       decoration: BoxDecoration(
                                                         borderRadius: BorderRadius.circular(10),
-                                                        color: Theme.of(context).colorScheme.primary,
+                                                        color: Theme.of(context).colorScheme.secondaryContainer,
                                                         boxShadow: [
                                                           BoxShadow(
                                                             color: Colors.black.withOpacity(0.2),
@@ -660,14 +660,14 @@ class _LandingPageState extends State<LandingPage> {
                                                                     style: GoogleFonts.nunito(fontSize: 24, fontWeight: FontWeight.bold),
                                                                   ),
                                                                   Text(_nicifyDateTime(DateTime.fromMillisecondsSinceEpoch(quizzes[index].timestamp.millisecondsSinceEpoch)), 
-                                                                    style: GoogleFonts.nunito(color: Colors.grey, fontSize: 16, fontWeight: FontWeight.w600, fontStyle: FontStyle.italic),
+                                                                    style: GoogleFonts.nunito(color: Theme.of(context).colorScheme.secondary, fontSize: 16, fontWeight: FontWeight.w600, fontStyle: FontStyle.italic),
                                                                   )
                                                                 ],
                                                               ),
                                                               Spacer(), 
 
                                                               Text("+ ${quizzes[index].xpEarned}xp",
-                                                                style: GoogleFonts.nunito(color: Theme.of(context).colorScheme.primary, fontSize: 18, fontWeight: FontWeight.w600, fontStyle: FontStyle.italic),
+                                                                style: GoogleFonts.nunito(color: Theme.of(context).colorScheme.secondary, fontSize: 18, fontWeight: FontWeight.w600, fontStyle: FontStyle.italic),
                                                               ),
                                                             ]
                                                           )

@@ -10,15 +10,14 @@ class AppTheme {
 
   static ThemeData lightTheme = ThemeData(
     colorScheme: const ColorScheme.light(
-      background: Color.fromARGB(255, 160, 160, 160),
-      
-      // background: Color.fromRGBO(240, 98, 146, 1),
-      primary: Color.fromARGB(255, 232, 232, 232),
-      secondary: Color.fromARGB(255, 51, 51, 51),
+      background: Colors.transparent,
+      primary: Color(0xFF19c37d),
+      secondary: Color(0xFF333333),
+      primaryContainer: Colors.white,
+      secondaryContainer: Colors.black,
       error: Colors.orange,
-      primaryContainer: Colors.white
     ),
-     scaffoldBackgroundColor: Color.fromARGB(255, 200, 200, 200),
+     scaffoldBackgroundColor: Color(0xFFF9FAFE),
     textTheme: const TextTheme(
       bodyMedium: TextStyle(color: Color(0xFF333333)),
     ),
@@ -31,14 +30,13 @@ class AppTheme {
   static ThemeData darkTheme = ThemeData(
     colorScheme: const ColorScheme.dark(
       background: Colors.transparent,
-      // background: Colors.transparent,
-      primary: Color.fromARGB(76, 123, 123, 123),
-      secondary: Color.fromARGB(255, 231, 231, 231),
+      primary: Color(0xFF19c37d),
+      secondary: Color(0xFFE7E7E7),
       primaryContainer: Color(0xFF202226),
+      secondaryContainer: Colors.white,
       error: Colors.orange,
     ),
-      
-     scaffoldBackgroundColor: Color(0xFF2c2b28),
+     scaffoldBackgroundColor: Color(0xFF131517),
     textTheme: const TextTheme(
       bodyMedium: TextStyle(color: Color(0xFFE7E7E7)),
     ),
