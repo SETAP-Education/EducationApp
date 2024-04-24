@@ -32,9 +32,8 @@ class AppTheme {
     colorScheme: const ColorScheme.dark(
       background: Colors.transparent,
       // background: Colors.transparent,
-      primary: Color(0xFF202226),
+      primary: Color(0xFF19c37d),
       secondary: Color(0xFFE7E7E7),
-      tertiary: Color(0xFF19c37d),
       primaryContainer: Color(0xFF202226),
       error: Colors.orange,
     ),

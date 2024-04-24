@@ -5,8 +5,7 @@ import 'package:education_app/Pages/AuthenticationPages/ErrorDisplayer.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
 
-Color primaryColour = Colors.white;
-Color secondaryColour = Colors.black;
+
 
 class AuthPageForm extends StatefulWidget {
 
