@@ -20,10 +20,7 @@ void main() async {
   runApp(
     ChangeNotifierProvider(
       create: (context) => ThemeNotifier(), // Add this line
-      child: ChangeNotifierProvider(
-        create: (context) => ProjectProvider(),
-        child: const MyApp(),
-      ),
+      child: const MyApp(),
     ),
   );
 } 
