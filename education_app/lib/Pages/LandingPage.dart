@@ -3,13 +3,13 @@ import 'package:education_app/Pages/QuizPages/QuizPage.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:education_app/Pages/QuizPages/HistoryPages/AllQuizzes.dart';
 import 'package:education_app/Pages/QuizBuilder.dart';
 import 'package:education_app/Pages/QuizPages/HistoryPages/QuizSummaryPage.dart';
 import 'package:education_app/Quizzes/quiz.dart';
 import 'package:education_app/Quizzes/quizManager.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:education_app/Theme/AppTheme.dart';
+import 'package:education_app/Pages/QuizPages/HistoryPages/AllQuizzesPage.dart';
 
 class LandingPage extends StatefulWidget {
   @override
