@@ -12,8 +12,7 @@ import 'dart:async';
 import 'package:provider/provider.dart';
 import '../SplashPage.dart';
 import 'package:education_app/Pages/AuthenticationPages/DisplayNamePage.dart';
-
-
+import 'package:education_app/Theme/AppTheme.dart';
 
 class LoginPage extends StatefulWidget {
   @override
@@ -54,6 +53,7 @@ class _LoginPageState extends State<LoginPage> {
     return PopScope(
       canPop: false, //When false, blocks the current route from being popped
       child: Scaffold(
+        appBar: AppTheme.buildAppBar(context, 'Quiz App', false, false, "Welcome to our quiz app", Text('')),
         body: AuthPageForm(child: _buildLoginForm())
       ),
     );

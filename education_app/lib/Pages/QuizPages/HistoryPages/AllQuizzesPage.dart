@@ -5,6 +5,7 @@ import 'package:education_app/Pages/AuthenticationPages/LoginPage.dart';
 import 'package:education_app/Quizzes/quiz.dart';
 import 'package:education_app/Quizzes/quizManager.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:education_app/Theme/AppTheme.dart';
 
 class QuizHistoryPage extends StatefulWidget {
   @override
@@ -84,23 +85,7 @@ class _QuizHistoryPageState extends State<QuizHistoryPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Quiz History'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.logout),
-            onPressed: () async {
-              await FirebaseAuth.instance.signOut();
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => LoginPage(),
-                ),
-              );
-            },
-          ),
-        ],
-      ),
+      appBar: AppTheme.buildAppBar(context, 'All Previous Quizzes', true, true, "All Previous Quizzes", Text('- Here you can view all previous quizzes you have attempted including different version of each quiz...')),
       body: ListView.builder(
         itemCount: completedQuizIds.length,
         itemBuilder: (context, index) {

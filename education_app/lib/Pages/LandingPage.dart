@@ -253,8 +253,8 @@ class _LandingPageState extends State<LandingPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppTheme.buildAppBar(context, 'Quiz App', true, "Welcome to our quiz app", Text(
-        'Hi there! This is the landing page for AMT. '
+      appBar: AppTheme.buildAppBar(context, 'Quizzical', true, false, "Welcome to our quiz app", Text(
+        'Hi there! This is the landing page for quizzical. '
         )),
       body: _user != null
           ? Row(
@@ -274,7 +274,7 @@ class _LandingPageState extends State<LandingPage> {
                             padding: EdgeInsets.all(16.0),
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(12),
-                              color: Theme.of(context).colorScheme.primaryContainer,
+                              color: Theme.of(context).colorScheme.primary,
                               boxShadow: [
                                 BoxShadow(
                                   color: Colors.black.withOpacity(0.2),
@@ -320,7 +320,7 @@ class _LandingPageState extends State<LandingPage> {
                                                       height: 200,
                                                       decoration: BoxDecoration(
                                                         borderRadius: BorderRadius.circular(10),
-                                                        color: Theme.of(context).colorScheme.primaryContainer,
+                                                        color: Theme.of(context).colorScheme.primary,
                                                         boxShadow: [
                                                           BoxShadow(
                                                             color: Colors.black.withOpacity(0.2),
@@ -418,7 +418,7 @@ class _LandingPageState extends State<LandingPage> {
                                                       height: 200,
                                                       decoration: BoxDecoration(
                                                         borderRadius: BorderRadius.circular(10),
-                                                        color: Theme.of(context).colorScheme.primaryContainer,
+                                                        color: Theme.of(context).colorScheme.primary,
                                                         boxShadow: [
                                                           BoxShadow(
                                                             color: Colors.black.withOpacity(0.2),
@@ -501,7 +501,7 @@ class _LandingPageState extends State<LandingPage> {
                           padding: EdgeInsets.all(16.0),
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(12),
-                            color: Theme.of(context).colorScheme.primaryContainer,
+                            color: Theme.of(context).colorScheme.primary,
                             boxShadow: [
                               BoxShadow(
                                 color: Colors.black.withOpacity(0.2),
@@ -521,36 +521,35 @@ class _LandingPageState extends State<LandingPage> {
                               ),
                               SizedBox(height: 10),
                               Container(
-    width: double.infinity,
-    height: 40,
-    decoration: BoxDecoration(
-        border: Border.all(color: Colors.black),
-        borderRadius: BorderRadius.circular(20),
-    ),
-    child: Stack(
-        children: [
-            // Inner Container with FractionallySizedBox
-            FractionallySizedBox(
-                widthFactor: xpLevel / 100,
-                child: Container(
-                    decoration: BoxDecoration(
-                        color: Colors.blue,
-                        borderRadius: BorderRadius.circular(20),
-                    ),
-                ),
-            ),
-            // Text widget aligned in the center
-            Center(
-                child: Text(
-                    '$xpLevel XP - ${_getXPLevelDescription(xpLevel)}',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                ),
-            ),
-        ],
-    ),
-),
-
-                              SizedBox(height: 10),
+                                width: double.infinity,
+                                height: 40,
+                                decoration: BoxDecoration(
+                                    border: Border.all(color: Colors.black),
+                                    borderRadius: BorderRadius.circular(20),
+                                ),
+                                child: Stack(
+                                    children: [
+                                        // Inner Container with FractionallySizedBox
+                                        FractionallySizedBox(
+                                            widthFactor: xpLevel / 100,
+                                            child: Container(
+                                                decoration: BoxDecoration(
+                                                    color: Colors.blue,
+                                                    borderRadius: BorderRadius.circular(20),
+                                                ),
+                                            ),
+                                        ),
+                                        // Text widget aligned in the center
+                                        Center(
+                                            child: Text(
+                                                '$xpLevel XP - ${_getXPLevelDescription(xpLevel)}',
+                                                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                                            ),
+                                        ),
+                                    ],
+                                ),
+                            ),
+                            SizedBox(height: 10),
                             ],
                           ),
                         ),
@@ -562,7 +561,7 @@ class _LandingPageState extends State<LandingPage> {
                             padding: EdgeInsets.all(16.0),
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(12),
-                              color: Theme.of(context).colorScheme.primaryContainer,
+                              color: Theme.of(context).colorScheme.primary,
                               boxShadow: [
                                 BoxShadow(
                                   color: Colors.black.withOpacity(0.2),
@@ -586,6 +585,9 @@ class _LandingPageState extends State<LandingPage> {
                                       ),
                                       SizedBox(width: MediaQuery.of(context).size.width * 1/12), // Adjust the width as needed
                                       ElevatedButton(
+                                        style: ElevatedButton.styleFrom(
+                                          backgroundColor: Theme.of(context).colorScheme.primary,
+                                        ),
                                         onPressed: () {
                                           Navigator.push(
                                             context,
@@ -594,11 +596,13 @@ class _LandingPageState extends State<LandingPage> {
                                             ),
                                           );
                                         },
-                                        child: const Text(
+                                        child: Text(
                                           'View All',
-                                          style: TextStyle(color: Colors.black),
+                                          style: TextStyle(
+                                            color: Theme.of(context).colorScheme.secondary,
+                                          ),
                                         ),
-                                      ),
+                                        ),
                                     ],
                                   ),
                                   const SizedBox(height: 20),
@@ -628,7 +632,7 @@ class _LandingPageState extends State<LandingPage> {
                                                       height: 100,
                                                       decoration: BoxDecoration(
                                                         borderRadius: BorderRadius.circular(10),
-                                                        color: Theme.of(context).colorScheme.primaryContainer,
+                                                        color: Theme.of(context).colorScheme.primary,
                                                         boxShadow: [
                                                           BoxShadow(
                                                             color: Colors.black.withOpacity(0.2),

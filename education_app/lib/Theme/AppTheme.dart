@@ -10,15 +10,15 @@ class AppTheme {
 
   static ThemeData lightTheme = ThemeData(
     colorScheme: const ColorScheme.light(
-      background: Colors.transparent,
+      background: Color.fromARGB(255, 160, 160, 160),
       
       // background: Color.fromRGBO(240, 98, 146, 1),
-      primary: Color(0xFF19c37d),
-      secondary: Color(0xFF333333),
+      primary: Color.fromARGB(255, 232, 232, 232),
+      secondary: Color.fromARGB(255, 51, 51, 51),
       error: Colors.orange,
       primaryContainer: Colors.white
     ),
-     scaffoldBackgroundColor: Color(0xFFF9FAFE),
+     scaffoldBackgroundColor: Color.fromARGB(255, 200, 200, 200),
     textTheme: const TextTheme(
       bodyMedium: TextStyle(color: Color(0xFF333333)),
     ),
@@ -32,13 +32,13 @@ class AppTheme {
     colorScheme: const ColorScheme.dark(
       background: Colors.transparent,
       // background: Colors.transparent,
-      primary: Color(0xFF19c37d),
-      secondary: Color(0xFFE7E7E7),
+      primary: Color.fromARGB(76, 123, 123, 123),
+      secondary: Color.fromARGB(255, 231, 231, 231),
       primaryContainer: Color(0xFF202226),
       error: Colors.orange,
     ),
       
-     scaffoldBackgroundColor: Color(0xFF131517),
+     scaffoldBackgroundColor: Color(0xFF2c2b28),
     textTheme: const TextTheme(
       bodyMedium: TextStyle(color: Color(0xFFE7E7E7)),
     ),
@@ -95,7 +95,7 @@ class AppTheme {
 //       current: 'Not too sure'
 //       replace with: 'AppTheme.defaultBodyText(context)'
 
-  static AppBar buildAppBar(BuildContext context, String title, bool includeTitleAndIcons, String dialogTitle, Text contentText) {//, bool automaticallyImplyLeading) {
+  static AppBar buildAppBar(BuildContext context, String title, bool includeTitleAndIcons, bool autoImply, String dialogTitle, Text contentText) {//, bool automaticallyImplyLeading) {
     // Get the current theme
     ThemeNotifier themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
 
@@ -106,17 +106,101 @@ class AppTheme {
     // Determine the current icon based on the theme
     Icon currentIcon = themeNotifier.isDarkMode ? lightModeIcon : darkModeIcon;
 
-    if (includeTitleAndIcons) {
+    if (includeTitleAndIcons && autoImply) {
       return AppBar(
         automaticallyImplyLeading: true,
         iconTheme: IconThemeData(color: Theme.of(context).colorScheme.secondary),
-        backgroundColor: Theme.of(context).colorScheme.background,
+        backgroundColor: Colors.transparent,
         centerTitle: true,
         flexibleSpace: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Padding(
               padding: const EdgeInsets.fromLTRB(56.0, 8, 8, 8), // Adjust the left padding as needed
+              child: IconButton(
+                icon: currentIcon,
+                onPressed: () {
+                  // Toggle between light and dark mode
+                  themeNotifier.toggleTheme();
+                },
+              ),
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  title,
+                  style: TextStyle(fontSize: 20, color: Theme.of(context).colorScheme.secondary),
+                ),
+                IconButton(
+                  icon: Icon(Icons.help_outline, color: Theme.of(context).colorScheme.secondary,),
+                  onPressed: () {
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                          title: Text(dialogTitle, style: TextStyle(color: Theme.of(context).colorScheme.secondary)),
+                          content: contentText,
+                          backgroundColor: Color(0xFF40414f),
+                          actions: [
+                            TextButton(
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                              },
+                              child: Text('Close', style: TextStyle(color: Theme.of(context).colorScheme.secondary)),
+                            ),
+                          ],
+                        );
+                      },
+                    );
+                  },
+                ),
+              ],
+            ),
+            Padding(
+              padding: const EdgeInsets.all(8.0), // Adjust the right padding as needed
+              child: Row(
+                children: [
+                  // IconButton(
+                  //   icon: Icon(Icons.settings),
+                  //   onPressed: () {
+                  //     Navigator.push(
+                  //       context,
+                  //       MaterialPageRoute(
+                  //         builder: (context) => SettingsPage(),
+                  //       ),
+                  //     );
+                  //   },
+                  // ),
+                  IconButton(
+                    icon: Icon(Icons.exit_to_app, color: Theme.of(context).colorScheme.secondary),
+                    onPressed: () {
+                      FirebaseAuth.instance.signOut();
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => LoginPage(),
+                        ),
+                      );
+                    },
+                  ),
+                ],
+              ),
+            )
+          ],
+        ),
+      );
+    } else if (includeTitleAndIcons && !autoImply) {
+      return AppBar(
+        automaticallyImplyLeading: false,
+        iconTheme: IconThemeData(color: Theme.of(context).colorScheme.secondary),
+        backgroundColor: Colors.transparent,
+        centerTitle: true,
+        flexibleSpace: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(8, 8, 8, 8), // Adjust the left padding as needed
               child: IconButton(
                 icon: currentIcon,
                 onPressed: () {
@@ -197,7 +281,7 @@ class AppTheme {
           color: Theme.of(context).colorScheme.secondary,
           fontSize: 20.0, // Set the desired font size
         ),
-        backgroundColor: Theme.of(context).colorScheme.background,
+        backgroundColor: Colors.transparent,
         centerTitle: true,
         leading: IconButton(
           icon: currentIcon,

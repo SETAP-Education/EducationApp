@@ -42,7 +42,7 @@ class _OpeningPageState extends State<OpeningPage> {
     Color secondaryColour = Theme.of(context).colorScheme.secondary;
 
     return Scaffold(
-      appBar: AppTheme.buildAppBar(context, 'Quiz App', false, "Welcome to our quiz app", Text(
+      appBar: AppTheme.buildAppBar(context, 'Quiz App', false, false, "Welcome to our quiz app", Text(
         'Hi there! This is the landing page for AMT. '
         )),
       body: Center(
