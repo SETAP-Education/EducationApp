@@ -30,6 +30,28 @@ class _RegistrationPageState extends State<RegistrationPage> {
   bool _showPassword = false; 
   bool _showConfirmPassword = false; 
 
+  void _checkAuthState() async {
+
+    User? firebaseUser = await FirebaseAuth.instance.authStateChanges().first;
+    
+    if (firebaseUser != null) {
+      print("User signed in");
+      Navigator.pushReplacement(context, MaterialPageRoute(builder:(context) {
+        return LandingPage();
+      },));
+    }
+    else {
+      print("User not signed in");
+    }
+  }
+
+  @override 
+  void initState() {
+    super.initState();
+
+    _checkAuthState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return PopScope(

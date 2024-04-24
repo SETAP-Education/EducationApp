@@ -25,6 +25,27 @@ class _LoginPageState extends State<LoginPage> {
   final _formKey = GlobalKey<FormState>();
   bool _showPassword = false;
 
+  void _checkAuthState() async {
+
+    User? firebaseUser = await FirebaseAuth.instance.authStateChanges().first;
+    
+    if (firebaseUser != null) {
+      print("User signed in");
+      Navigator.pushReplacement(context, MaterialPageRoute(builder:(context) {
+        return LandingPage();
+      },));
+    }
+    else {
+      print("User not signed in");
+    }
+  }
+
+  @override 
+  void initState() {
+    super.initState();
+
+    _checkAuthState();
+  }
 
   @override
   Widget build(BuildContext context) {

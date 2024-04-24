@@ -1,4 +1,6 @@
+import 'package:education_app/Pages/LandingPage.dart';
 import 'package:education_app/Widgets/Button.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import '../Pages/AuthenticationPages/LoginPage.dart';
 import 'package:education_app/Pages/AuthenticationPages/RegistrationPage.dart';
@@ -10,6 +12,29 @@ class OpeningPage extends StatefulWidget {
 }
 
 class _OpeningPageState extends State<OpeningPage> {
+
+  void _checkAuthState() async {
+
+    User? firebaseUser = await FirebaseAuth.instance.authStateChanges().first;
+    
+    if (firebaseUser != null) {
+      print("User signed in");
+      Navigator.pushReplacement(context, MaterialPageRoute(builder:(context) {
+        return LandingPage();
+      },));
+    }
+    else {
+      print("User not signed in");
+    }
+  }
+
+  @override 
+  void initState() {
+    super.initState();
+
+    _checkAuthState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
