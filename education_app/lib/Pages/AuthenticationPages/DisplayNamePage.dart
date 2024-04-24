@@ -5,6 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:education_app/Pages/AuthenticationPages/LoginPage.dart';
 import 'package:education_app/Pages/LandingPage.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:education_app/Theme/AppTheme.dart';
 
 class DisplayUser extends StatefulWidget {
   @override
@@ -110,18 +111,13 @@ Widget build(BuildContext context) {
                     focusedBorder: OutlineInputBorder(
                       borderSide: BorderSide(color: secondaryColour),
                       borderRadius: BorderRadius.circular(30.0),
+                    )),
+                    style: GoogleFonts.nunito(
+                      fontSize: 20.0,
                     ),
-                    enabledBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: secondaryColour),
-                      borderRadius: BorderRadius.circular(30.0),
-                    ),
-                    labelStyle: TextStyle(color: secondaryColour),
-                  ),
-                  style: GoogleFonts.nunito(
-                    fontSize: 20.0,
-                  ),
-                  cursorColor: secondaryColour,
-                  onEditingComplete: () {},
+                    cursorColor: secondaryColour,
+                    onEditingComplete: () {},
+                  
                 ),
               ),
             ),
@@ -172,13 +168,14 @@ Widget build(BuildContext context) {
                         decoration: BoxDecoration(
                           color: _selectedInterests.contains(interest)
                               ? Color(0xFF19c37d)
+
                               : Colors.white,
                           borderRadius: BorderRadius.circular(24),
-                         
                         ),
                         child: Center(
                           child: Text(
                             interest,
+
                             style: GoogleFonts.nunito(
                               fontSize: 18, 
                               fontWeight: FontWeight.bold,
@@ -224,13 +221,43 @@ Widget build(BuildContext context) {
                   child: Text('Let\'s go!',
                       style: GoogleFonts.nunito(
                           color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
-              ),
-            )
-          ],
+              )),
+              SizedBox(height: 20),
+              Center(
+                child: ElevatedButton(
+                  onPressed: () {
+                    // Get the entered display name
+                    String displayName = _nameController.text.trim();
+
+                    if (displayName.isNotEmpty) {
+                      // Set the display name in Firebase database
+                      _setDisplayName(_user!.uid, displayName);
+
+                      // Save selected interests to Firestore
+                      _saveInterests(_user!.uid, _selectedInterests);
+
+                      // Navigate to the landing page
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => LandingPage()),
+                      );
+                    } else {
+                      // Show an error message or handle empty display name
+                      print('Display name cannot be empty');
+                    }
+                  },
+                  child: Text('Continue',
+                      style: GoogleFonts.nunito(
+                          color: Colors.black, fontSize: 17)),
+                ),
+              )
+            ],
+          ),
         ),
       ),
     ),
-  ));
+  );
 }
 
 
@@ -242,7 +269,8 @@ Widget build(BuildContext context) {
     // Setting the display name for the user
     users.doc(userId).set({
       'displayName': displayName,
-      'xpLvl': 0
+      'xpLvl': 0,
+      'darkMode': true,
     }).then((_) {
       print('Display Name set successfully!');
     }).catchError((error) {
