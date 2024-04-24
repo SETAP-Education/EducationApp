@@ -7,9 +7,11 @@ import 'package:education_app/Pages/QuizBuilder.dart';
 import 'package:education_app/Pages/QuizPages/HistoryPages/QuizSummaryPage.dart';
 import 'package:education_app/Quizzes/quiz.dart';
 import 'package:education_app/Quizzes/quizManager.dart';
+import 'package:flutter/widgets.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:education_app/Theme/AppTheme.dart';
 import 'package:education_app/Pages/QuizPages/HistoryPages/AllQuizzesPage.dart';
+
 
 class LandingPage extends StatefulWidget {
   @override
@@ -23,7 +25,6 @@ class _LandingPageState extends State<LandingPage> {
   late String _displayName = "Placeholder";
   late List<String> otherTopics = [];
 
-  List<String> recentQuizzes = [];
   late List<QuizQuestion> loadedQuestions = [];
   Map<String, dynamic> quizAttemptData = {};
   Map<String, dynamic> userSummary = {};
@@ -49,7 +50,6 @@ class _LandingPageState extends State<LandingPage> {
           _getUserInterests(user.uid);
           _getUserXPLevel(user.uid);
           _getUserDisplayName(user.uid); // Call to get user display name
-          _checkQuizHistory();
         }
       }
     });
@@ -146,31 +146,7 @@ class _LandingPageState extends State<LandingPage> {
     }
   }
 
-  void _checkQuizHistory() async {
-    if (_user != null) {
-      try {
-        final CollectionReference userCollection = FirebaseFirestore.instance.collection('users');
-        final DocumentReference userDoc = userCollection.doc(_user!.uid);
-
-        final CollectionReference quizHistoryCollection = userDoc.collection('quizHistory');
-
-        final QuerySnapshot quizHistorySnapshot = await quizHistoryCollection.orderBy('timestamp', descending: true).limit(3).get();
-
-        if (quizHistorySnapshot.docs.isNotEmpty) {
-          // Quiz history exists, get the three most recent quiz IDs
-          final recentQuizIds = quizHistorySnapshot.docs.map((doc) => doc.id).toList();
-
-          setState(() {
-            recentQuizzes = recentQuizIds;
-          });
-        } else {
-          print('No quizzes have been attempted.');
-        }
-      } catch (e) {
-        print('Error checking quiz history: $e');
-      }
-    }
-  }
+ 
 
   Future<void> _getloadedQuestions(String quizId) async {
     // int currentQuestionIndex = 0;
@@ -626,16 +602,16 @@ class _LandingPageState extends State<LandingPage> {
                                     ],
                                   ),
                                   const SizedBox(height: 20),
-                                  FutureBuilder<List<String>>(
-                                    future: getQuizNames(recentQuizzes),
+                                  FutureBuilder<List<RecentQuiz>>(
+                                    future: quizManager.getRecentQuizzesForUser(_user!.uid),
                                     builder: (context, snapshot) {
                                       if (snapshot.connectionState == ConnectionState.waiting) {
                                         return Center(child: CircularProgressIndicator());
                                       } else if (snapshot.hasError) {
                                         return Center(child: Text('Error loading quiz names'));
                                       } else {
-                                        List<String> quizNames = snapshot.data ?? [];
-                                        int numRecentQuizzes = quizNames.length;
+                                        List<RecentQuiz> quizzes = snapshot.data! ?? [];
+                                        int numRecentQuizzes = quizzes.length;
                                         int numQuizzesPerRow = 2;
                                         int numRows = (numRecentQuizzes / numQuizzesPerRow).ceil();
                                         List<Widget> rows = List.generate(numRows, (rowIndex) {
@@ -645,11 +621,11 @@ class _LandingPageState extends State<LandingPage> {
                                             const SizedBox(height: 10);
                                             if (index < numRecentQuizzes) {
                                               rowChildren.add(
-                                                Flexible(
+                                                Expanded(
                                                   child: Padding(
                                                     padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 10),
                                                     child: Container(
-                                                      height: 200,
+                                                      height: 100,
                                                       decoration: BoxDecoration(
                                                         borderRadius: BorderRadius.circular(10),
                                                         color: Theme.of(context).colorScheme.primaryContainer,
@@ -664,23 +640,33 @@ class _LandingPageState extends State<LandingPage> {
                                                       ),
                                                       child: InkWell(
                                                         onTap: () async {
-                                                          await _getloadedQuestions(recentQuizzes[index]);
-                                                          await _loadQuizAttemptData(recentQuizzes[index]);
+                                                          await _getloadedQuestions(quizzes[index].id);
+                                                          await _loadQuizAttemptData(quizzes[index].id);
                                                           _quizSummaryButton(loadedQuestions, quizAttemptData);
                                                         },
-                                                        child: Center(
-                                                          child: Column(
-                                                            mainAxisAlignment: MainAxisAlignment.center,
-                                                            crossAxisAlignment: CrossAxisAlignment.center,
-                                                            children: [
-                                                              const Icon(
-                                                                Icons.history,
-                                                                size: 60,
-                                                                color: Colors.blue,
+                                                        child: Padding(
+                                                          padding: const EdgeInsets.symmetric(horizontal: 20),
+                                                          child: Row(
+                                                            children: [ 
+                                                              Column(
+                                                                mainAxisAlignment: MainAxisAlignment.center,
+                                                                crossAxisAlignment: CrossAxisAlignment.start,
+                                                                children: [
+                                                                  Text(quizzes[index].name, 
+                                                                    style: GoogleFonts.nunito(fontSize: 24, fontWeight: FontWeight.bold),
+                                                                  ),
+                                                                  Text(_nicifyDateTime(DateTime.fromMillisecondsSinceEpoch(quizzes[index].timestamp.millisecondsSinceEpoch)), 
+                                                                    style: GoogleFonts.nunito(color: Colors.grey, fontSize: 16, fontWeight: FontWeight.w600, fontStyle: FontStyle.italic),
+                                                                  )
+                                                                ],
                                                               ),
-                                                              const SizedBox(height: 10),
-                                                            ],
-                                                          ),
+                                                              Spacer(), 
+
+                                                              Text("+ ${quizzes[index].xpEarned}xp",
+                                                                style: GoogleFonts.nunito(color: Theme.of(context).colorScheme.primary, fontSize: 18, fontWeight: FontWeight.w600, fontStyle: FontStyle.italic),
+                                                              ),
+                                                            ]
+                                                          )
                                                         ),
                                                       ),
                                                     ),
@@ -736,5 +722,27 @@ class _LandingPageState extends State<LandingPage> {
     } else {
       return 'Master';
     }
+  }
+
+  String _nicifyDateTime(DateTime dateTime) {
+    
+
+    List<String> months = [
+      'January',
+      'February',
+      'March',
+      'April',
+      'May',
+      'June',
+      'July',
+      'August',
+      'September',
+      'October',
+      'November',
+      'December'
+    ];
+
+    return "${dateTime.day} ${months[dateTime.month - 1]}";
+
   }
 }
