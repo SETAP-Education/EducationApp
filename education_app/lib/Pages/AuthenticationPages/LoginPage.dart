@@ -278,7 +278,7 @@ class _LoginPageState extends State<LoginPage> {
           );
         }
       } catch (e) {
-        globalErrorManager.pushError("Please insure your login details are correct");
+        globalErrorManager.pushError("Please ensure your login details are correct");
       }
     }
   }
