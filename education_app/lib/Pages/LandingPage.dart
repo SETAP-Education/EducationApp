@@ -344,7 +344,7 @@ class _LandingPageState extends State<LandingPage> {
                                                       height: 200,
                                                       decoration: BoxDecoration(
                                                         borderRadius: BorderRadius.circular(10),
-                                                        color: Colors.white,
+                                                        color: Theme.of(context).colorScheme.primaryContainer,
                                                         boxShadow: [
                                                           BoxShadow(
                                                             color: Colors.black.withOpacity(0.2),
@@ -442,7 +442,7 @@ class _LandingPageState extends State<LandingPage> {
                                                       height: 200,
                                                       decoration: BoxDecoration(
                                                         borderRadius: BorderRadius.circular(10),
-                                                        color: Colors.white,
+                                                        color: Theme.of(context).colorScheme.primaryContainer,
                                                         boxShadow: [
                                                           BoxShadow(
                                                             color: Colors.black.withOpacity(0.2),
@@ -652,7 +652,7 @@ class _LandingPageState extends State<LandingPage> {
                                                       height: 200,
                                                       decoration: BoxDecoration(
                                                         borderRadius: BorderRadius.circular(10),
-                                                        color: Colors.white,
+                                                        color: Theme.of(context).colorScheme.primaryContainer,
                                                         boxShadow: [
                                                           BoxShadow(
                                                             color: Colors.black.withOpacity(0.2),
