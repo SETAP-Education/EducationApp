@@ -1,12 +1,15 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:education_app/Pages/AuthenticationPages/AuthPageForm.dart';
 import 'package:education_app/Pages/AuthenticationPages/ErrorDisplayer.dart';
 import 'package:education_app/Pages/LandingPage.dart';
+import 'package:education_app/Theme/ThemeNotifier.dart';
 import 'package:education_app/Widgets/Button.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:education_app/Pages/AuthenticationPages/RegistrationPage.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'dart:async';
+import 'package:provider/provider.dart';
 import '../SplashPage.dart';
 import 'package:education_app/Pages/AuthenticationPages/DisplayNamePage.dart';
 

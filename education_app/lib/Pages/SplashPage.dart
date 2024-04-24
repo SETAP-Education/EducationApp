@@ -73,43 +73,32 @@ class _OpeningPageState extends State<OpeningPage> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Quiz App 🎓',
-                        style: GoogleFonts.nunito(
-                          fontSize: 60.0,
-                          fontWeight: FontWeight.bold,
-                          color: secondaryColour
-                        ),
-                      ),
-                      // SizedBox(width: 10),
-                      // Container(
-                      //   width: 50,
-                      //   height: 50,
-                      //   // decoration: BoxDecoration(
-                      //   //   border: Border.all(color: Colors.black),
-                      //   //   borderRadius: BorderRadius.circular(15),
-                      //   // ),
-                      //   child: Center(
-                      //     child: Image.asset(
-                      //       'images/quiz_logo.png', // Change to your image asset path
-                      //       width: 50, // Adjust as needed
-                      //       height: 50, // Adjust as needed
-                      //     ),
-                      //   ),
-                      // ),
-                    ]
-                  ),
-                  SizedBox(height: 10),
+                  Text("Welcome to", style: GoogleFonts.nunito(
+                        fontSize: 30.0,
+                        fontWeight: FontWeight.bold,
+                        fontStyle: FontStyle.italic,
+                        color: secondaryColour
+                      )),
+
                   Text(
-                    'Welcome to Quiz App, \nwhere we make learning fun!',
+                    'Quizzical 🎓!',
                     style: GoogleFonts.nunito(
-                      fontSize: 30.0,
+                      fontSize: 60.0,
+                      fontWeight: FontWeight.bold,
                       color: secondaryColour
                     ),
                   ),
+                  SizedBox(height: 10),
+
+                   Text(
+                    'Learning doesn\'t have to be boring!',
+                    style: GoogleFonts.nunito(
+                      fontSize: 24.0,
+                      fontWeight: FontWeight.w600,
+                      fontStyle: FontStyle.italic
+                    ),
+                  ),
+                 
                   SizedBox(height: 25),
                   Center(
                     child: SizedBox(

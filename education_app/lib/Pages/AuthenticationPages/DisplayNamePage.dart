@@ -111,13 +111,13 @@ Widget build(BuildContext context) {
                     focusedBorder: OutlineInputBorder(
                       borderSide: BorderSide(color: secondaryColour),
                       borderRadius: BorderRadius.circular(30.0),
-                    ),
+                    )),
                     style: GoogleFonts.nunito(
                       fontSize: 20.0,
                     ),
                     cursorColor: secondaryColour,
                     onEditingComplete: () {},
-                  ),
+                  
                 ),
               ),
             ),
@@ -221,7 +221,7 @@ Widget build(BuildContext context) {
                   child: Text('Let\'s go!',
                       style: GoogleFonts.nunito(
                           color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
-              ),
+              )),
               SizedBox(height: 20),
               Center(
                 child: ElevatedButton(
@@ -257,7 +257,7 @@ Widget build(BuildContext context) {
         ),
       ),
     ),
-  ));
+  );
 }
 
 
