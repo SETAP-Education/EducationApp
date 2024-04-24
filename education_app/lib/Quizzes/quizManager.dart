@@ -260,6 +260,10 @@ class QuizManager {
 
     }
 
+    recent.sort(((a, b) {
+      return b.timestamp.compareTo(a.timestamp);
+    }));
+
     return recent; 
   }
 
