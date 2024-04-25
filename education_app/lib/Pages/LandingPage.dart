@@ -694,7 +694,7 @@ class _LandingPageState extends State<LandingPage> {
                                                               Spacer(), 
 
                                                               Text("+ ${quizzes[index].xpEarned}xp",
-                                                                style: GoogleFonts.nunito(color: Theme.of(context).textTheme.bodyMedium!.color, fontSize: 18, fontWeight: FontWeight.w600, fontStyle: FontStyle.italic),
+                                                                style: GoogleFonts.nunito(color: Theme.of(context).colorScheme.primary, fontSize: 18, fontWeight: FontWeight.w600, fontStyle: FontStyle.italic),
                                                               ),
                                                             ]
                                                           )
