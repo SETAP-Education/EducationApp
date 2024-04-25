@@ -27,7 +27,7 @@ class _AuthPageFormState extends State<AuthPageForm> {
     return Stack(
           children: [
             Container(
-             
+
               child: Center( // Center widget added here
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center, // Align the column content vertically centered
