@@ -243,7 +243,7 @@ class _LoginPageState extends State<LoginPage> {
                     child: Text(
                       'Sign up',
                       style: GoogleFonts.nunito(
-                        color: Theme.of(context).colorScheme.secondary,
+                        color: Theme.of(context).colorScheme.primary,
                         fontSize: 17.0,
                       ),
                     ),

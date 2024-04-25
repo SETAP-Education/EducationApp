@@ -4,7 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:education_app/Theme/ThemeNotifier.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:education_app/Pages/AuthenticationPages/LoginPage.dart';
-// import 'package:education_app/Pages/Settings_Page.dart';
+import 'package:education_app/Pages/AuthenticationPages/DisplayNamePage.dart';
 
 class AppTheme {
 
@@ -243,17 +243,17 @@ class AppTheme {
               padding: const EdgeInsets.all(8.0), // Adjust the right padding as needed
               child: Row(
                 children: [
-                  // IconButton(
-                  //   icon: Icon(Icons.settings),
-                  //   onPressed: () {
-                  //     Navigator.push(
-                  //       context,
-                  //       MaterialPageRoute(
-                  //         builder: (context) => SettingsPage(),
-                  //       ),
-                  //     );
-                  //   },
-                  // ),
+                  IconButton(
+                    icon: Icon(Icons.settings),
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => DisplayUser(),
+                        ),
+                      );
+                    },
+                  ),
                   IconButton(
                     icon: Icon(Icons.exit_to_app, color: Theme.of(context).colorScheme.secondary),
                     onPressed: () {

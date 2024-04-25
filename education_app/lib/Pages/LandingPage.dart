@@ -11,6 +11,7 @@ import 'package:flutter/widgets.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:education_app/Theme/AppTheme.dart';
 import 'package:education_app/Pages/QuizPages/HistoryPages/AllQuizzesPage.dart';
+import 'package:education_app/Pages/AuthenticationPages/DisplayNamePage.dart';
 
 
 class LandingPage extends StatefulWidget {
@@ -289,10 +290,27 @@ class _LandingPageState extends State<LandingPage> {
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
                                   const SizedBox(height: 20),
-                                  Text(
-                                    'Your Interests',
-                                    style: GoogleFonts.nunito(color: Theme.of(context).textTheme.bodyMedium!.color, fontSize: 28),
-                                  ),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: [
+                                        Text(
+                                            'Your Interests',
+                                            style: GoogleFonts.nunito(color: Theme.of(context).textTheme.bodyMedium!.color, fontSize: 28),
+                                        ),
+                                        IconButton(
+                                            icon: Icon(Icons.add),
+                                            onPressed: () {
+                                                // Navigate to DisplayUser page
+                                                Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                        builder: (context) => DisplayUser(), // Navigate to DisplayUser page
+                                                    ),
+                                                );
+                                            },
+                                        ),
+                                    ],
+                                ),
                                   const SizedBox(height: 20),
                                   FutureBuilder<List<String>>(
                                     future: Future.value(userInterests),
