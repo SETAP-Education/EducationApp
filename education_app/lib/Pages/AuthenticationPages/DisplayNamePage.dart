@@ -271,6 +271,8 @@ class _DisplayUserState extends State<DisplayUser> {
     // Saving the interests for the user
     users.doc(userId).set({
       'interests': interests,
+      'darkMode': true,
+      // 'xpLvl': _findXpLvl(userId),
     }, SetOptions(merge: true)).then((_) {
       print('Interests saved successfully!');
     }).catchError((error) {
