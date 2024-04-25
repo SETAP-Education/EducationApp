@@ -290,26 +290,35 @@ class _LandingPageState extends State<LandingPage> {
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
                                   const SizedBox(height: 20),
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                    children: [
-                                        Text(
-                                            'Your Interests',
-                                            style: GoogleFonts.nunito(color: Theme.of(context).textTheme.bodyMedium!.color, fontSize: 28),
-                                        ),
-                                        IconButton(
-                                            icon: Icon(Icons.add),
-                                            onPressed: () {
-                                                // Navigate to DisplayUser page
-                                                Navigator.push(
-                                                    context,
-                                                    MaterialPageRoute(
-                                                        builder: (context) => DisplayUser(), // Navigate to DisplayUser page
+                                  Container(
+                                    child: Row(
+                                        mainAxisAlignment: MainAxisAlignment.spaceBetween, // Space between the title and icon
+                                        children: [
+                                            Expanded(
+                                                child: Center(
+                                                    child: Text(
+                                                        'Your Interests',
+                                                        style: GoogleFonts.nunito(
+                                                            color: Theme.of(context).textTheme.bodyMedium!.color, 
+                                                            fontSize: 28,
+                                                        ),
                                                     ),
-                                                );
-                                            },
-                                        ),
-                                    ],
+                                                ),
+                                            ),
+                                            IconButton(
+                                                icon: Icon(Icons.add),
+                                                onPressed: () {
+                                                    // Navigate to DisplayUser page
+                                                    Navigator.push(
+                                                        context,
+                                                        MaterialPageRoute(
+                                                            builder: (context) => DisplayUser(), // Navigate to DisplayUser page
+                                                        ),
+                                                    );
+                                                },
+                                            ),
+                                        ],
+                                    ),
                                 ),
                                   const SizedBox(height: 20),
                                   FutureBuilder<List<String>>(
