@@ -54,12 +54,10 @@ class _RegistrationPageState extends State<RegistrationPage> {
 
   @override
   Widget build(BuildContext context) {
-
-    
-
     return PopScope(
       canPop: false, //When false, blocks the current route from being popped
       child: Scaffold(
+        appBar: AppTheme.buildAppBar(context, 'Quiz App', false, false, "Welcome to our quiz app", Text('')),
         body: AuthPageForm(child: _buildRegistrationForm())
       )
     );

@@ -1,9 +1,12 @@
+import 'package:education_app/Pages/AuthenticationPages/RegistrationPage.dart';
 import 'package:flutter/material.dart';
 import 'package:education_app/Quizzes/quiz.dart';
 import 'package:education_app/Quizzes/quizManager.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:education_app/Pages/QuizPages/HistoryPages/QuizSummaryPage.dart';
+import 'package:education_app/Theme/AppTheme.dart';
+import 'package:education_app/Pages/LandingPage.dart';
 
 class QuizPage extends StatefulWidget {
 
@@ -207,9 +210,12 @@ class _QuizPageState extends State<QuizPage> {
     double containerWidth = MediaQuery.of(context).size.width * 2 / 3;
     double containerHeight = MediaQuery.of(context).size.height * 2 / 3;
 
+    Color primaryColour = Theme.of(context).colorScheme.primary;
+    Color secondaryColour = Theme.of(context).colorScheme.secondary;
+
     return Scaffold(
-      appBar: AppBar(
-      ),
+      backgroundColor: Theme.of(context).colorScheme.background,
+      appBar: AppTheme.buildAppBar(context, 'Quiz App', false, false, "Welcome to our quiz app", Text('')),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -220,7 +226,7 @@ class _QuizPageState extends State<QuizPage> {
                 height: containerHeight,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(12),
-                  color: Color(0xFFf3edf6).withOpacity(1),
+                  color: primaryColour.withOpacity(1),
                   boxShadow: [
                     BoxShadow(
                       color: Colors.black.withOpacity(0.2),
@@ -240,7 +246,7 @@ class _QuizPageState extends State<QuizPage> {
             ),
           ),
           Padding(
-            padding: const EdgeInsets.only(left: 250),
+            padding: const EdgeInsets.only(left: 0),
             child: Column(
               children: [
                 Row(
@@ -248,7 +254,7 @@ class _QuizPageState extends State<QuizPage> {
                   children: [
                     if (currentQuestionIndex > 0)
                       Padding(
-                        padding: const EdgeInsets.only(left: 350),
+                        padding: const EdgeInsets.only(left: 550),
                         child: IconButton(
                           // color: tertiary,
                           // hoverColor: secondary,
@@ -289,10 +295,84 @@ class _QuizPageState extends State<QuizPage> {
                     ),
                   ],
                 ),
-
+                SizedBox(height: 16),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 0.0),
+                      child: ElevatedButton(
+                        onPressed: () async {
+                          // Show the alert dialog
+                          bool? userConfirmed = await showDialog(
+                            context: context,
+                            builder: (context) {
+                              return AlertDialog(
+                                title: Text(
+                                  'Are you sure?',
+                                  style: TextStyle(
+                                    color: secondaryColour,
+                                  ),
+                                ),
+                                content: Text(
+                                  'Do you really want to quit?',
+                                  style: TextStyle(
+                                    color: secondaryColour,
+                                  ),
+                                ),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () {
+                                      // User pressed 'Cancel'
+                                      Navigator.pop(context, false);
+                                    },
+                                    child: Text(
+                                      'Cancel',
+                                      style: TextStyle(
+                                        color: secondaryColour,
+                                      ),
+                                    ),
+                                  ),
+                                  TextButton(
+                                    onPressed: () {
+                                      // User pressed 'Yes'
+                                      Navigator.pop(context, true);
+                                    },
+                                    child: Text(
+                                      'Yes',
+                                      style: TextStyle(
+                                        color: secondaryColour, // Secondary color
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              );
+                            },
+                          );
+                          // If the user confirmed the action, navigate to the LandingPage
+                          if (userConfirmed == true) {
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(builder: (context) => LandingPage()),
+                            );
+                          }
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: primaryColour, // Set the desired color for the button
+                        ),
+                        child: Text(
+                          'Quit',
+                          style: TextStyle(
+                            color: secondaryColour, // Set the desired text color for the button
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
                 SizedBox(height: 16),
                 Padding(
-                  padding: const EdgeInsets.only(bottom: 50, right: 190),
+                  padding: const EdgeInsets.only(bottom: 50, right: 0),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: loadedQuestions.map((id) {
@@ -305,7 +385,7 @@ class _QuizPageState extends State<QuizPage> {
                           shape: BoxShape.circle,
                           color: index == currentQuestionIndex
                               ? Colors.blue
-                              : Colors.grey,
+                              : Theme.of(context).colorScheme.secondary,
                         ),
                       );
                     }).toList(),
@@ -404,7 +484,7 @@ class _QuizPageState extends State<QuizPage> {
             borderRadius: BorderRadius.circular(25),
           ),
           filled: true,
-          fillColor: Colors.white,
+          fillColor: primaryColour,
         ),
       )
     );
