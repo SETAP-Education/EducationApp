@@ -254,7 +254,7 @@ class _LandingPageState extends State<LandingPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppTheme.buildAppBar(context, 'Quizzical', true, false, "Welcome to our quiz app", Text(
+      appBar: AppTheme.buildAppBar(context, '', true, false, "Welcome to our quiz app", Text(
         'Hi there! This is the landing page for quizzical. '
         )),
       body: _user != null
@@ -290,36 +290,34 @@ class _LandingPageState extends State<LandingPage> {
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
                                   const SizedBox(height: 20),
-                                  Container(
-                                    child: Row(
-                                        mainAxisAlignment: MainAxisAlignment.spaceBetween, // Space between the title and icon
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      const SizedBox(), // Empty space on the left
+                                      Row(
+                                        mainAxisSize: MainAxisSize.min,
                                         children: [
-                                            Expanded(
-                                                child: Center(
-                                                    child: Text(
-                                                        'Your Interests',
-                                                        style: GoogleFonts.nunito(
-                                                            color: Theme.of(context).textTheme.bodyMedium!.color, 
-                                                            fontSize: 28,
-                                                        ),
-                                                    ),
-                                                ),
-                                            ),
-                                            IconButton(
-                                                icon: Icon(Icons.add),
-                                                onPressed: () {
-                                                    // Navigate to DisplayUser page
-                                                    Navigator.push(
-                                                        context,
-                                                        MaterialPageRoute(
-                                                            builder: (context) => DisplayUser(), // Navigate to DisplayUser page
-                                                        ),
-                                                    );
-                                                },
-                                            ),
+                                          Text(
+                                            'Your Interests',
+                                            style: GoogleFonts.nunito(fontSize: 28),
+                                          ),
                                         ],
-                                    ),
-                                ),
+                                      ),
+                                      IconButton(
+                                        icon: const Icon(Icons.remove),
+                                        onPressed: () {
+                                          // Navigate to DisplayUser page
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) => DisplayUser(),
+                                            ),
+                                          );
+                                        },
+                                      ),
+                                    ],
+                                  ),
+
                                   const SizedBox(height: 20),
                                   FutureBuilder<List<String>>(
                                     future: Future.value(userInterests),
@@ -408,9 +406,32 @@ class _LandingPageState extends State<LandingPage> {
                                     },
                                   ),
                                   const SizedBox(height: 20),
-                                  Text(
-                                    'Other Topics',
-                                    style: GoogleFonts.nunito(color: Theme.of(context).textTheme.bodyMedium!.color, fontSize: 28),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      const SizedBox(), // Empty space on the left
+                                      Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          Text(
+                                            'Other Topics',
+                                            style: GoogleFonts.nunito(fontSize: 28),
+                                          ),
+                                        ],
+                                      ),
+                                      IconButton(
+                                        icon: const Icon(Icons.add),
+                                        onPressed: () {
+                                          // Navigate to DisplayUser page
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) => DisplayUser(),
+                                            ),
+                                          );
+                                        },
+                                      ),
+                                    ],
                                   ),
                                   const SizedBox(height: 20),
                                   FutureBuilder<List<String>>(
