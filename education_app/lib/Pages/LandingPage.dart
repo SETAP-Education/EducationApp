@@ -291,32 +291,32 @@ class _LandingPageState extends State<LandingPage> {
                                 children: [
                                   const SizedBox(height: 20),
                                   Row(
-  mainAxisAlignment: MainAxisAlignment.center,
-  children: [
-    const SizedBox(), // Empty space on the left
-    Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Text(
-          'Your Interests',
-          style: GoogleFonts.nunito(fontSize: 28),
-        ),
-      ],
-    ),
-    IconButton(
-      icon: const Icon(Icons.add),
-      onPressed: () {
-        // Navigate to DisplayUser page
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => DisplayUser(),
-          ),
-        );
-      },
-    ),
-  ],
-),
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      const SizedBox(), // Empty space on the left
+                                      Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          Text(
+                                            'Your Interests',
+                                            style: GoogleFonts.nunito(fontSize: 28),
+                                          ),
+                                        ],
+                                      ),
+                                      IconButton(
+                                        icon: const Icon(Icons.remove),
+                                        onPressed: () {
+                                          // Navigate to DisplayUser page
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) => DisplayUser(),
+                                            ),
+                                          );
+                                        },
+                                      ),
+                                    ],
+                                  ),
 
                                   const SizedBox(height: 20),
                                   FutureBuilder<List<String>>(
@@ -406,9 +406,32 @@ class _LandingPageState extends State<LandingPage> {
                                     },
                                   ),
                                   const SizedBox(height: 20),
-                                  Text(
-                                    'Other Topics',
-                                    style: GoogleFonts.nunito(color: Theme.of(context).textTheme.bodyMedium!.color, fontSize: 28),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      const SizedBox(), // Empty space on the left
+                                      Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          Text(
+                                            'Other Topics',
+                                            style: GoogleFonts.nunito(fontSize: 28),
+                                          ),
+                                        ],
+                                      ),
+                                      IconButton(
+                                        icon: const Icon(Icons.add),
+                                        onPressed: () {
+                                          // Navigate to DisplayUser page
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) => DisplayUser(),
+                                            ),
+                                          );
+                                        },
+                                      ),
+                                    ],
                                   ),
                                   const SizedBox(height: 20),
                                   FutureBuilder<List<String>>(

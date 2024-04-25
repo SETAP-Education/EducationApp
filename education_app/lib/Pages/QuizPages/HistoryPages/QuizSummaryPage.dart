@@ -273,11 +273,15 @@ class QuizSummaryPage extends StatelessWidget {
       ),
       child: Center(
         child: Text(
-          (userResponse.isEmpty) ? 'Not answered - The correct Answer is: "${question.correctAnswer}"' : userResponse,
+          userResponse.isEmpty
+              ? 'Not answered - The correct Answer is: "${question.correctAnswer}"'
+              : userResponse.toLowerCase() == question.correctAnswer.toLowerCase()
+                  ? 'Correct! Your answer: ${userResponse} ✓'
+                  : 'Incorrect. Your answer: ${userResponse} ✘ | The correct Answer is: "${question.correctAnswer}"',
           style: const TextStyle(
-            color: Colors.black,
+              color: Colors.black,
           ),
-        ),
+      ),
       ),
     );
   }
