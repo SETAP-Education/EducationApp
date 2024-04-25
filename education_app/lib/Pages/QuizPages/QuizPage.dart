@@ -706,10 +706,31 @@ class _QuizPageState extends State<QuizPage> {
       // Store data in Firebase
       await quizAttemptDocument.set(quizAttemptData);
 
+      // Calculate the User XP to add
+
+
+      int xpGain = calculateXpGain(userSummary, 0.5);
+
       // Now, update the timestamp field in the quizId2 document
       await FirebaseFirestore.instance.collection('users').doc(userId).collection('quizHistory').doc(widget.quizId).set({
         'timestamp': FieldValue.serverTimestamp(),
+        'xpGain': xpGain,
       }, SetOptions(merge: true));
+
+      // We want to add xp to user now
+      var userDoc = await FirebaseFirestore.instance.collection("users").doc(userId).get();
+      int currentXp = 0; 
+
+      if (userDoc.data() != null) {
+        if (userDoc.data()!.containsKey("xpLvl")) {
+          currentXp = userDoc.data()!["xpLvl"];
+        }
+      }
+
+      currentXp += xpGain;
+
+      FirebaseFirestore.instance.collection("users").doc(userId).update({ "xpLvl": currentXp }, );
+
 
       // Print success message
       print("User answers and summary stored successfully!");
@@ -748,5 +769,22 @@ class _QuizPageState extends State<QuizPage> {
     });
 
     return userTotal;
+  }
+
+  int calculateXpGain(Map<String, dynamic> userSummary, double multiplier) {
+    int xp = 0; 
+
+    userSummary.forEach((questionId, details) {
+      if (details['correctIncorrect'] == 'Correct') {
+        var q = loadedQuestions.where((element)  { return element.questionId == questionId; });
+        xp +=  q.first.difficulty;
+      }
+    });
+
+    xp = xp ~/ loadedQuestions.length;
+
+    xp = (xp.toDouble() * multiplier).toInt();
+
+    return xp;
   }
 }
