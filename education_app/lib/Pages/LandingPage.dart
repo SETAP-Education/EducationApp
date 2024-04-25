@@ -9,6 +9,7 @@ import 'package:flutter/widgets.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:education_app/Theme/AppTheme.dart';
 import 'package:education_app/Pages/QuizPages/HistoryPages/AllQuizzesPage.dart';
+import 'package:education_app/Pages/AuthenticationPages/DisplayNamePage.dart';
 
 
 class LandingPage extends StatefulWidget {
@@ -251,8 +252,8 @@ class _LandingPageState extends State<LandingPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppTheme.buildAppBar(context, 'Quiz App', true, "Welcome to our quiz app", Text(
-        'Hi there! This is the landing page for AMT. '
+      appBar: AppTheme.buildAppBar(context, 'Quizzical', true, false, "Welcome to our quiz app", Text(
+        'Hi there! This is the landing page for quizzical. '
         )),
       body: _user != null
           ? Row(
@@ -287,10 +288,36 @@ class _LandingPageState extends State<LandingPage> {
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
                                   const SizedBox(height: 20),
-                                  Text(
-                                    'Your Interests',
-                                    style: GoogleFonts.nunito(fontSize: 28),
-                                  ),
+                                  Container(
+                                    child: Row(
+                                        mainAxisAlignment: MainAxisAlignment.spaceBetween, // Space between the title and icon
+                                        children: [
+                                            Expanded(
+                                                child: Center(
+                                                    child: Text(
+                                                        'Your Interests',
+                                                        style: GoogleFonts.nunito(
+                                                            color: Theme.of(context).textTheme.bodyMedium!.color, 
+                                                            fontSize: 28,
+                                                        ),
+                                                    ),
+                                                ),
+                                            ),
+                                            IconButton(
+                                                icon: Icon(Icons.add),
+                                                onPressed: () {
+                                                    // Navigate to DisplayUser page
+                                                    Navigator.push(
+                                                        context,
+                                                        MaterialPageRoute(
+                                                            builder: (context) => DisplayUser(), // Navigate to DisplayUser page
+                                                        ),
+                                                    );
+                                                },
+                                            ),
+                                        ],
+                                    ),
+                                ),
                                   const SizedBox(height: 20),
                                   FutureBuilder<List<String>>(
                                     future: Future.value(userInterests),
@@ -318,7 +345,7 @@ class _LandingPageState extends State<LandingPage> {
                                                       height: 200,
                                                       decoration: BoxDecoration(
                                                         borderRadius: BorderRadius.circular(10),
-                                                        color: Theme.of(context).colorScheme.primaryContainer,
+                                                        color: Theme.of(context).colorScheme.secondaryContainer,
                                                         boxShadow: [
                                                           BoxShadow(
                                                             color: Colors.black.withOpacity(0.2),
@@ -381,7 +408,7 @@ class _LandingPageState extends State<LandingPage> {
                                   const SizedBox(height: 20),
                                   Text(
                                     'Other Topics',
-                                    style: GoogleFonts.nunito(fontSize: 28),
+                                    style: GoogleFonts.nunito(color: Theme.of(context).textTheme.bodyMedium!.color, fontSize: 28),
                                   ),
                                   const SizedBox(height: 20),
                                   FutureBuilder<List<String>>(
@@ -416,7 +443,7 @@ class _LandingPageState extends State<LandingPage> {
                                                       height: 200,
                                                       decoration: BoxDecoration(
                                                         borderRadius: BorderRadius.circular(10),
-                                                        color: Theme.of(context).colorScheme.primaryContainer,
+                                                        color: Theme.of(context).colorScheme.secondaryContainer,
                                                         boxShadow: [
                                                           BoxShadow(
                                                             color: Colors.black.withOpacity(0.2),
@@ -519,36 +546,35 @@ class _LandingPageState extends State<LandingPage> {
                               ),
                               SizedBox(height: 10),
                               Container(
-    width: double.infinity,
-    height: 40,
-    decoration: BoxDecoration(
-        border: Border.all(color: Colors.black),
-        borderRadius: BorderRadius.circular(20),
-    ),
-    child: Stack(
-        children: [
-            // Inner Container with FractionallySizedBox
-            FractionallySizedBox(
-                widthFactor: xpLevel / 100,
-                child: Container(
-                    decoration: BoxDecoration(
-                        color: Colors.blue,
-                        borderRadius: BorderRadius.circular(20),
-                    ),
-                ),
-            ),
-            // Text widget aligned in the center
-            Center(
-                child: Text(
-                    '$xpLevel XP - ${_getXPLevelDescription(xpLevel)}',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                ),
-            ),
-        ],
-    ),
-),
-
-                              SizedBox(height: 10),
+                                width: double.infinity,
+                                height: 40,
+                                decoration: BoxDecoration(
+                                    border: Border.all(color: Colors.black),
+                                    borderRadius: BorderRadius.circular(20),
+                                ),
+                                child: Stack(
+                                    children: [
+                                        // Inner Container with FractionallySizedBox
+                                        FractionallySizedBox(
+                                            widthFactor: xpLevel / 100,
+                                            child: Container(
+                                                decoration: BoxDecoration(
+                                                    color: Colors.blue,
+                                                    borderRadius: BorderRadius.circular(20),
+                                                ),
+                                            ),
+                                        ),
+                                        // Text widget aligned in the center
+                                        Center(
+                                            child: Text(
+                                                '$xpLevel XP - ${_getXPLevelDescription(xpLevel)}',
+                                                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                                            ),
+                                        ),
+                                    ],
+                                ),
+                            ),
+                            SizedBox(height: 10),
                             ],
                           ),
                         ),
@@ -584,6 +610,9 @@ class _LandingPageState extends State<LandingPage> {
                                       ),
                                       SizedBox(width: MediaQuery.of(context).size.width * 1/12), // Adjust the width as needed
                                       ElevatedButton(
+                                        style: ElevatedButton.styleFrom(
+                                          backgroundColor: Theme.of(context).colorScheme.primary,
+                                        ),
                                         onPressed: () {
                                           Navigator.push(
                                             context,
@@ -592,11 +621,13 @@ class _LandingPageState extends State<LandingPage> {
                                             ),
                                           );
                                         },
-                                        child: const Text(
+                                        child: Text(
                                           'View All',
-                                          style: TextStyle(color: Colors.black),
+                                          style: TextStyle(
+                                            color: Theme.of(context).colorScheme.secondary,
+                                          ),
                                         ),
-                                      ),
+                                        ),
                                     ],
                                   ),
                                   const SizedBox(height: 20),
@@ -626,7 +657,7 @@ class _LandingPageState extends State<LandingPage> {
                                                       height: 100,
                                                       decoration: BoxDecoration(
                                                         borderRadius: BorderRadius.circular(10),
-                                                        color: Theme.of(context).colorScheme.primaryContainer,
+                                                        color: Theme.of(context).colorScheme.secondaryContainer,
                                                         boxShadow: [
                                                           BoxShadow(
                                                             color: Colors.black.withOpacity(0.2),
@@ -654,14 +685,14 @@ class _LandingPageState extends State<LandingPage> {
                                                                     style: GoogleFonts.nunito(fontSize: 24, fontWeight: FontWeight.bold),
                                                                   ),
                                                                   Text(_nicifyDateTime(DateTime.fromMillisecondsSinceEpoch(quizzes[index].timestamp.millisecondsSinceEpoch)), 
-                                                                    style: GoogleFonts.nunito(color: Colors.grey, fontSize: 16, fontWeight: FontWeight.w600, fontStyle: FontStyle.italic),
+                                                                    style: GoogleFonts.nunito(color: Theme.of(context).colorScheme.secondary, fontSize: 16, fontWeight: FontWeight.w600, fontStyle: FontStyle.italic),
                                                                   )
                                                                 ],
                                                               ),
                                                               Spacer(), 
 
                                                               Text("+ ${quizzes[index].xpEarned}xp",
-                                                                style: GoogleFonts.nunito(color: Theme.of(context).colorScheme.primary, fontSize: 18, fontWeight: FontWeight.w600, fontStyle: FontStyle.italic),
+                                                                style: GoogleFonts.nunito(color: Theme.of(context).textTheme.bodyMedium!.color, fontSize: 18, fontWeight: FontWeight.w600, fontStyle: FontStyle.italic),
                                                               ),
                                                             ]
                                                           )

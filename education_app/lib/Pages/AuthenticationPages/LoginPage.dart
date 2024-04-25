@@ -10,8 +10,9 @@ import 'package:education_app/Pages/AuthenticationPages/RegistrationPage.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'dart:async';
 import 'package:provider/provider.dart';
-
-
+import '../SplashPage.dart';
+import 'package:education_app/Pages/AuthenticationPages/DisplayNamePage.dart';
+import 'package:education_app/Theme/AppTheme.dart';
 
 class LoginPage extends StatefulWidget {
   @override
@@ -52,6 +53,7 @@ class _LoginPageState extends State<LoginPage> {
     return PopScope(
       canPop: false, //When false, blocks the current route from being popped
       child: Scaffold(
+        appBar: AppTheme.buildAppBar(context, 'Quiz App', false, false, "Welcome to our quiz app", Text('')),
         body: AuthPageForm(child: _buildLoginForm())
       ),
     );
@@ -188,7 +190,7 @@ class _LoginPageState extends State<LoginPage> {
                   child: Text(
                     'Forgot Password?',
                     style: TextStyle(
-                      color: Color(0xFF19c37d),
+                      color: Theme.of(context).colorScheme.primary,
                     ),
                   ),
                 ),
@@ -203,7 +205,7 @@ class _LoginPageState extends State<LoginPage> {
                 _login();
               },
              
-              child: Text('Log in', style: GoogleFonts.nunito(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
+              child: Text('Log in', style: GoogleFonts.nunito(color: Theme.of(context).colorScheme.secondary, fontSize: 18, fontWeight: FontWeight.bold)),
             ),
             // ElevatedButton(
             //   onPressed: () {
@@ -241,7 +243,7 @@ class _LoginPageState extends State<LoginPage> {
                     child: Text(
                       'Sign up',
                       style: GoogleFonts.nunito(
-                        color: Color(0xFF19c37d),
+                        color: Theme.of(context).colorScheme.primary,
                         fontSize: 17.0,
                       ),
                     ),

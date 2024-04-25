@@ -10,6 +10,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:education_app/Pages/AuthenticationPages/DisplayNamePage.dart';
 import 'package:education_app/Pages/LandingPage.dart';
 
+import '../../Theme/AppTheme.dart';
+
 // Basic color scheme - will come up with one on Friday with Max
 Color primaryColour = Colors.white;
 
@@ -53,12 +55,10 @@ class _RegistrationPageState extends State<RegistrationPage> {
 
   @override
   Widget build(BuildContext context) {
-
-    
-
     return PopScope(
       canPop: false, //When false, blocks the current route from being popped
       child: Scaffold(
+        appBar: AppTheme.buildAppBar(context, 'Quiz App', false, false, "Welcome to our quiz app", Text('')),
         body: AuthPageForm(child: _buildRegistrationForm())
       )
     );
