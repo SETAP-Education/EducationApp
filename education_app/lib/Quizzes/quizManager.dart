@@ -1,7 +1,16 @@
 import 'dart:math';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:education_app/Quizzes/quiz.dart';
+
+// Stores info required about recent quiz
+class RecentQuiz
+{
+  String id = "";
+  String name = "";
+  Timestamp timestamp = Timestamp.now(); 
+  int xpEarned = 0;
+}
+
 
 // Quizzes are stored under the quizzes collection in the database
 
@@ -215,6 +224,41 @@ class QuizManager {
     print(outputQuizId);
 
     return outputQuizId;
+  }
+
+  Future<List<RecentQuiz>> getRecentQuizzesForUser(String userId) async {
+    List<RecentQuiz> recent = [];
+
+    var db = FirebaseFirestore.instance; 
+
+    var userRef = db.collection("users").doc(userId);
+
+    var quizzes = await userRef.collection("quizHistory").get();
+
+    for (var i in quizzes.docs) {
+      Map<String, dynamic> data = i.data(); 
+
+      String id = i.id;
+
+      Quiz? q = await getQuizWithId(id);
+      
+      if (q != null) {
+
+        // We have a quiz
+
+        RecentQuiz recentQuiz = RecentQuiz(); 
+        recentQuiz.id = id; 
+        recentQuiz.name = q.name;
+        recentQuiz.timestamp = data["timestamp"];
+        recentQuiz.xpEarned = 0;
+        
+        recent.add(recentQuiz);
+
+      }
+
+    }
+
+    return recent; 
   }
 
 }
