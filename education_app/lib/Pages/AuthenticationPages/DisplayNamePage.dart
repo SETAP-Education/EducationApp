@@ -245,8 +245,8 @@ class _DisplayUserState extends State<DisplayUser> {
             ),
           ),
 
-          // // Add ErrorDisplayer widget to display error messages
-          // ErrorDisplayer(),
+          // Add ErrorDisplayer widget to display error messages
+          ErrorDisplayer(),
         ],
       ),
     );
