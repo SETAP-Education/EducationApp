@@ -1,7 +1,7 @@
 import 'package:education_app/Pages/LandingPage.dart';
 import 'package:flutter/material.dart';
 import 'package:education_app/Quizzes/quiz.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+
 
 class QuizSummaryPage extends StatelessWidget {
   final List<QuizQuestion> loadedQuestions;
@@ -59,7 +59,7 @@ class QuizSummaryPage extends StatelessWidget {
                   );
                 },
                 child: const Text(
-                  'Back to Home',
+                  'Home',
                   style: TextStyle(color: Colors.black),
                 ),
               ),
