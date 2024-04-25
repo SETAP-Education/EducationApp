@@ -362,7 +362,7 @@ class _LandingPageState extends State<LandingPage> {
                                                           print('Interest ${index + 1}: ${interests[index]} pressed');
 
                                                           // Generate a new quiz
-                                                          String id = await quizManager.generateQuiz([ interests[index] ], 30, 20, 5);
+                                                          String id = await quizManager.generateQuiz([ interests[index] ], xpLevel, 20, 5);
                                                           
                                                           Navigator.push(context, MaterialPageRoute(builder:(context) {
                                                             return QuizPage(quizId: id);
@@ -461,7 +461,7 @@ class _LandingPageState extends State<LandingPage> {
                                                           // Add functionality here if needed
 
                                                           // Generate a new quiz
-                                                          String id = await quizManager.generateQuiz([ remainingTopics[index] ], 30, 20, 5);
+                                                          String id = await quizManager.generateQuiz([ remainingTopics[index] ], xpLevel, 20, 5);
                                                           
                                                           Navigator.push(context, MaterialPageRoute(builder:(context) {
                                                             return QuizPage(quizId: id);
@@ -643,7 +643,7 @@ class _LandingPageState extends State<LandingPage> {
                                       } else {
                                         List<RecentQuiz> quizzes = snapshot.data! ?? [];
                                         int numRecentQuizzes = quizzes.length;
-                                        int numQuizzesPerRow = 2;
+                                        int numQuizzesPerRow = 1;
                                         int numRows = (numRecentQuizzes / numQuizzesPerRow).ceil();
                                         List<Widget> rows = List.generate(numRows, (rowIndex) {
                                           List<Widget> rowChildren = [];
@@ -694,7 +694,7 @@ class _LandingPageState extends State<LandingPage> {
                                                               Spacer(), 
 
                                                               Text("+ ${quizzes[index].xpEarned}xp",
-                                                                style: GoogleFonts.nunito(color: Theme.of(context).textTheme.bodyMedium!.color, fontSize: 18, fontWeight: FontWeight.w600, fontStyle: FontStyle.italic),
+                                                                style: GoogleFonts.nunito(color: Theme.of(context).colorScheme.primary, fontSize: 18, fontWeight: FontWeight.w600, fontStyle: FontStyle.italic),
                                                               ),
                                                             ]
                                                           )
