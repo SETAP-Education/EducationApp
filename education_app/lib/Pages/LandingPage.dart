@@ -291,7 +291,7 @@ class _LandingPageState extends State<LandingPage> {
                                   const SizedBox(height: 20),
                                   Text(
                                     'Your Interests',
-                                    style: GoogleFonts.nunito(fontSize: 28),
+                                    style: GoogleFonts.nunito(color: Theme.of(context).textTheme.bodyMedium!.color, fontSize: 28),
                                   ),
                                   const SizedBox(height: 20),
                                   FutureBuilder<List<String>>(
@@ -383,7 +383,7 @@ class _LandingPageState extends State<LandingPage> {
                                   const SizedBox(height: 20),
                                   Text(
                                     'Other Topics',
-                                    style: GoogleFonts.nunito(fontSize: 28),
+                                    style: GoogleFonts.nunito(color: Theme.of(context).textTheme.bodyMedium!.color, fontSize: 28),
                                   ),
                                   const SizedBox(height: 20),
                                   FutureBuilder<List<String>>(
@@ -667,7 +667,7 @@ class _LandingPageState extends State<LandingPage> {
                                                               Spacer(), 
 
                                                               Text("+ ${quizzes[index].xpEarned}xp",
-                                                                style: GoogleFonts.nunito(color: Theme.of(context).colorScheme.secondary, fontSize: 18, fontWeight: FontWeight.w600, fontStyle: FontStyle.italic),
+                                                                style: GoogleFonts.nunito(color: Theme.of(context).textTheme.bodyMedium!.color, fontSize: 18, fontWeight: FontWeight.w600, fontStyle: FontStyle.italic),
                                                               ),
                                                             ]
                                                           )
