@@ -1,8 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:education_app/Pages/QuizPages/QuizPage.dart';
+import 'package:education_app/Quizzes/quizManager.dart';
 import 'package:education_app/Widgets/Button.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:education_app/Pages/LandingPage.dart';
+import 'package:flutter/widgets.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:education_app/Theme/AppTheme.dart';
 
@@ -17,6 +20,7 @@ class _DisplayUserState extends State<DisplayUser> {
   List<String> _selectedInterests = [];
   List<String> _interestsList = [];
   String _displayName = '';
+  QuizManager quizManager = QuizManager(); 
 
   @override
   void initState() {
@@ -116,7 +120,7 @@ class _DisplayUserState extends State<DisplayUser> {
                   child: Container(
                     width: 600,
                     child: TextFormField(
-                      controller: _nameController..text = _displayName,
+                      controller: _nameController,
                       decoration: InputDecoration(
                         labelText: 'Display Name',
                         contentPadding:
@@ -126,10 +130,17 @@ class _DisplayUserState extends State<DisplayUser> {
                               color: Theme.of(context).textTheme.bodyMedium!.color!),
                           borderRadius: BorderRadius.circular(30.0),
                         ),
+                        border: OutlineInputBorder(
+                          borderSide: BorderSide(
+                              color: Theme.of(context).textTheme.bodyMedium!.color!),
+                          borderRadius: BorderRadius.circular(30.0),
+                        ),
                       ),
                       style: GoogleFonts.nunito(fontSize: 20.0),
                       cursorColor: Theme.of(context).textTheme.bodyMedium!.color!,
-                      onEditingComplete: () {},
+                      onChanged: (value) {
+                        _displayName = value; 
+                      },
                     ),
                   ),
                 ),
@@ -150,15 +161,18 @@ class _DisplayUserState extends State<DisplayUser> {
                   ),
                 ),
                 SizedBox(height: 16),
-                Container(
+                SizedBox(
                   width: 400,
-                  child: ListView.builder(
+                  child: GridView.builder(
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                  ),
                     shrinkWrap: true,
                     itemCount: _interestsList.length,
                     itemBuilder: (context, index) {
                       final interest = _interestsList[index];
                       return Padding(
-                        padding: const EdgeInsets.only(bottom: 16.0),
+                        padding: const EdgeInsets.all(8.0),
                         child: InkWell(
                           splashColor: !_selectedInterests.contains(interest)
                               ? Color(0xFF19c37d)
@@ -174,25 +188,36 @@ class _DisplayUserState extends State<DisplayUser> {
                             });
                           },
                           child: Ink(
-                            height: 94,
                             padding: EdgeInsets.all(8),
                             decoration: BoxDecoration(
-                              color: _selectedInterests.contains(interest)
-                                  ? Color(0xFF19c37d)
-                                  : Colors.white,
-                              borderRadius: BorderRadius.circular(24),
+                              color: _selectedInterests.contains(interest) ? Color(0xFFF45B69).withOpacity(0.5) : Theme.of(context).colorScheme.primary.withOpacity(0.2),
+                              borderRadius: BorderRadius.circular(32),
                             ),
-                            child: Center(
-                              child: Text(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+
+                                Container(
+
+                                  decoration: BoxDecoration(
+                                    color: Theme.of(context).scaffoldBackgroundColor,
+                                    borderRadius: BorderRadius.circular(20),
+                                  ),
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Image.asset("assets/images/${interest.toLowerCase()}.png", color: Theme.of(context).colorScheme.primary, width: 48, height: 48)
+                                ),
+
+                                SizedBox(height: 8.0), 
+                                 Text(
                                 interest,
                                 style: GoogleFonts.nunito(
                                   fontSize: 18,
                                   fontWeight: FontWeight.bold,
-                                  color: _selectedInterests.contains(interest)
-                                      ? Colors.white
-                                      : Colors.black,
+                                  color: Theme.of(context).colorScheme.primary,
                                 ),
                               ),
+                              ]
                             ),
                           ),
                         ),
@@ -217,10 +242,13 @@ class _DisplayUserState extends State<DisplayUser> {
                         _saveInterests(_user!.uid, _selectedInterests);
 
                         // Navigate to the landing page
-                        Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(builder: (context) => LandingPage()),
-                        );
+                        // Navigator.pushReplacement(
+                        //   context,
+                        //   MaterialPageRoute(builder: (context) => LandingPage()),
+                        // );
+
+                        // Let's do a diagnostic test
+                        pushDiagnostic(_selectedInterests);
                       } else {
                         // Show an error message or handle empty display name
                         print('Display name cannot be empty');
@@ -263,5 +291,34 @@ class _DisplayUserState extends State<DisplayUser> {
     }).catchError((error) {
       print('Failed to save Interests: $error');
     });
+  }
+
+  void pushDiagnostic(List<String> interests) async {
+
+    // TODO: This does nothing...
+    if (await quizManager.hasUserDoneDiagnostic(_user!.uid)) {
+
+      print("User has done diagnostic");
+
+      // If the user has done the diagnostic push them to home
+      // I think we should make a settings page 
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => LandingPage()),
+      );
+
+      return; 
+    }
+
+    final users = FirebaseFirestore.instance.collection('users');
+    users.doc(_user!.uid).update({ "doneDiagnostic": true });
+
+    String quizId = await quizManager.generateQuiz(_selectedInterests, 15, 60, 8, name: "Diagnostic Test");
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => QuizPage(quizId: quizId, multiplier: 1.0)),
+    );
+
+   
   }
 }

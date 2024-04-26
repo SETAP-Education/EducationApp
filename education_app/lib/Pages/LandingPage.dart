@@ -261,222 +261,12 @@ class _LandingPageState extends State<LandingPage> {
           ? Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Expanded(
-                  flex: 1,
-                  child: Container(
-                    height: MediaQuery.of(context).size.height,
-                    width: MediaQuery.of(context).size.width * 1 / 3,
-                    margin: const EdgeInsets.fromLTRB(30, 30, 30, 30),
-                    child: Column(
-                      children: [
-                        Container(
-                          height: 125,
-                          padding: EdgeInsets.all(16.0),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(12),
-                            color: Theme.of(context).colorScheme.primaryContainer,
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.2),
-                                spreadRadius: 5,
-                                blurRadius: 10,
-                                offset: const Offset(0, 3),
-                              ),
-                            ],
-                          ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(
-                                'XP Level',
-                                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                              ),
-                              SizedBox(height: 10),
-                              Container(
-                                width: double.infinity,
-                                height: 40,
-                                decoration: BoxDecoration(
-                                    border: Border.all(color: Colors.black),
-                                    borderRadius: BorderRadius.circular(20),
-                                ),
-                                child: Stack(
-                                    children: [
-                                        // Inner Container with FractionallySizedBox
-                                        FractionallySizedBox(
-                                            widthFactor: xpLevel / 100,
-                                            child: Container(
-                                                decoration: BoxDecoration(
-                                                    color: Colors.blue,
-                                                    borderRadius: BorderRadius.circular(20),
-                                                ),
-                                            ),
-                                        ),
-                                        // Text widget aligned in the center
-                                        Center(
-                                            child: Text(
-                                                '$xpLevel XP - ${_getXPLevelDescription(xpLevel)}',
-                                                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                                            ),
-                                        ),
-                                    ],
-                                ),
-                            ),
-                            SizedBox(height: 10),
-                            ],
-                          ),
-                        ),
-                        SizedBox(height: 30),
-                        Expanded(
-                          flex: 7,
-                          child: Container(
-                            width: MediaQuery.of(context).size.width * 1 / 3,
-                            padding: EdgeInsets.all(16.0),
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(12),
-                              color: Theme.of(context).colorScheme.primaryContainer,
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withOpacity(0.2),
-                                  spreadRadius: 5,
-                                  blurRadius: 10,
-                                  offset: const Offset(0, 3),
-                                ),
-                              ],
-                            ),
-                            child: SingleChildScrollView(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  const SizedBox(height: 20),
-                                  Row(
-                                    children: [
-                                      Text(
-                                        'Recent',
-                                        style: GoogleFonts.nunito(fontSize: 28),
-                                      ),
-                                      Spacer(), 
-                                      // ElevatedButton(
-                                      //   style: ElevatedButton.styleFrom(
-                                      //     backgroundColor: Theme.of(context).colorScheme.primary,
-                                      //   ),
-                                      //   onPressed: () {
-                                      //     Navigator.push(
-                                      //       context,
-                                      //       MaterialPageRoute(
-                                      //         builder: (context) => QuizHistoryPage(),
-                                      //       ),
-                                      //     );
-                                      //   },
-                                      //   child: Text(
-                                      //     'View All',
-                                      //     style: TextStyle(
-                                      //       color: Theme.of(context).colorScheme.secondary,
-                                      //     ),
-                                      //   ),
-                                      //   ),
-                                    ],
-                                  ),
-                                  const SizedBox(height: 20),
-                                  FutureBuilder<List<RecentQuiz>>(
-                                    future: quizManager.getRecentQuizzesForUser(_user!.uid),
-                                    builder: (context, snapshot) {
-                                      if (snapshot.connectionState == ConnectionState.waiting) {
-                                        return Center(child: CircularProgressIndicator());
-                                      } else if (snapshot.hasError) {
-                                        return Center(child: Text('Error loading quiz names'));
-                                      } else {
-                                        List<RecentQuiz> quizzes = snapshot.data! ?? [];
-                                        int numRecentQuizzes = quizzes.length;
-                                        int numQuizzesPerRow = 1;
-                                        int numRows = (numRecentQuizzes / numQuizzesPerRow).ceil();
-                                        List<Widget> rows = List.generate(numRows, (rowIndex) {
-                                          List<Widget> rowChildren = [];
-                                          for (int i = 0; i < numQuizzesPerRow; i++) {
-                                            int index = rowIndex * numQuizzesPerRow + i;
-                                            const SizedBox(height: 10);
-                                            if (index < numRecentQuizzes) {
-                                              rowChildren.add(
-                                                Expanded(
-                                                  child: Padding(
-                                                    padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 10),
-                                                    child: Container(
-                                                      height: 100,
-                                                      decoration: BoxDecoration(
-                                                        borderRadius: BorderRadius.circular(10),
-                                                        color: Theme.of(context).colorScheme.secondaryContainer,
-                                                        boxShadow: [
-                                                          BoxShadow(
-                                                            color: Colors.black.withOpacity(0.2),
-                                                            spreadRadius: 1,
-                                                            blurRadius: 2,
-                                                            offset: const Offset(0, 1),
-                                                          ),
-                                                        ],
-                                                      ),
-                                                      child: InkWell(
-                                                        onTap: () async {
-                                                          await _getloadedQuestions(quizzes[index].id);
-                                                          await _loadQuizAttemptData(quizzes[index].id);
-                                                          _quizSummaryButton(loadedQuestions, quizAttemptData);
-                                                        },
-                                                        child: Padding(
-                                                          padding: const EdgeInsets.symmetric(horizontal: 20),
-                                                          child: Row(
-                                                            children: [ 
-                                                              Column(
-                                                                mainAxisAlignment: MainAxisAlignment.center,
-                                                                crossAxisAlignment: CrossAxisAlignment.start,
-                                                                children: [
-                                                                  Text(quizzes[index].name, 
-                                                                    style: GoogleFonts.nunito(fontSize: 24, fontWeight: FontWeight.bold),
-                                                                  ),
-                                                                  Text(_nicifyDateTime(DateTime.fromMillisecondsSinceEpoch(quizzes[index].timestamp.millisecondsSinceEpoch)), 
-                                                                    style: GoogleFonts.nunito(color: Theme.of(context).colorScheme.secondary, fontSize: 16, fontWeight: FontWeight.w600, fontStyle: FontStyle.italic),
-                                                                  )
-                                                                ],
-                                                              ),
-                                                              Spacer(), 
-
-                                                              Text("+ ${quizzes[index].xpEarned}xp",
-                                                                style: GoogleFonts.nunito(color: Theme.of(context).colorScheme.primary, fontSize: 18, fontWeight: FontWeight.w600, fontStyle: FontStyle.italic),
-                                                              ),
-                                                            ]
-                                                          )
-                                                        ),
-                                                      ),
-                                                    ),
-                                                  ),
-                                                ),
-                                              );
-                                            }
-                                          }
-                                          return Row(
-                                            children: rowChildren,
-                                          );
-                                        });
-                                        return Column(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                          children: rows,
-                                        );
-                                      }
-                                    },
-                                  ),
-                                  const SizedBox(height: 20),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
+                
                 Expanded(
                   flex: 2,
                   child: Container(
                     height: MediaQuery.of(context).size.height,
-                    margin: const EdgeInsets.fromLTRB(0.0, 30.0, 30.0, 30.0),
+                    margin: const EdgeInsets.fromLTRB(30.0, 30.0, 30.0, 30.0),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -726,7 +516,221 @@ class _LandingPageState extends State<LandingPage> {
                     ),
                   ),
                 ),
-                
+                Expanded(
+                  flex: 1,
+                  child: Container(
+                    height: MediaQuery.of(context).size.height,
+                    width: MediaQuery.of(context).size.width * 1 / 3,
+                    margin: const EdgeInsets.fromLTRB(0, 30, 30, 30),
+                    child: Column(
+                      children: [
+                        Container(
+                          
+                          padding: EdgeInsets.all(16.0),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(12),
+                            color: Theme.of(context).colorScheme.primaryContainer,
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.2),
+                                spreadRadius: 5,
+                                blurRadius: 10,
+                                offset: const Offset(0, 3),
+                              ),
+                            ],
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                'XP Level',
+                                style: GoogleFonts.nunito(fontSize: 26,),
+                              ),
+                              SizedBox(height: 10),
+                              Container(
+                                width: double.infinity,
+                                height: 40,
+                                decoration: BoxDecoration(
+                                    border: Border.all(color: Colors.black),
+                                    borderRadius: BorderRadius.circular(20),
+                                ),
+                                child: Stack(
+                                    children: [
+                                        // Inner Container with FractionallySizedBox
+                                        FractionallySizedBox(
+                                            widthFactor: xpLevel / 100,
+                                            child: Container(
+                                                decoration: BoxDecoration(
+                                                    color: Colors.blue,
+                                                    borderRadius: BorderRadius.circular(20),
+                                                ),
+                                            ),
+                                        ),
+                                        // Text widget aligned in the center
+                                        Center(
+                                            child: Text(
+                                                '$xpLevel XP - ${_getXPLevelDescription(xpLevel)}',
+                                                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                                            ),
+                                        ),
+                                    ],
+                                ),
+                            ),
+                            SizedBox(height: 10),
+                            ],
+                          ),
+                        ),
+                        SizedBox(height: 30),
+                        Expanded(
+                          flex: 7,
+                          child: Container(
+                            width: MediaQuery.of(context).size.width * 1 / 3,
+                            padding: EdgeInsets.all(8.0),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(12),
+                              color: Theme.of(context).colorScheme.primaryContainer,
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.2),
+                                  spreadRadius: 5,
+                                  blurRadius: 10,
+                                  offset: const Offset(0, 3),
+                                ),
+                              ],
+                            ),
+                            child: SingleChildScrollView(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  const SizedBox(height: 20),
+                                  Padding( 
+                                    padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                                    child: Row(
+                                    children: [
+                                      
+                                      Text(
+                                        'Recent',
+                                        style: GoogleFonts.nunito(fontSize: 28),
+                                      ),
+                                      const Spacer(), 
+                                      ElevatedButton(
+                                        style: ElevatedButton.styleFrom(
+                                          backgroundColor: Theme.of(context).colorScheme.primary,
+                                        ),
+                                        onPressed: () {
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) => QuizHistoryPage(),
+                                            ),
+                                          );
+                                        },
+                                        child: Text(
+                                          'View All',
+                                          style: TextStyle(
+                                            color: Theme.of(context).colorScheme.secondary,
+                                          ),
+                                        ),
+                                        ),
+                                        
+                                    ],
+                                  )),
+                                  const SizedBox(height: 20),
+                                  FutureBuilder<List<RecentQuiz>>(
+                                    future: quizManager.getRecentQuizzesForUser(_user!.uid),
+                                    builder: (context, snapshot) {
+                                      if (snapshot.connectionState == ConnectionState.waiting) {
+                                        return Center(child: CircularProgressIndicator());
+                                      } else if (snapshot.hasError) {
+                                        return Center(child: Text('Error loading quiz names'));
+                                      } else {
+                                        List<RecentQuiz> quizzes = snapshot.data! ?? [];
+                                        int numRecentQuizzes = quizzes.length;
+                                        int numQuizzesPerRow = 1;
+                                        int numRows = (numRecentQuizzes / numQuizzesPerRow).ceil();
+                                        List<Widget> rows = List.generate(numRows, (rowIndex) {
+                                          List<Widget> rowChildren = [];
+                                          for (int i = 0; i < numQuizzesPerRow; i++) {
+                                            int index = rowIndex * numQuizzesPerRow + i;
+                                            const SizedBox(height: 10);
+                                            if (index < numRecentQuizzes) {
+                                              rowChildren.add(
+                                                Expanded(
+                                                  child: Padding(
+                                                    padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 10),
+                                                    child: Container(
+                                                      height: 100,
+                                                      decoration: BoxDecoration(
+                                                        borderRadius: BorderRadius.circular(10),
+                                                        color: Theme.of(context).colorScheme.secondaryContainer,
+                                                        boxShadow: [
+                                                          BoxShadow(
+                                                            color: Colors.black.withOpacity(0.2),
+                                                            spreadRadius: 1,
+                                                            blurRadius: 2,
+                                                            offset: const Offset(0, 1),
+                                                          ),
+                                                        ],
+                                                      ),
+                                                      child: InkWell(
+                                                        onTap: () async {
+                                                          await _getloadedQuestions(quizzes[index].id);
+                                                          await _loadQuizAttemptData(quizzes[index].id);
+                                                          _quizSummaryButton(loadedQuestions, quizAttemptData);
+                                                        },
+                                                        child: Padding(
+                                                          padding: const EdgeInsets.symmetric(horizontal: 14),
+                                                          child: Row(
+                                                            children: [ 
+                                                              Column(
+                                                                mainAxisAlignment: MainAxisAlignment.center,
+                                                                crossAxisAlignment: CrossAxisAlignment.start,
+                                                                children: [
+                                                                  Text(quizzes[index].name, 
+                                                                    style: GoogleFonts.nunito(fontSize: 20, fontWeight: FontWeight.bold),
+                                                                  ),
+                                                                  Text(_nicifyDateTime(DateTime.fromMillisecondsSinceEpoch(quizzes[index].timestamp.millisecondsSinceEpoch)), 
+                                                                    style: GoogleFonts.nunito(color: Colors.grey, fontSize: 16, fontWeight: FontWeight.w600, fontStyle: FontStyle.italic),
+                                                                  )
+                                                                ],
+                                                              ),
+                                                              Spacer(), 
+
+                                                              Text("+ ${quizzes[index].xpEarned}xp",
+                                                                style: GoogleFonts.nunito(color: Theme.of(context).colorScheme.primary, fontSize: 18, fontWeight: FontWeight.w600, fontStyle: FontStyle.italic),
+                                                              ),
+                                                            ]
+                                                          )
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
+                                              );
+                                            }
+                                          }
+                                          return Row(
+                                            children: rowChildren,
+                                          );
+                                        });
+                                        return Column(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: rows,
+                                        );
+                                      }
+                                    },
+                                  ),
+                                  const SizedBox(height: 20),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
               ],
             )
           : Center(
