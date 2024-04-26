@@ -7,12 +7,12 @@ import 'package:education_app/Pages/AuthenticationPages/RegistrationPage.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:education_app/Theme/AppTheme.dart';
 
-class OpeningPage extends StatefulWidget {
+class SplashPage extends StatefulWidget {
   @override
-  _OpeningPageState createState() => _OpeningPageState();
+  _SplashPageState createState() => _SplashPageState();
 }
 
-class _OpeningPageState extends State<OpeningPage> {
+class _SplashPageState extends State<SplashPage> {
 
   void _checkAuthState() async {
 
