@@ -277,4 +277,31 @@ class QuizManager {
     return recent; 
   }
 
+  Future<bool> hasUserDoneDiagnostic(String userId) async {
+
+    print("Testing if user $userId has done diagnostic");
+    var db = FirebaseFirestore.instance;
+
+    var user = await db.collection("users").doc(userId).get();
+
+    if (!user.exists) {
+      print("User not found");
+    }
+
+    var data = user.data();
+
+    if (data == null) {
+      print("user Data was null");
+      return false; 
+    }
+
+    print(data);
+
+    if (data.containsKey("doneDiagnostic")) {
+      print("doneDiagnostics exists");
+    }
+
+    return false; 
+  }
+
 }

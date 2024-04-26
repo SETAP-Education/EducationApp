@@ -1,3 +1,4 @@
+import 'package:education_app/Pages/SettingsPage.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
@@ -249,7 +250,8 @@ class AppTheme {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => DisplayUser(),
+                          // builder: (context) => DisplayUser(),
+                          builder: (context) => SettingsPage()
                         ),
                       );
                     },

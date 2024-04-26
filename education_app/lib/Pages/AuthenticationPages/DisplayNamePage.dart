@@ -272,10 +272,31 @@ class _DisplayUserState extends State<DisplayUser> {
   }
 
   void pushDiagnostic(List<String> interests) async {
+
+    // TODO: This does nothing...
+    if (await quizManager.hasUserDoneDiagnostic(_user!.uid)) {
+
+      print("User has done diagnostic");
+
+      // If the user has done the diagnostic push them to home
+      // I think we should make a settings page 
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => LandingPage()),
+      );
+
+      return; 
+    }
+
+    final users = FirebaseFirestore.instance.collection('users');
+    users.doc(_user!.uid).update({ "doneDiagnostic": true });
+
     String quizId = await quizManager.generateQuiz(_selectedInterests, 15, 60, 8, name: "Diagnostic Test");
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(builder: (context) => QuizPage(quizId: quizId, multiplier: 1.0)),
     );
+
+   
   }
 }

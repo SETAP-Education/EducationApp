@@ -715,6 +715,7 @@ class _QuizPageState extends State<QuizPage> {
       await FirebaseFirestore.instance.collection('users').doc(userId).collection('quizHistory').doc(widget.quizId).set({
         'timestamp': FieldValue.serverTimestamp(),
         'xpGain': xpGain,
+        'name': quiz.name,
       }, SetOptions(merge: true));
 
       // We want to add xp to user now
