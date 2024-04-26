@@ -2,6 +2,7 @@ import 'package:education_app/Pages/LandingPage.dart';
 import 'package:flutter/material.dart';
 import 'package:education_app/Quizzes/quiz.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:education_app/Theme/AppTheme.dart';
 
 class QuizSummaryPage extends StatelessWidget {
   final List<QuizQuestion> loadedQuestions;
@@ -20,8 +21,7 @@ class QuizSummaryPage extends StatelessWidget {
     print("4 Question Ids: $questionIds");
 
     return Scaffold(
-      appBar: AppBar(
-      ),
+      appBar: AppTheme.buildAppBar(context, 'Quiz App', false, false, "Welcome to our quiz app", Text('')),
       body: Center(
         child: SingleChildScrollView(
           padding: EdgeInsets.all(16.0),
@@ -273,11 +273,15 @@ class QuizSummaryPage extends StatelessWidget {
       ),
       child: Center(
         child: Text(
-          (userResponse.isEmpty) ? 'Not answered - The correct Answer is: "${question.correctAnswer}"' : userResponse,
+          userResponse.isEmpty
+              ? 'Not answered - The correct Answer is: "${question.correctAnswer}"'
+              : userResponse.toLowerCase() == question.correctAnswer.toLowerCase()
+                  ? 'Correct! Your answer: ${userResponse} ✓'
+                  : 'Incorrect. Your answer: ${userResponse} ✘ | The correct Answer is: "${question.correctAnswer}"',
           style: const TextStyle(
-            color: Colors.black,
+              color: Colors.black,
           ),
-        ),
+      ),
       ),
     );
   }

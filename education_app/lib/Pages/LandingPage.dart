@@ -3,13 +3,16 @@ import 'package:education_app/Pages/QuizPages/QuizPage.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-
-import 'package:education_app/Pages/QuizPages/HistoryPages/AllQuizzes.dart';
 import 'package:education_app/Pages/QuizBuilder.dart';
 import 'package:education_app/Pages/QuizPages/HistoryPages/QuizSummaryPage.dart';
 import 'package:education_app/Quizzes/quiz.dart';
 import 'package:education_app/Quizzes/quizManager.dart';
+import 'package:flutter/widgets.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:education_app/Theme/AppTheme.dart';
+import 'package:education_app/Pages/QuizPages/HistoryPages/AllQuizzesPage.dart';
+import 'package:education_app/Pages/AuthenticationPages/DisplayNamePage.dart';
+
 
 class LandingPage extends StatefulWidget {
   @override
@@ -23,7 +26,6 @@ class _LandingPageState extends State<LandingPage> {
   late String _displayName = "Placeholder";
   late List<String> otherTopics = [];
 
-  List<String> recentQuizzes = [];
   late List<QuizQuestion> loadedQuestions = [];
   Map<String, dynamic> quizAttemptData = {};
   Map<String, dynamic> userSummary = {};
@@ -49,7 +51,6 @@ class _LandingPageState extends State<LandingPage> {
           _getUserInterests(user.uid);
           _getUserXPLevel(user.uid);
           _getUserDisplayName(user.uid); // Call to get user display name
-          _checkQuizHistory();
         }
       }
     });
@@ -146,31 +147,7 @@ class _LandingPageState extends State<LandingPage> {
     }
   }
 
-  void _checkQuizHistory() async {
-    if (_user != null) {
-      try {
-        final CollectionReference userCollection = FirebaseFirestore.instance.collection('users');
-        final DocumentReference userDoc = userCollection.doc(_user!.uid);
-
-        final CollectionReference quizHistoryCollection = userDoc.collection('quizHistory');
-
-        final QuerySnapshot quizHistorySnapshot = await quizHistoryCollection.orderBy('timestamp', descending: true).limit(3).get();
-
-        if (quizHistorySnapshot.docs.isNotEmpty) {
-          // Quiz history exists, get the three most recent quiz IDs
-          final recentQuizIds = quizHistorySnapshot.docs.map((doc) => doc.id).toList();
-
-          setState(() {
-            recentQuizzes = recentQuizIds;
-          });
-        } else {
-          print('No quizzes have been attempted.');
-        }
-      } catch (e) {
-        print('Error checking quiz history: $e');
-      }
-    }
-  }
+ 
 
   Future<void> _getloadedQuestions(String quizId) async {
     // int currentQuestionIndex = 0;
@@ -277,36 +254,19 @@ class _LandingPageState extends State<LandingPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        centerTitle: true,
-        title: Text('Quiz App'),
-        actions: _user != null
-            ? [
-                IconButton(
-                  icon: Icon(Icons.logout),
-                  onPressed: () async {
-                    await FirebaseAuth.instance.signOut();
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => LoginPage(),
-                      ),
-                    );
-                  },
-                ),
-              ]
-            : null,
-      ),
+      appBar: AppTheme.buildAppBar(context, '', true, false, "Welcome to our quiz app", Text(
+        'Hi there! This is the landing page for quizzical. '
+        )),
       body: _user != null
           ? Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                
                 Expanded(
                   flex: 2,
                   child: Container(
                     height: MediaQuery.of(context).size.height,
-                    margin: const EdgeInsets.all(30.0),
+                    margin: const EdgeInsets.fromLTRB(30.0, 30.0, 30.0, 30.0),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -316,7 +276,7 @@ class _LandingPageState extends State<LandingPage> {
                             padding: EdgeInsets.all(16.0),
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(12),
-                              color: const Color(0xFFf3edf6).withOpacity(1),
+                              color: Theme.of(context).colorScheme.primaryContainer,
                               boxShadow: [
                                 BoxShadow(
                                   color: Colors.black.withOpacity(0.2),
@@ -331,10 +291,34 @@ class _LandingPageState extends State<LandingPage> {
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
                                   const SizedBox(height: 20),
-                                  Text(
-                                    'Your Interests',
-                                    style: GoogleFonts.nunito(color: Colors.black, fontSize: 28),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      const SizedBox(), // Empty space on the left
+                                      Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          Text(
+                                            'Your Interests',
+                                            style: GoogleFonts.nunito(fontSize: 28),
+                                          ),
+                                        ],
+                                      ),
+                                      IconButton(
+                                        icon: const Icon(Icons.remove),
+                                        onPressed: () {
+                                          // Navigate to DisplayUser page
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) => DisplayUser(),
+                                            ),
+                                          );
+                                        },
+                                      ),
+                                    ],
                                   ),
+
                                   const SizedBox(height: 20),
                                   FutureBuilder<List<String>>(
                                     future: Future.value(userInterests),
@@ -362,7 +346,7 @@ class _LandingPageState extends State<LandingPage> {
                                                       height: 200,
                                                       decoration: BoxDecoration(
                                                         borderRadius: BorderRadius.circular(10),
-                                                        color: Colors.white,
+                                                        color: Theme.of(context).colorScheme.secondaryContainer,
                                                         boxShadow: [
                                                           BoxShadow(
                                                             color: Colors.black.withOpacity(0.2),
@@ -377,7 +361,7 @@ class _LandingPageState extends State<LandingPage> {
                                                           print('Interest ${index + 1}: ${interests[index]} pressed');
 
                                                           // Generate a new quiz
-                                                          String id = await quizManager.generateQuiz([ interests[index] ], 30, 20, 5);
+                                                          String id = await quizManager.generateQuiz([ interests[index] ], xpLevel, 20, 5);
                                                           
                                                           Navigator.push(context, MaterialPageRoute(builder:(context) {
                                                             return QuizPage(quizId: id);
@@ -423,9 +407,32 @@ class _LandingPageState extends State<LandingPage> {
                                     },
                                   ),
                                   const SizedBox(height: 20),
-                                  Text(
-                                    'Other Topics',
-                                    style: GoogleFonts.nunito(color: Colors.black, fontSize: 28),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      const SizedBox(), // Empty space on the left
+                                      Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          Text(
+                                            'Other Topics',
+                                            style: GoogleFonts.nunito(fontSize: 28),
+                                          ),
+                                        ],
+                                      ),
+                                      IconButton(
+                                        icon: const Icon(Icons.add),
+                                        onPressed: () {
+                                          // Navigate to DisplayUser page
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) => DisplayUser(),
+                                            ),
+                                          );
+                                        },
+                                      ),
+                                    ],
                                   ),
                                   const SizedBox(height: 20),
                                   FutureBuilder<List<String>>(
@@ -460,7 +467,7 @@ class _LandingPageState extends State<LandingPage> {
                                                       height: 200,
                                                       decoration: BoxDecoration(
                                                         borderRadius: BorderRadius.circular(10),
-                                                        color: Colors.white,
+                                                        color: Theme.of(context).colorScheme.secondaryContainer,
                                                         boxShadow: [
                                                           BoxShadow(
                                                             color: Colors.black.withOpacity(0.2),
@@ -476,7 +483,7 @@ class _LandingPageState extends State<LandingPage> {
                                                           // Add functionality here if needed
 
                                                           // Generate a new quiz
-                                                          String id = await quizManager.generateQuiz([ remainingTopics[index] ], 30, 20, 5);
+                                                          String id = await quizManager.generateQuiz([ remainingTopics[index] ], xpLevel, 20, 5);
                                                           
                                                           Navigator.push(context, MaterialPageRoute(builder:(context) {
                                                             return QuizPage(quizId: id);
@@ -539,11 +546,11 @@ class _LandingPageState extends State<LandingPage> {
                     child: Column(
                       children: [
                         Container(
-                          height: 125,
+                          
                           padding: EdgeInsets.all(16.0),
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(12),
-                            color: const Color(0xFFf3edf6).withOpacity(1),
+                            color: Theme.of(context).colorScheme.primaryContainer,
                             boxShadow: [
                               BoxShadow(
                                 color: Colors.black.withOpacity(0.2),
@@ -554,45 +561,44 @@ class _LandingPageState extends State<LandingPage> {
                             ],
                           ),
                           child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Text(
                                 'XP Level',
-                                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                                style: GoogleFonts.nunito(fontSize: 26,),
                               ),
                               SizedBox(height: 10),
                               Container(
-    width: double.infinity,
-    height: 40,
-    decoration: BoxDecoration(
-        border: Border.all(color: Colors.black),
-        borderRadius: BorderRadius.circular(20),
-    ),
-    child: Stack(
-        children: [
-            // Inner Container with FractionallySizedBox
-            FractionallySizedBox(
-                widthFactor: xpLevel / 100,
-                child: Container(
-                    decoration: BoxDecoration(
-                        color: Colors.blue,
-                        borderRadius: BorderRadius.circular(20),
-                    ),
-                ),
-            ),
-            // Text widget aligned in the center
-            Center(
-                child: Text(
-                    '$xpLevel XP - ${_getXPLevelDescription(xpLevel)}',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                ),
-            ),
-        ],
-    ),
-),
-
-                              SizedBox(height: 10),
+                                width: double.infinity,
+                                height: 40,
+                                decoration: BoxDecoration(
+                                    border: Border.all(color: Colors.black),
+                                    borderRadius: BorderRadius.circular(20),
+                                ),
+                                child: Stack(
+                                    children: [
+                                        // Inner Container with FractionallySizedBox
+                                        FractionallySizedBox(
+                                            widthFactor: xpLevel / 100,
+                                            child: Container(
+                                                decoration: BoxDecoration(
+                                                    color: Colors.blue,
+                                                    borderRadius: BorderRadius.circular(20),
+                                                ),
+                                            ),
+                                        ),
+                                        // Text widget aligned in the center
+                                        Center(
+                                            child: Text(
+                                                '$xpLevel XP - ${_getXPLevelDescription(xpLevel)}',
+                                                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                                            ),
+                                        ),
+                                    ],
+                                ),
+                            ),
+                            SizedBox(height: 10),
                             ],
                           ),
                         ),
@@ -601,10 +607,10 @@ class _LandingPageState extends State<LandingPage> {
                           flex: 7,
                           child: Container(
                             width: MediaQuery.of(context).size.width * 1 / 3,
-                            padding: EdgeInsets.all(16.0),
+                            padding: EdgeInsets.all(8.0),
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(12),
-                              color: const Color(0xFFf3edf6).withOpacity(1),
+                              color: Theme.of(context).colorScheme.primaryContainer,
                               boxShadow: [
                                 BoxShadow(
                                   color: Colors.black.withOpacity(0.2),
@@ -619,15 +625,20 @@ class _LandingPageState extends State<LandingPage> {
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
                                   const SizedBox(height: 20),
-                                  Row(
+                                  Padding( 
+                                    padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                                    child: Row(
                                     children: [
-                                      Spacer(),
+                                      
                                       Text(
-                                        'Quiz History',
-                                        style: GoogleFonts.nunito(color: Colors.black, fontSize: 28),
+                                        'Recent',
+                                        style: GoogleFonts.nunito(fontSize: 28),
                                       ),
-                                      SizedBox(width: MediaQuery.of(context).size.width * 1/12), // Adjust the width as needed
+                                      const Spacer(), 
                                       ElevatedButton(
+                                        style: ElevatedButton.styleFrom(
+                                          backgroundColor: Theme.of(context).colorScheme.primary,
+                                        ),
                                         onPressed: () {
                                           Navigator.push(
                                             context,
@@ -636,25 +647,28 @@ class _LandingPageState extends State<LandingPage> {
                                             ),
                                           );
                                         },
-                                        child: const Text(
+                                        child: Text(
                                           'View All',
-                                          style: TextStyle(color: Colors.black),
+                                          style: TextStyle(
+                                            color: Theme.of(context).colorScheme.secondary,
+                                          ),
                                         ),
-                                      ),
+                                        ),
+                                        
                                     ],
-                                  ),
+                                  )),
                                   const SizedBox(height: 20),
-                                  FutureBuilder<List<String>>(
-                                    future: getQuizNames(recentQuizzes),
+                                  FutureBuilder<List<RecentQuiz>>(
+                                    future: quizManager.getRecentQuizzesForUser(_user!.uid),
                                     builder: (context, snapshot) {
                                       if (snapshot.connectionState == ConnectionState.waiting) {
                                         return Center(child: CircularProgressIndicator());
                                       } else if (snapshot.hasError) {
                                         return Center(child: Text('Error loading quiz names'));
                                       } else {
-                                        List<String> quizNames = snapshot.data ?? [];
-                                        int numRecentQuizzes = quizNames.length;
-                                        int numQuizzesPerRow = 2;
+                                        List<RecentQuiz> quizzes = snapshot.data! ?? [];
+                                        int numRecentQuizzes = quizzes.length;
+                                        int numQuizzesPerRow = 1;
                                         int numRows = (numRecentQuizzes / numQuizzesPerRow).ceil();
                                         List<Widget> rows = List.generate(numRows, (rowIndex) {
                                           List<Widget> rowChildren = [];
@@ -663,14 +677,14 @@ class _LandingPageState extends State<LandingPage> {
                                             const SizedBox(height: 10);
                                             if (index < numRecentQuizzes) {
                                               rowChildren.add(
-                                                Flexible(
+                                                Expanded(
                                                   child: Padding(
                                                     padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 10),
                                                     child: Container(
-                                                      height: 200,
+                                                      height: 100,
                                                       decoration: BoxDecoration(
                                                         borderRadius: BorderRadius.circular(10),
-                                                        color: Colors.white,
+                                                        color: Theme.of(context).colorScheme.secondaryContainer,
                                                         boxShadow: [
                                                           BoxShadow(
                                                             color: Colors.black.withOpacity(0.2),
@@ -682,23 +696,33 @@ class _LandingPageState extends State<LandingPage> {
                                                       ),
                                                       child: InkWell(
                                                         onTap: () async {
-                                                          await _getloadedQuestions(recentQuizzes[index]);
-                                                          await _loadQuizAttemptData(recentQuizzes[index]);
+                                                          await _getloadedQuestions(quizzes[index].id);
+                                                          await _loadQuizAttemptData(quizzes[index].id);
                                                           _quizSummaryButton(loadedQuestions, quizAttemptData);
                                                         },
-                                                        child: Center(
-                                                          child: Column(
-                                                            mainAxisAlignment: MainAxisAlignment.center,
-                                                            crossAxisAlignment: CrossAxisAlignment.center,
-                                                            children: [
-                                                              const Icon(
-                                                                Icons.history,
-                                                                size: 60,
-                                                                color: Colors.blue,
+                                                        child: Padding(
+                                                          padding: const EdgeInsets.symmetric(horizontal: 14),
+                                                          child: Row(
+                                                            children: [ 
+                                                              Column(
+                                                                mainAxisAlignment: MainAxisAlignment.center,
+                                                                crossAxisAlignment: CrossAxisAlignment.start,
+                                                                children: [
+                                                                  Text(quizzes[index].name, 
+                                                                    style: GoogleFonts.nunito(fontSize: 20, fontWeight: FontWeight.bold),
+                                                                  ),
+                                                                  Text(_nicifyDateTime(DateTime.fromMillisecondsSinceEpoch(quizzes[index].timestamp.millisecondsSinceEpoch)), 
+                                                                    style: GoogleFonts.nunito(color: Colors.grey, fontSize: 16, fontWeight: FontWeight.w600, fontStyle: FontStyle.italic),
+                                                                  )
+                                                                ],
                                                               ),
-                                                              const SizedBox(height: 10),
-                                                            ],
-                                                          ),
+                                                              Spacer(), 
+
+                                                              Text("+ ${quizzes[index].xpEarned}xp",
+                                                                style: GoogleFonts.nunito(color: Theme.of(context).colorScheme.primary, fontSize: 18, fontWeight: FontWeight.w600, fontStyle: FontStyle.italic),
+                                                              ),
+                                                            ]
+                                                          )
                                                         ),
                                                       ),
                                                     ),
@@ -754,5 +778,27 @@ class _LandingPageState extends State<LandingPage> {
     } else {
       return 'Master';
     }
+  }
+
+  String _nicifyDateTime(DateTime dateTime) {
+    
+
+    List<String> months = [
+      'January',
+      'February',
+      'March',
+      'April',
+      'May',
+      'June',
+      'July',
+      'August',
+      'September',
+      'October',
+      'November',
+      'December'
+    ];
+
+    return "${dateTime.day} ${months[dateTime.month - 1]}";
+
   }
 }

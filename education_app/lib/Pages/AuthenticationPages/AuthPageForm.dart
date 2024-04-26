@@ -5,8 +5,7 @@ import 'package:education_app/Pages/AuthenticationPages/ErrorDisplayer.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
 
-Color primaryColour = Colors.white;
-Color secondaryColour = Colors.black;
+
 
 class AuthPageForm extends StatefulWidget {
 
@@ -28,7 +27,7 @@ class _AuthPageFormState extends State<AuthPageForm> {
     return Stack(
           children: [
             Container(
-             
+
               child: Center( // Center widget added here
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center, // Align the column content vertically centered

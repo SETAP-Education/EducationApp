@@ -9,10 +9,10 @@ import 'package:education_app/Pages/AuthenticationPages/LoginPage.dart';
 import 'package:flutter/widgets.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:education_app/Pages/AuthenticationPages/DisplayNamePage.dart';
+import 'package:education_app/Theme/AppTheme.dart';
 
 // Basic color scheme - will come up with one on Friday with Max
 Color primaryColour = Colors.white;
-Color secondaryColour = Colors.black;
 
 class RegistrationPage extends StatefulWidget {
   @override
@@ -57,12 +57,16 @@ class _RegistrationPageState extends State<RegistrationPage> {
     return PopScope(
       canPop: false, //When false, blocks the current route from being popped
       child: Scaffold(
+        appBar: AppTheme.buildAppBar(context, 'Quiz App', false, false, "Welcome to our quiz app", Text('')),
         body: AuthPageForm(child: _buildRegistrationForm())
       )
     );
   }
 
   Widget _buildRegistrationForm() {
+
+    Color? textColour = Theme.of(context).textTheme.bodyMedium!.color;
+
     return Form(
       key: _formKey,
       child: Column(
@@ -74,7 +78,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
                 style: GoogleFonts.nunito(
                   fontSize: 30.0,
                   fontWeight: FontWeight.bold,
-                  color: secondaryColour,
+                  color: textColour,
                 ),
               ),
             
@@ -87,14 +91,14 @@ class _RegistrationPageState extends State<RegistrationPage> {
                 decoration: InputDecoration(labelText: 'Email',
                       contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
                       focusedBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: secondaryColour),
+                        borderSide: BorderSide(color: textColour!),
                         borderRadius: BorderRadius.circular(30.0),
                       ),
                       enabledBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: secondaryColour),
+                        borderSide: BorderSide(color: textColour!),
                         borderRadius: BorderRadius.circular(30.0),
                       ),
-                      labelStyle: TextStyle(color: secondaryColour),
+                      labelStyle: TextStyle(color: textColour),
                     ),
                     
                 style: GoogleFonts.nunito(
@@ -112,21 +116,21 @@ class _RegistrationPageState extends State<RegistrationPage> {
                 decoration: InputDecoration(labelText: 'Password',
                   contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
                   focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: secondaryColour),
+                    borderSide: BorderSide(color: textColour),
                     borderRadius: BorderRadius.circular(30.0),
                   ),
                   enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: secondaryColour),
+                    borderSide: BorderSide(color: textColour),
                     borderRadius: BorderRadius.circular(30.0),
                   ),
-                  labelStyle: TextStyle(color: secondaryColour),
+                  labelStyle: TextStyle(color: textColour),
                   suffixIcon: Padding(
                     padding: EdgeInsets.only(right: 8.0), // Adjust the padding as needed
                     child: IconButton(
                       icon: Icon(
                         _showPassword ? Icons.visibility_off : Icons.visibility,
                       ),
-                      color: secondaryColour,
+                      color: textColour,
                       onPressed: () {
                         setState(() {
                           _showPassword = !_showPassword;
@@ -163,21 +167,21 @@ class _RegistrationPageState extends State<RegistrationPage> {
                 decoration: InputDecoration(labelText: 'Confirm Password',
                   contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
                   focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: secondaryColour),
+                    borderSide: BorderSide(color: textColour),
                     borderRadius: BorderRadius.circular(30.0),
                   ),
                   enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: secondaryColour),
+                    borderSide: BorderSide(color: textColour),
                     borderRadius: BorderRadius.circular(30.0),
                   ),
-                  labelStyle: TextStyle(color: secondaryColour),
+                  labelStyle: TextStyle(color: textColour),
                   suffixIcon: Padding(
                     padding: EdgeInsets.only(right: 8.0), // Adjust the padding as needed
                     child: IconButton(
                       icon: Icon(
                         _showConfirmPassword ? Icons.visibility_off : Icons.visibility,
                       ),
-                      color: secondaryColour,
+                      color: textColour,
                       onPressed: () {
                         setState(() {
                           _showConfirmPassword = !_showConfirmPassword;
@@ -213,7 +217,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
               children: [
                 Text(
                   'Already have an account? ',
-                  style: GoogleFonts.nunito(color: Colors.black, fontSize: 17.0),
+                  style: GoogleFonts.nunito(fontSize: 17.0),
                 ),
                 MouseRegion(
                   cursor: SystemMouseCursors.click,
@@ -298,7 +302,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
       children: [
         satisfied ? Icon(Icons.done, color: Colors.green,) : Icon(Icons.close, color: Colors.red),
         const SizedBox(width: 8.0),
-        Text(text, style: GoogleFonts.nunito(color: satisfied ? Colors.grey : Colors.black, fontSize: 18, decoration: satisfied ?  TextDecoration.lineThrough : TextDecoration.none),)
+        Text(text, style: GoogleFonts.nunito(color: satisfied ? Colors.grey : Theme.of(context).textTheme.bodyMedium!.color!, fontSize: 18, decoration: satisfied ?  TextDecoration.lineThrough : TextDecoration.none),)
       ]
     );
   }
@@ -311,7 +315,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
     return Container(
       padding: const EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 8.0),
       decoration: BoxDecoration(
-        border: Border.all(),
+        border: Border.all(color: Theme.of(context).textTheme.bodyMedium!.color!),
         borderRadius: BorderRadius.circular(25)
       ),
 
