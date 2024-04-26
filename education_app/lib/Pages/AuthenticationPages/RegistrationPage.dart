@@ -9,7 +9,6 @@ import 'package:flutter/widgets.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:education_app/Pages/AuthenticationPages/DisplayNamePage.dart';
 import 'package:education_app/Pages/LandingPage.dart';
-
 import '../../Theme/AppTheme.dart';
 
 // Basic color scheme - will come up with one on Friday with Max
