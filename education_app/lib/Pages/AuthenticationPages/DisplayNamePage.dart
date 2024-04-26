@@ -1,4 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:education_app/Pages/QuizPages/QuizPage.dart';
+import 'package:education_app/Quizzes/quizManager.dart';
 import 'package:education_app/Widgets/Button.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -17,6 +19,7 @@ class _DisplayUserState extends State<DisplayUser> {
   List<String> _selectedInterests = [];
   List<String> _interestsList = [];
   String _displayName = '';
+  QuizManager quizManager = QuizManager(); 
 
   @override
   void initState() {
@@ -217,10 +220,13 @@ class _DisplayUserState extends State<DisplayUser> {
                         _saveInterests(_user!.uid, _selectedInterests);
 
                         // Navigate to the landing page
-                        Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(builder: (context) => LandingPage()),
-                        );
+                        // Navigator.pushReplacement(
+                        //   context,
+                        //   MaterialPageRoute(builder: (context) => LandingPage()),
+                        // );
+
+                        // Let's do a diagnostic test
+                        pushDiagnostic(_selectedInterests);
                       } else {
                         // Show an error message or handle empty display name
                         print('Display name cannot be empty');
@@ -263,5 +269,13 @@ class _DisplayUserState extends State<DisplayUser> {
     }).catchError((error) {
       print('Failed to save Interests: $error');
     });
+  }
+
+  void pushDiagnostic(List<String> interests) async {
+    String quizId = await quizManager.generateQuiz(_selectedInterests, 15, 60, 8, name: "Diagnostic Test");
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => QuizPage(quizId: quizId, multiplier: 1.0)),
+    );
   }
 }

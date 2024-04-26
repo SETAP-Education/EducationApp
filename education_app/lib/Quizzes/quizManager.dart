@@ -152,7 +152,7 @@ class QuizManager {
 
   
 
-   Future<String> generateQuiz(List<String> tags, int userLevel, int range, int questionCount) async {
+   Future<String> generateQuiz(List<String> tags, int userLevel, int range, int questionCount, { String name = "" }) async {
 
     print("Quiz Generating...");
 
@@ -221,7 +221,17 @@ class QuizManager {
 
     //print(l.map((e) => e.debugPrint()));
 
-    outputQuizId = await addQuizToDatabase(tags.toString(), "System", questionIds);
+    String quizName = tags.toString();
+
+    // Remove the brackets from the quiz name due to List.toString()
+    quizName = quizName.substring(1, quizName.length - 1);
+
+    // If the quiz name is provided then use that
+    if (name.isNotEmpty) {
+      quizName = name; 
+    }
+
+    outputQuizId = await addQuizToDatabase(name, "System", questionIds);
 
     print(outputQuizId);
 

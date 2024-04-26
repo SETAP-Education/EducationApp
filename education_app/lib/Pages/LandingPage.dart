@@ -585,7 +585,7 @@ class _LandingPageState extends State<LandingPage> {
                           flex: 7,
                           child: Container(
                             width: MediaQuery.of(context).size.width * 1 / 3,
-                            padding: EdgeInsets.all(16.0),
+                            padding: EdgeInsets.all(8.0),
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(12),
                               color: Theme.of(context).colorScheme.primaryContainer,
@@ -603,14 +603,16 @@ class _LandingPageState extends State<LandingPage> {
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
                                   const SizedBox(height: 20),
-                                  Row(
+                                  Padding( 
+                                    padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                                    child: Row(
                                     children: [
-                                      Spacer(),
+                                      
                                       Text(
-                                        'Quiz History',
+                                        'Recent',
                                         style: GoogleFonts.nunito(fontSize: 28),
                                       ),
-                                      SizedBox(width: MediaQuery.of(context).size.width * 1/12), // Adjust the width as needed
+                                      const Spacer(), 
                                       ElevatedButton(
                                         style: ElevatedButton.styleFrom(
                                           backgroundColor: Theme.of(context).colorScheme.primary,
@@ -630,8 +632,9 @@ class _LandingPageState extends State<LandingPage> {
                                           ),
                                         ),
                                         ),
+                                        
                                     ],
-                                  ),
+                                  )),
                                   const SizedBox(height: 20),
                                   FutureBuilder<List<RecentQuiz>>(
                                     future: quizManager.getRecentQuizzesForUser(_user!.uid),
@@ -676,7 +679,7 @@ class _LandingPageState extends State<LandingPage> {
                                                           _quizSummaryButton(loadedQuestions, quizAttemptData);
                                                         },
                                                         child: Padding(
-                                                          padding: const EdgeInsets.symmetric(horizontal: 20),
+                                                          padding: const EdgeInsets.symmetric(horizontal: 14),
                                                           child: Row(
                                                             children: [ 
                                                               Column(
@@ -684,10 +687,10 @@ class _LandingPageState extends State<LandingPage> {
                                                                 crossAxisAlignment: CrossAxisAlignment.start,
                                                                 children: [
                                                                   Text(quizzes[index].name, 
-                                                                    style: GoogleFonts.nunito(fontSize: 24, fontWeight: FontWeight.bold),
+                                                                    style: GoogleFonts.nunito(fontSize: 20, fontWeight: FontWeight.bold),
                                                                   ),
                                                                   Text(_nicifyDateTime(DateTime.fromMillisecondsSinceEpoch(quizzes[index].timestamp.millisecondsSinceEpoch)), 
-                                                                    style: GoogleFonts.nunito(color: Theme.of(context).colorScheme.secondary, fontSize: 16, fontWeight: FontWeight.w600, fontStyle: FontStyle.italic),
+                                                                    style: GoogleFonts.nunito(color: Colors.grey, fontSize: 16, fontWeight: FontWeight.w600, fontStyle: FontStyle.italic),
                                                                   )
                                                                 ],
                                                               ),
