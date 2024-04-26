@@ -1,3 +1,4 @@
+import 'package:education_app/Pages/SettingsPage.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
@@ -130,46 +131,46 @@ class AppTheme {
                   title,
                   style: TextStyle(fontSize: 20, color: Theme.of(context).colorScheme.secondary),
                 ),
-                IconButton(
-                  icon: Icon(Icons.help_outline, color: Theme.of(context).colorScheme.secondary,),
-                  onPressed: () {
-                    showDialog(
-                      context: context,
-                      builder: (BuildContext context) {
-                        return AlertDialog(
-                          title: Text(dialogTitle, style: TextStyle(color: Theme.of(context).colorScheme.secondary)),
-                          content: contentText,
-                          backgroundColor: Color(0xFF40414f),
-                          actions: [
-                            TextButton(
-                              onPressed: () {
-                                Navigator.of(context).pop();
-                              },
-                              child: Text('Close', style: TextStyle(color: Theme.of(context).colorScheme.secondary)),
-                            ),
-                          ],
-                        );
-                      },
-                    );
-                  },
-                ),
+                // IconButton(
+                //   icon: Icon(Icons.help_outline, color: Theme.of(context).colorScheme.secondary,),
+                //   onPressed: () {
+                //     showDialog(
+                //       context: context,
+                //       builder: (BuildContext context) {
+                //         return AlertDialog(
+                //           title: Text(dialogTitle, style: TextStyle(color: Theme.of(context).colorScheme.secondary)),
+                //           content: contentText,
+                //           backgroundColor: Color(0xFF40414f),
+                //           actions: [
+                //             TextButton(
+                //               onPressed: () {
+                //                 Navigator.of(context).pop();
+                //               },
+                //               child: Text('Close', style: TextStyle(color: Theme.of(context).colorScheme.secondary)),
+                //             ),
+                //           ],
+                //         );
+                //       },
+                //     );
+                //   },
+                // ),
               ],
             ),
             Padding(
               padding: const EdgeInsets.all(8.0), // Adjust the right padding as needed
               child: Row(
                 children: [
-                  // IconButton(
-                  //   icon: Icon(Icons.settings),
-                  //   onPressed: () {
-                  //     Navigator.push(
-                  //       context,
-                  //       MaterialPageRoute(
-                  //         builder: (context) => SettingsPage(),
-                  //       ),
-                  //     );
-                  //   },
-                  // ),
+                  IconButton(
+                    icon: Icon(Icons.settings),
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => DisplayUser(),
+                        ),
+                      );
+                    },
+                  ),
                   IconButton(
                     icon: Icon(Icons.exit_to_app, color: Theme.of(context).colorScheme.secondary),
                     onPressed: () {
@@ -214,29 +215,29 @@ class AppTheme {
                   title,
                   style: TextStyle(fontSize: 20, color: Theme.of(context).colorScheme.secondary),
                 ),
-                IconButton(
-                  icon: Icon(Icons.help_outline, color: Theme.of(context).colorScheme.secondary,),
-                  onPressed: () {
-                    showDialog(
-                      context: context,
-                      builder: (BuildContext context) {
-                        return AlertDialog(
-                          title: Text(dialogTitle, style: TextStyle(color: Theme.of(context).colorScheme.secondary)),
-                          content: contentText,
-                          backgroundColor: Color(0xFF40414f),
-                          actions: [
-                            TextButton(
-                              onPressed: () {
-                                Navigator.of(context).pop();
-                              },
-                              child: Text('Close', style: TextStyle(color: Theme.of(context).colorScheme.secondary)),
-                            ),
-                          ],
-                        );
-                      },
-                    );
-                  },
-                ),
+                // IconButton(
+                //   icon: Icon(Icons.help_outline, color: Theme.of(context).colorScheme.secondary,),
+                //   onPressed: () {
+                //     showDialog(
+                //       context: context,
+                //       builder: (BuildContext context) {
+                //         return AlertDialog(
+                //           title: Text(dialogTitle, style: TextStyle(color: Theme.of(context).colorScheme.secondary)),
+                //           content: contentText,
+                //           backgroundColor: Color(0xFF40414f),
+                //           actions: [
+                //             TextButton(
+                //               onPressed: () {
+                //                 Navigator.of(context).pop();
+                //               },
+                //               child: Text('Close', style: TextStyle(color: Theme.of(context).colorScheme.secondary)),
+                //             ),
+                //           ],
+                //         );
+                //       },
+                //     );
+                //   },
+                // ),
               ],
             ),
             Padding(
@@ -249,7 +250,8 @@ class AppTheme {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => DisplayUser(),
+                          // builder: (context) => DisplayUser(),
+                          builder: (context) => SettingsPage()
                         ),
                       );
                     },

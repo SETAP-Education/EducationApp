@@ -14,29 +14,29 @@ void setUpLevelAndRank(){
 }
 
 // adds gained xp from quiz to total xp - called after user completes a quiz
-void setXp(BuildContext context, int quizXp){
-  xp += quizXp;
+  void setXp(BuildContext context, int quizXp){
+    xp += quizXp;
 
-  // check if level has changed
-  if(checkIfLeveledUp() == true){
-    // only need to set level and rank if user has leveled up, otherwise just wasting time
-    level = getLevel();
-    rank = getRank();
-    if(reachedMaxLevel == true){
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Congratulations you have reached the maximum level! You are now at level ${level} and rank ${rank}'),
-        ),
-      );
+    // check if level has changed
+    if(checkIfLeveledUp() == true){
+      // only need to set level and rank if user has leveled up, otherwise just wasting time
+      level = getLevel();
+      rank = getRank();
+      if(reachedMaxLevel == true){
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Congratulations you have reached the maximum level! You are now at level ${level} and rank ${rank}'),
+          ),
+        );
+      }
+      else{
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Congratulations you leveled up! You are now at level ${level} and rank ${rank}'),
+          ),
+        );
+      }
     }
-    else{
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Congratulations you leveled up! You are now at level ${level} and rank ${rank}'),
-        ),
-      );
-    }
-  }
 
   // need to add a function that updates xp to users db - needs to happen everytime the user completes a quiz
 }
