@@ -308,23 +308,23 @@ class _LandingPageState extends State<LandingPage> {
                           )
                         ),
 
-                        const SizedBox(height: 32.0),
+                        const SizedBox(height: 16.0),
 
                         Expanded(
                           child: Container(
                             width: MediaQuery.of(context).size.width * 2 / 3,
-                            padding: EdgeInsets.all(16.0),
+                            padding: EdgeInsets.symmetric(horizontal: 16.0),
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(12),
                              
                             ),
                             child: SingleChildScrollView(
                               child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   const SizedBox(height: 20),
                                   Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    mainAxisAlignment: MainAxisAlignment.start,
                                     children: [
                                       const SizedBox(), // Empty space on the left
                                       Row(
@@ -332,23 +332,28 @@ class _LandingPageState extends State<LandingPage> {
                                         children: [
                                           Text(
                                             'Your Interests',
-                                            style: GoogleFonts.nunito(fontSize: 28),
+                                            style: GoogleFonts.nunito(fontSize: 28, fontWeight: FontWeight.bold),
                                           ),
                                         ],
                                       ),
-                                      IconButton(
-                                        icon: const Icon(Icons.remove),
-                                        onPressed: () {
-                                          // Navigate to DisplayUser page
-                                          Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                              builder: (context) => DisplayUser(),
-                                            ),
-                                          );
-                                        },
-                                      ),
+                                      // IconButton(
+                                      //   icon: const Icon(Icons.remove),
+                                      //   onPressed: () {
+                                      //     // Navigate to DisplayUser page
+                                      //     Navigator.push(
+                                      //       context,
+                                      //       MaterialPageRoute(
+                                      //         builder: (context) => DisplayUser(),
+                                      //       ),
+                                      //     );
+                                      //   },
+                                      // ),
                                     ],
+                                  ),
+
+                                  Text(
+                                    'Pick a topic to begin a quiz!',
+                                    style: GoogleFonts.nunito(fontSize: 18),
                                   ),
 
                                   const SizedBox(height: 20),
@@ -410,7 +415,7 @@ class _LandingPageState extends State<LandingPage> {
                                                               const SizedBox(height: 10),
                                                               Text(
                                                                 interests[index],
-                                                                style:  GoogleFonts.nunito(fontSize: 18,  fontWeight: FontWeight.bold, color: Colors.white),
+                                                                style:  GoogleFonts.nunito(fontSize: 18,  fontWeight: FontWeight.bold),
                                                                 textAlign: TextAlign.center,
                                                               ),
                                                             ],
@@ -438,7 +443,7 @@ class _LandingPageState extends State<LandingPage> {
                                   ),
                                   const SizedBox(height: 20),
                                   Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    mainAxisAlignment: MainAxisAlignment.start,
                                     children: [
                                       const SizedBox(), // Empty space on the left
                                       Row(
@@ -446,23 +451,27 @@ class _LandingPageState extends State<LandingPage> {
                                         children: [
                                           Text(
                                             'Other Topics',
-                                            style: GoogleFonts.nunito(fontSize: 28),
+                                            style: GoogleFonts.nunito(fontSize: 28, fontWeight: FontWeight.bold),
                                           ),
                                         ],
                                       ),
-                                      IconButton(
-                                        icon: const Icon(Icons.add),
-                                        onPressed: () {
-                                          // Navigate to DisplayUser page
-                                          Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                              builder: (context) => DisplayUser(),
-                                            ),
-                                          );
-                                        },
-                                      ),
+                                      // IconButton(
+                                      //   icon: const Icon(Icons.add),
+                                      //   onPressed: () {
+                                      //     // Navigate to DisplayUser page
+                                      //     Navigator.push(
+                                      //       context,
+                                      //       MaterialPageRoute(
+                                      //         builder: (context) => DisplayUser(),
+                                      //       ),
+                                      //     );
+                                      //   },
+                                      // ),
                                     ],
+                                  ),
+                                  Text(
+                                    'Other topics you can take quiz on that didn\'t interest you as much!',
+                                    style: GoogleFonts.nunito(fontSize: 18),
                                   ),
                                   const SizedBox(height: 20),
                                   FutureBuilder<List<String>>(
@@ -493,24 +502,9 @@ class _LandingPageState extends State<LandingPage> {
                                                 Flexible(
                                                   child: Padding(
                                                     padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 10),
-                                                    child: Container(
-                                                      height: 200,
-                                                      decoration: BoxDecoration(
-                                                        borderRadius: BorderRadius.circular(10),
-                                                        color: Theme.of(context).colorScheme.secondaryContainer,
-                                                        boxShadow: [
-                                                          BoxShadow(
-                                                            color: Colors.black.withOpacity(0.2),
-                                                            spreadRadius: 1,
-                                                            blurRadius: 2,
-                                                            offset: const Offset(0, 1),
-                                                          ),
-                                                        ],
-                                                      ),
-                                                      child: InkWell(
-                                                        onTap: () async {
-                                                          print('${remainingTopics[index]} pressed');
-                                                          // Add functionality here if needed
+                                                    child: InkWell(
+                                                      onTap: () async {
+                                                          print('Interest ${index + 1}: ${remainingTopics[index]} pressed');
 
                                                           // Generate a new quiz
                                                           String id = await quizManager.generateQuiz([ remainingTopics[index] ], xpLevel, 20, 5);
@@ -519,20 +513,32 @@ class _LandingPageState extends State<LandingPage> {
                                                             return QuizPage(quizId: id);
                                                           },));
                                                         },
+                                                      
+                                                      child: Ink(
+                                                        height: 200,
+                                                        decoration: BoxDecoration(
+                                                        borderRadius: BorderRadius.circular(10),
+                                                        color: Theme.of(context).colorScheme.primary.withOpacity(0.3),
+                                                        
+                                                      ),
                                                         child: Center(
                                                           child: Column(
                                                             mainAxisAlignment: MainAxisAlignment.center,
                                                             crossAxisAlignment: CrossAxisAlignment.center,
                                                             children: [
-                                                              const Icon(
-                                                                Icons.topic, // Replace with appropriate icon
-                                                                size: 60,
-                                                                color: Colors.blue,
+                                                               Container(
+
+                                                                decoration: BoxDecoration(
+                                                                  color: Theme.of(context).scaffoldBackgroundColor,
+                                                                  borderRadius: BorderRadius.circular(20),
+                                                                ),
+                                                                padding: const EdgeInsets.all(8.0),
+                                                                child: Image.asset("assets/images/${remainingTopics[index].toLowerCase()}.png", color: Theme.of(context).colorScheme.primary, width: 48, height: 48)
                                                               ),
                                                               const SizedBox(height: 10),
                                                               Text(
-                                                                remainingTopics[index], // Use remainingTopics instead of topics
-                                                                style: const TextStyle(fontSize: 16),
+                                                                remainingTopics[index],
+                                                                style:  GoogleFonts.nunito(fontSize: 18,  fontWeight: FontWeight.bold),
                                                                 textAlign: TextAlign.center,
                                                               ),
                                                             ],
@@ -540,8 +546,8 @@ class _LandingPageState extends State<LandingPage> {
                                                         ),
                                                       ),
                                                     ),
+                                                    ),
                                                   ),
-                                                ),
                                               );
                                             } else {
                                               rowChildren.add(Flexible(child: SizedBox())); // Add an empty Flexible widget for even distribution
