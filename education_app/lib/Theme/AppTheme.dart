@@ -107,6 +107,7 @@ class AppTheme {
 
     if (includeTitleAndIcons && autoImply) {
       return AppBar(
+        clipBehavior: Clip.none,
         automaticallyImplyLeading: true,
         iconTheme: IconThemeData(color: Theme.of(context).colorScheme.secondary),
         backgroundColor: Colors.transparent,

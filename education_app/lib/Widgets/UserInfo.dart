@@ -14,6 +14,15 @@ class UserInfoState extends State<UserInfo> {
 
   @override
   Widget build(BuildContext context) {
-    return Container();
+    return Container(
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.primaryContainer,
+      ),
+      child: Column(
+        children: [
+          
+        ],
+      )
+    );
   }
 }

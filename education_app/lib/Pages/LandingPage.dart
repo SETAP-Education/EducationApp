@@ -265,63 +265,50 @@ class _LandingPageState extends State<LandingPage> {
                 Expanded(
                   flex: 2,
                   child: Container(
-                    height: MediaQuery.of(context).size.height,
-                    margin: const EdgeInsets.fromLTRB(30.0, 30.0, 30.0, 30.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-
-                        InkWell(
-                          borderRadius: BorderRadius.circular(24),
-                          onTap: () async {
-                            // We want to run a review quiz 
-
-                            // Since we use all questions from all difficulties just fluke user stuff
-                            String quizId = await quizManager.generateQuiz(userInterests, 50, 100, 8, name: "Review");
-                            // Reviews grant even less xp 
-                            Navigator.push(context, MaterialPageRoute(builder:(context) => QuizPage(quizId: quizId, multiplier: 0.15)));
-                          },
-                          child: Ink(
-                            width: double.infinity,
-                            decoration: BoxDecoration(
-                              color: Theme.of(context).colorScheme.primary.withOpacity(0.3),
-                              borderRadius: BorderRadius.circular(24),
-                            ),
-                            padding: EdgeInsets.all(24.0),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Container(
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(12),
-                                    color: Theme.of(context).colorScheme.primary
-                                  ),
-                                  padding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 6.0),
-                                  child: Text("Review", style: GoogleFonts.nunito(fontSize: 20, fontWeight: FontWeight.w800))
-                                ),
-                                SizedBox(height: 12.0),
-                                Text("Take a review of all topics and difficulties to see how much you've improved!", style: GoogleFonts.nunito(fontSize: 18, fontWeight: FontWeight.bold)),
-                                SizedBox(height: 6.0),
-                                Text("8 Questions • ${userInterests.toString().substring(1, userInterests.toString().length - 1)}", style: GoogleFonts.nunito(fontSize: 14, fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.primary))
-                              ],
-                            )
-                          )
-                        ),
-
-                        const SizedBox(height: 16.0),
-
-                        Expanded(
-                          child: Container(
-                            width: MediaQuery.of(context).size.width * 2 / 3,
-                            padding: EdgeInsets.symmetric(horizontal: 16.0),
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(12),
-                             
-                            ),
-                            child: SingleChildScrollView(
+                    clipBehavior: Clip.none,
+                    height: double.infinity,
+                    padding: const EdgeInsets.all(30),
+                    child:  SingleChildScrollView(
+                      clipBehavior: Clip.none,
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
+                                  InkWell(
+                                    borderRadius: BorderRadius.circular(24),
+                                    onTap: () async {
+                                      // We want to run a review quiz 
+
+                                      // Since we use all questions from all difficulties just fluke user stuff
+                                      String quizId = await quizManager.generateQuiz(userInterests, 50, 100, 8, name: "Review");
+                                      // Reviews grant even less xp 
+                                      Navigator.push(context, MaterialPageRoute(builder:(context) => QuizPage(quizId: quizId, multiplier: 0.15)));
+                                    },
+                                    child: Ink(
+                                      width: double.infinity,
+                                      decoration: BoxDecoration(
+                                        color: Theme.of(context).colorScheme.primary.withOpacity(0.3),
+                                        borderRadius: BorderRadius.circular(24),
+                                      ),
+                                      padding: EdgeInsets.all(24.0),
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Container(
+                                            decoration: BoxDecoration(
+                                              borderRadius: BorderRadius.circular(12),
+                                              color: Theme.of(context).colorScheme.primary
+                                            ),
+                                            padding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 6.0),
+                                            child: Text("Review", style: GoogleFonts.nunito(fontSize: 20, fontWeight: FontWeight.w800))
+                                          ),
+                                          SizedBox(height: 12.0),
+                                          Text("Take a review of all topics and difficulties to see how much you've improved!", style: GoogleFonts.nunito(fontSize: 18, fontWeight: FontWeight.bold)),
+                                          SizedBox(height: 6.0),
+                                          Text("8 Questions • ${userInterests.toString().substring(1, userInterests.toString().length - 1)}", style: GoogleFonts.nunito(fontSize: 14, fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.primary))
+                                        ],
+                                      )
+                                    )
+                                  ),  
                                   const SizedBox(height: 20),
                                   Row(
                                     mainAxisAlignment: MainAxisAlignment.start,
@@ -565,14 +552,11 @@ class _LandingPageState extends State<LandingPage> {
                                     },
                                   ),
                                 ],
-                              ),
+                              ))),
                             ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
+                          
+                        
+                
                 Expanded(
                   flex: 1,
                   child: Container(
