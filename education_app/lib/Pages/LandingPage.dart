@@ -270,6 +270,10 @@ class _LandingPageState extends State<LandingPage> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
+                        Text(
+                          'Hello, ' + _displayName +'!',
+                          style: GoogleFonts.nunito(fontSize: 28),
+                        ),
                         Expanded(
                           child: Container(
                             width: MediaQuery.of(context).size.width * 2 / 3,
@@ -290,10 +294,6 @@ class _LandingPageState extends State<LandingPage> {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
-                                  Text(
-                                    'Hello, ' + _displayName +'!',
-                                    style: GoogleFonts.nunito(fontSize: 28),
-                                  ),
                                   const SizedBox(height: 20),
                                   Row(
                                     mainAxisAlignment: MainAxisAlignment.center,
