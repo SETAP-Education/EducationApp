@@ -1,13 +1,14 @@
+import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:education_app/Pages/QuizPages/QuizPage.dart';
 import 'package:education_app/Quizzes/quizManager.dart';
 import 'package:education_app/Widgets/Button.dart';
-import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:education_app/Pages/LandingPage.dart';
 import 'package:flutter/widgets.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:education_app/Theme/AppTheme.dart';
+import 'package:education_app/Pages/AuthenticationPages/ErrorDisplayer.dart';
 
 class DisplayUser extends StatefulWidget {
   @override
@@ -81,40 +82,42 @@ class _DisplayUserState extends State<DisplayUser> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppTheme.buildAppBar(context, 'Quiz App', false, false, "Welcome to our quiz app", Text('')),
-      body: SingleChildScrollView(
-        child: Center(
-          child: Container(
-            width: 600,
-            padding: EdgeInsets.all(8),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Center(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
+      body: Stack(
+        children: [
+          SingleChildScrollView(
+            child: Center(
+              child: Container(
+                width: 600,
+                padding: EdgeInsets.all(8),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Center(
+                      child: Column(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          Text("Hey There!! ",
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Text("Hey There!! ",
+                                  style: GoogleFonts.nunito(
+                                      fontSize: 38,
+                                      fontWeight: FontWeight.bold,
+                                      fontStyle: FontStyle.italic)),
+                              Text(
+                                "👋",
+                                style: TextStyle(fontSize: 38),
+                              )
+                            ],
+                          ),
+                          Text("What should we call you?",
                               style: GoogleFonts.nunito(
-                                  fontSize: 38,
-                                  fontWeight: FontWeight.bold,
-                                  fontStyle: FontStyle.italic)),
-                          Text(
-                            "👋",
-                            style: TextStyle(fontSize: 38),
-                          )
+                                  fontSize: 26, fontWeight: FontWeight.w600))
                         ],
                       ),
-                      Text("What should we call you?",
-                          style: GoogleFonts.nunito(
-                              fontSize: 26, fontWeight: FontWeight.w600))
-                    ],
                   ),
-                ),
                 SizedBox(height: 20),
                 Center(
                   child: Container(
@@ -219,52 +222,55 @@ class _DisplayUserState extends State<DisplayUser> {
                               ),
                               ]
                             ),
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-                ),
-                SizedBox(height: 20),
-                Center(
-                  child: Button(
-                    width: 400,
-                    important: true,
-                    onClick: () {
-                      // Get the entered display name
-                      String displayName = _nameController.text.trim();
+                          )));
+                        },
+                      ),
+                    ),
+                    SizedBox(height: 20),
+                    Center(
+                      child: Button(
+                        width: 400,
+                        important: true,
+                        onClick: () {
+                          // Get the entered display name
+                          String displayName = _nameController.text.trim();
 
-                      if (displayName.isNotEmpty) {
-                        // Set the display name in Firebase database
-                        _setDisplayName(_user!.uid, displayName);
+                          // Check if display name or interests are empty
+                          if (displayName.isEmpty) {
+                              // Add an error message to the error manager
+                              print("No display name");
+                              globalErrorManager.pushError('Display name cannot be empty');
+                          } else if (_selectedInterests.isEmpty) {
+                              // Add an error message to the error manager
+                              print("No interests");
+                              globalErrorManager.pushError('You must select at least one interest');
+                          } else {
+                              // If there are no errors, proceed with setting the display name and interests
+                              _setDisplayName(_user!.uid, displayName);
+                              _saveInterests(_user!.uid, _selectedInterests);
+                              // Navigate to the landing page
+                               // Let's do a diagnostic test
+                              pushDiagnostic(_selectedInterests);
+                          }
+                        },
+                        child: Text('Let\'s go!',
+                            style: GoogleFonts.nunito(
+                                color: Colors.white,
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold)),
+                      ),
+                    ),
+                    SizedBox(height: 20),
+                  
+        ]),
 
-                        // Save selected interests to Firestore
-                        _saveInterests(_user!.uid, _selectedInterests);
-
-                        // Navigate to the landing page
-                        // Navigator.pushReplacement(
-                        //   context,
-                        //   MaterialPageRoute(builder: (context) => LandingPage()),
-                        // );
-
-                        // Let's do a diagnostic test
-                        pushDiagnostic(_selectedInterests);
-                      } else {
-                        // Show an error message or handle empty display name
-                        print('Display name cannot be empty');
-                      }
-                    },
-                    child: Text('Let\'s go!',
-                        style: GoogleFonts.nunito(
-                            color: Colors.white,
-                            fontSize: 18,fontWeight: FontWeight.bold)),
-              )),
-              SizedBox(height: 20),
-            ],
-          ),
-        ),
+          // Add ErrorDisplayer widget to display error messages
+         
+      ))),
+       ErrorDisplayer(),
+      ],
       ),
-    ));
+    );
   }
 
   void _setDisplayName(String userId, String displayName) {
