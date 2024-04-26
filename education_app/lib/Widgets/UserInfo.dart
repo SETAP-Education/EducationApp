@@ -48,15 +48,21 @@ class UserInfoWidgetState extends State<UserInfoWidget> {
         currentXpOverall = data["xpLvl"];
         print(currentXpOverall);
         currentLevel = XpInterface.getLevel(currentXpOverall);
-        currentLevelMax = XpInterface.rankThesholds[currentLevel];
-        if (currentLevel > 0) {
-          prevLevelMax = XpInterface.rankThesholds[currentLevel - 1];
+
+        if (XpInterface.rankList[currentLevel] == "Emerald") {
+          currentLevelProgress = currentXpOverall - prevLevelMax;
         }
         else {
-          prevLevelMax = 0;
+          currentLevelMax = XpInterface.rankThesholds[currentLevel];
+          if (currentLevel > 0) {
+            prevLevelMax = XpInterface.rankThesholds[currentLevel - 1];
+          }
+          else {
+            prevLevelMax = 0;
+          }
+          
+          currentLevelProgress = currentXpOverall - prevLevelMax;
         }
-        
-        currentLevelProgress = currentXpOverall - prevLevelMax;
       });
      
     }
@@ -96,37 +102,53 @@ class UserInfoWidgetState extends State<UserInfoWidget> {
 
             Text(XpInterface.getRank(currentXpOverall), style: GoogleFonts.nunito(fontWeight: FontWeight.bold, fontSize: 30)),
 
-            SizedBox(
-              width: double.infinity,
-              child: RichText(
-                text: TextSpan(
-                  text: currentLevelProgress.toString(),
-                  style: GoogleFonts.nunito(
-                    color: Theme.of(context).textTheme.bodyMedium!.color,
-                    fontSize: 22, 
-                    fontWeight: FontWeight.bold
-                  ),
-                  children: [
-                    TextSpan(
-                      text: " / ${currentLevelMax - prevLevelMax}",
-                      style: GoogleFonts.nunito(
-                        color: Colors.black.withOpacity(0.3),
-                        fontSize: 16, 
-                        fontWeight: FontWeight.bold
-                      )
+            if (XpInterface.getRank(currentXpOverall) != "Emerald")
+              SizedBox(
+                width: double.infinity,
+                child: RichText(
+                  text: TextSpan(
+                    text: currentLevelProgress.toString(),
+                    style: GoogleFonts.nunito(
+                      color: Theme.of(context).textTheme.bodyMedium!.color,
+                      fontSize: 22, 
+                      fontWeight: FontWeight.bold
                     ),
-                    // TextSpan(
-                    //   text: " xp",
-                    //   style: GoogleFonts.nunito(
-                    //     color: Theme.of(context).textTheme.bodyMedium!.color!,
-                    //     fontSize: 22, 
-                    //     fontWeight: FontWeight.bold
-                    //   )
-                    // )
-                  ]
-                )
+                    children: [
+                      TextSpan(
+                        text: " / ${currentLevelMax - prevLevelMax}",
+                        style: GoogleFonts.nunito(
+                          color: Colors.black.withOpacity(0.3),
+                          fontSize: 16, 
+                          fontWeight: FontWeight.bold
+                        )
+                      ),
+                      // TextSpan(
+                      //   text: " xp",
+                      //   style: GoogleFonts.nunito(
+                      //     color: Theme.of(context).textTheme.bodyMedium!.color!,
+                      //     fontSize: 22, 
+                      //     fontWeight: FontWeight.bold
+                      //   )
+                      // )
+                    ]
+                  )
+                ),
               ),
-            ),
+            if (XpInterface.getRank(currentXpOverall) == "Emerald")
+              SizedBox(
+                  width: double.infinity,
+                  child: RichText(
+                    text: TextSpan(
+                      text: currentLevelProgress.toString(),
+                      style: GoogleFonts.nunito(
+                        color: Theme.of(context).textTheme.bodyMedium!.color,
+                        fontSize: 22, 
+                        fontWeight: FontWeight.bold
+                      ),
+                      
+                    )
+                  ),
+                ),
 
             const SizedBox(height: 6.0),
            
