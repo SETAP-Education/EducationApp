@@ -270,21 +270,53 @@ class _LandingPageState extends State<LandingPage> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
+
+                        InkWell(
+                          borderRadius: BorderRadius.circular(24),
+                          onTap: () async {
+                            // We want to run a review quiz 
+
+                            // Since we use all questions from all difficulties just fluke user stuff
+                            String quizId = await quizManager.generateQuiz(userInterests, 50, 100, 8, name: "Review");
+                            // Reviews grant even less xp 
+                            Navigator.push(context, MaterialPageRoute(builder:(context) => QuizPage(quizId: quizId, multiplier: 0.15)));
+                          },
+                          child: Ink(
+                            width: double.infinity,
+                            decoration: BoxDecoration(
+                              color: Theme.of(context).colorScheme.primary.withOpacity(0.3),
+                              borderRadius: BorderRadius.circular(24),
+                            ),
+                            padding: EdgeInsets.all(24.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Container(
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(12),
+                                    color: Theme.of(context).colorScheme.primary
+                                  ),
+                                  padding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 6.0),
+                                  child: Text("Review", style: GoogleFonts.nunito(fontSize: 20, fontWeight: FontWeight.w800))
+                                ),
+                                SizedBox(height: 12.0),
+                                Text("Take a review of all topics and difficulties to see how much you've improved!", style: GoogleFonts.nunito(fontSize: 18, fontWeight: FontWeight.bold)),
+                                SizedBox(height: 6.0),
+                                Text("8 Questions • ${userInterests.toString().substring(1, userInterests.toString().length - 1)}", style: GoogleFonts.nunito(fontSize: 14, fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.primary))
+                              ],
+                            )
+                          )
+                        ),
+
+                        const SizedBox(height: 32.0),
+
                         Expanded(
                           child: Container(
                             width: MediaQuery.of(context).size.width * 2 / 3,
                             padding: EdgeInsets.all(16.0),
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(12),
-                              color: Theme.of(context).colorScheme.primaryContainer,
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withOpacity(0.2),
-                                  spreadRadius: 5,
-                                  blurRadius: 10,
-                                  offset: const Offset(0, 3),
-                                ),
-                              ],
+                             
                             ),
                             child: SingleChildScrollView(
                               child: Column(
@@ -342,22 +374,8 @@ class _LandingPageState extends State<LandingPage> {
                                                 Flexible(
                                                   child: Padding(
                                                     padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 10),
-                                                    child: Container(
-                                                      height: 200,
-                                                      decoration: BoxDecoration(
-                                                        borderRadius: BorderRadius.circular(10),
-                                                        color: Theme.of(context).colorScheme.secondaryContainer,
-                                                        boxShadow: [
-                                                          BoxShadow(
-                                                            color: Colors.black.withOpacity(0.2),
-                                                            spreadRadius: 1,
-                                                            blurRadius: 2,
-                                                            offset: const Offset(0, 1),
-                                                          ),
-                                                        ],
-                                                      ),
-                                                      child: InkWell(
-                                                        onTap: () async {
+                                                    child: InkWell(
+                                                      onTap: () async {
                                                           print('Interest ${index + 1}: ${interests[index]} pressed');
 
                                                           // Generate a new quiz
@@ -367,20 +385,32 @@ class _LandingPageState extends State<LandingPage> {
                                                             return QuizPage(quizId: id);
                                                           },));
                                                         },
+                                                      
+                                                      child: Ink(
+                                                        height: 200,
+                                                        decoration: BoxDecoration(
+                                                        borderRadius: BorderRadius.circular(10),
+                                                        color: Theme.of(context).colorScheme.primary.withOpacity(0.3),
+                                                        
+                                                      ),
                                                         child: Center(
                                                           child: Column(
                                                             mainAxisAlignment: MainAxisAlignment.center,
                                                             crossAxisAlignment: CrossAxisAlignment.center,
                                                             children: [
-                                                              const Icon(
-                                                                Icons.history,
-                                                                size: 60,
-                                                                color: Colors.blue,
+                                                               Container(
+
+                                                                decoration: BoxDecoration(
+                                                                  color: Theme.of(context).scaffoldBackgroundColor,
+                                                                  borderRadius: BorderRadius.circular(20),
+                                                                ),
+                                                                padding: const EdgeInsets.all(8.0),
+                                                                child: Image.asset("assets/images/${interests[index].toLowerCase()}.png", color: Theme.of(context).colorScheme.primary, width: 48, height: 48)
                                                               ),
                                                               const SizedBox(height: 10),
                                                               Text(
                                                                 interests[index],
-                                                                style: const TextStyle(fontSize: 16),
+                                                                style:  GoogleFonts.nunito(fontSize: 18,  fontWeight: FontWeight.bold, color: Colors.white),
                                                                 textAlign: TextAlign.center,
                                                               ),
                                                             ],
