@@ -5,6 +5,9 @@ import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:firebase_auth_mocks/firebase_auth_mocks.dart';
 import 'package:education_app/Pages/AuthenticationPages/RegistrationPage.dart';
 
+
+//this test does actually pass but the page it takes you to means the test cant end itself so a timeout
+//has been put in to force it to stop as the test passes but cannot sign out
 main() {
   testWidgets('registration success', (WidgetTester tester) async {
     //Mock Firebase Auth and Firestore
