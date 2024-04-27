@@ -177,9 +177,7 @@ class _DisplayUserState extends State<DisplayUser> {
                       return Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: InkWell(
-                          splashColor: !_selectedInterests.contains(interest)
-                              ? Color(0xFF19c37d)
-                              : Colors.white,
+                          splashColor: Colors.white,
                           borderRadius: BorderRadius.circular(24),
                           onTap: () {
                             setState(() {
@@ -193,7 +191,7 @@ class _DisplayUserState extends State<DisplayUser> {
                           child: Ink(
                             padding: EdgeInsets.all(8),
                             decoration: BoxDecoration(
-                              color: _selectedInterests.contains(interest) ? Color(0xFFF45B69).withOpacity(0.5) : Theme.of(context).colorScheme.primary.withOpacity(0.2),
+                              color: _selectedInterests.contains(interest) ? Theme.of(context).colorScheme.primary.withOpacity(1) : Theme.of(context).colorScheme.primary.withOpacity(0.2),
                               borderRadius: BorderRadius.circular(32),
                             ),
                             child: Column(
@@ -217,7 +215,7 @@ class _DisplayUserState extends State<DisplayUser> {
                                 style: GoogleFonts.nunito(
                                   fontSize: 18,
                                   fontWeight: FontWeight.bold,
-                                  color: Theme.of(context).colorScheme.primary,
+                                  color: _selectedInterests.contains(interest) ? Colors.white : Theme.of(context).colorScheme.primary,
                                 ),
                               ),
                               ]
