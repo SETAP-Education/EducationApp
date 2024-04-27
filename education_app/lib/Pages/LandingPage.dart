@@ -222,7 +222,7 @@ class _LandingPageState extends State<LandingPage> {
         print('Error loading quiz attempt data: $e');
       }
     }
-  }
+  } 
 
   Map<String, dynamic> createQuizAttemptData(Map<String, dynamic> userSummary) {
     int quizTotal = loadedQuestions.length;
