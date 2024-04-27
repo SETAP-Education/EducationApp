@@ -201,10 +201,11 @@ class UserInfoWidgetState extends State<UserInfoWidget> {
 
             const Expanded(
               child: SizedBox(
-              child: SingleChildScrollView(
-                child:  RecentQuizzes()
+                child: SingleChildScrollView(
+                  child:  RecentQuizzes()
+                )
               )
-            ))
+            )
 
           
 

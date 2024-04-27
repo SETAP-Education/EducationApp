@@ -79,14 +79,7 @@ class RecentQuizzesState extends State<RecentQuizzes> {
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(10),
                             color: Theme.of(context).colorScheme.secondaryContainer,
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.2),
-                                spreadRadius: 1,
-                                blurRadius: 2,
-                                offset: const Offset(0, 1),
-                              ),
-                            ],
+                            
                           ),
                           child: InkWell(
                             onTap: () async {
