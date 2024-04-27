@@ -9,7 +9,6 @@ import 'package:flutter/widgets.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:education_app/Pages/AuthenticationPages/DisplayNamePage.dart';
 import 'package:education_app/Theme/AppTheme.dart';
-
 import 'package:education_app/Pages/QuizPages/QuizPage.dart';
 import 'package:education_app/Quizzes/quizManager.dart';
 import 'package:education_app/Pages/LandingPage.dart';
@@ -321,8 +320,6 @@ class _SettingsDisplayUserState extends State<SettingsDisplayUser> {
                           SizedBox(height: 20),
 
                         ]),
-
-                    // Add ErrorDisplayer widget to display error messages
 
                   ))),
           ErrorDisplayer(),
