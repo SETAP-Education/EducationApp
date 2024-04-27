@@ -2,6 +2,7 @@
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:education_app/Quizzes/xpLogic.dart';
+import 'package:education_app/Widgets/RecentQuizzes.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -90,7 +91,7 @@ class UserInfoWidgetState extends State<UserInfoWidget> {
                 borderRadius: BorderRadius.circular(16.0),
                 color: Theme.of(context).colorScheme.primary,
               ),
-              padding: EdgeInsets.all(16.0),
+              padding: EdgeInsets.all(32.0),
 
             child: Column(
               children: [
@@ -122,14 +123,7 @@ class UserInfoWidgetState extends State<UserInfoWidget> {
                           fontWeight: FontWeight.bold
                         )
                       ),
-                      // TextSpan(
-                      //   text: " xp",
-                      //   style: GoogleFonts.nunito(
-                      //     color: Theme.of(context).textTheme.bodyMedium!.color!,
-                      //     fontSize: 22, 
-                      //     fontWeight: FontWeight.bold
-                      //   )
-                      // )
+                      
                     ]
                   )
                 ),
@@ -170,8 +164,23 @@ class UserInfoWidgetState extends State<UserInfoWidget> {
                       ),
                   ),
               ),
-            )
-              ]))
+            ),
+
+            ])),
+
+            // End of XP box and rank box
+
+            const SizedBox(height: 16),
+
+            const Expanded(
+              child: SizedBox(
+              child: SingleChildScrollView(
+                child:  RecentQuizzes()
+              )
+            ))
+
+          
+
           ],
         )
       )
