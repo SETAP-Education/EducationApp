@@ -123,6 +123,16 @@ class UserInfoWidgetState extends State<UserInfoWidget> {
                           fontWeight: FontWeight.bold
                         )
                       ),
+
+                      TextSpan(
+                        text: " xp",
+                        style: GoogleFonts.nunito(
+                          color:  Theme.of(context).textTheme.bodyMedium!.color,
+                          fontSize: 22, 
+                          fontWeight: FontWeight.bold,
+                          fontStyle: FontStyle.italic
+                        )
+                      ),
                       
                     ]
                   )
@@ -133,12 +143,24 @@ class UserInfoWidgetState extends State<UserInfoWidget> {
                   width: double.infinity,
                   child: RichText(
                     text: TextSpan(
-                      text: currentLevelProgress.toString(),
+                      text: "${currentLevelProgress.toString()} ",
                       style: GoogleFonts.nunito(
                         color: Theme.of(context).textTheme.bodyMedium!.color,
                         fontSize: 22, 
                         fontWeight: FontWeight.bold
                       ),
+                      children: [
+                        TextSpan(
+                        text: " xp",
+                        style: GoogleFonts.nunito(
+                          color:  Theme.of(context).textTheme.bodyMedium!.color,
+                          fontSize: 22, 
+                          fontWeight: FontWeight.bold,
+                          fontStyle: FontStyle.italic
+                        )
+                      ),
+                      ]
+                      
                       
                     )
                   ),
