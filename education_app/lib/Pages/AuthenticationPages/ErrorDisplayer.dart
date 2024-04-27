@@ -1,8 +1,4 @@
-
-
-
 import 'dart:async';
-
 import 'package:flutter/material.dart';
 
 class ErrorManager extends ChangeNotifier {
