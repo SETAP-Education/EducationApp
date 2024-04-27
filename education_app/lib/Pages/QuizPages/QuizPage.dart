@@ -10,10 +10,10 @@ import 'package:education_app/Pages/LandingPage.dart';
 
 class QuizPage extends StatefulWidget {
 
-  QuizPage({ required this.quizId });
+  QuizPage({ required this.quizId, this.multiplier = 0.5 });
 
   String quizId = ""; 
-
+  double multiplier  = 0.0; 
 
   @override
   _QuizPageState createState() => _QuizPageState();
@@ -28,6 +28,7 @@ class _QuizPageState extends State<QuizPage> {
   bool quizCompleted = false;
   Map<String, dynamic> userSummary = {};
   bool quizSubmitted = false;
+  int earnedXp = 0; 
   // Replace the quizId being passed in, it is static for testing purposes.
   Map<String, dynamic> quizAttemptData = {};
 
@@ -183,6 +184,7 @@ class _QuizPageState extends State<QuizPage> {
           builder: (context) => QuizSummaryPage(
             loadedQuestions: loadedQuestions,
             quizAttemptData: quizAttemptData,
+            earnedXp: earnedXp,
           ),
         ),
       );
@@ -258,7 +260,7 @@ class _QuizPageState extends State<QuizPage> {
                         child: IconButton(
                           // color: tertiary,
                           // hoverColor: secondary,
-                          icon: const Icon(Icons.arrow_left),
+                          icon: Icon(Icons.arrow_left, color: Theme.of(context).colorScheme.primary,),
                           tooltip: 'Previous question',
                           onPressed: () {
                             if (currentQuestionIndex > 0) {
@@ -279,7 +281,7 @@ class _QuizPageState extends State<QuizPage> {
                       child: IconButton(
                         // color: tertiary,
                         // hoverColor: secondary,
-                        icon: const Icon(Icons.arrow_right),
+                        icon: Icon(Icons.arrow_right, color: Theme.of(context).colorScheme.primary),
                         tooltip: currentQuestionIndex < loadedQuestions.length - 1
                             ? 'Next Question'
                             : 'Submit Quiz',
@@ -709,12 +711,15 @@ class _QuizPageState extends State<QuizPage> {
       // Calculate the User XP to add
 
 
-      int xpGain = calculateXpGain(userSummary, 0.5);
+      int xpGain = calculateXpGain(userSummary, widget.multiplier);
+
+      earnedXp = xpGain; 
 
       // Now, update the timestamp field in the quizId2 document
       await FirebaseFirestore.instance.collection('users').doc(userId).collection('quizHistory').doc(widget.quizId).set({
         'timestamp': FieldValue.serverTimestamp(),
         'xpGain': xpGain,
+        'name': quiz.name,
       }, SetOptions(merge: true));
 
       // We want to add xp to user now

@@ -10,7 +10,33 @@ bool reachedMaxLevel = false;
 // function to be ran at the beginning of the program, takes xp and sets level and rank
 void setUpLevelAndRank(){
   level = getLevel();
-  rank = getRank();
+}
+
+class XpInterface {
+
+  static List<String> rankList = ['Bronze', 'Silver', 'Gold', 'Platinum', 'Emerald'];
+  static List<int> rankThesholds = [ 20, 40, 60, 80, 100 ];
+
+  static int getLevel(int xp) {
+     for (int i = 0; i < rankThesholds.length; i++) {
+      if (xp < rankThesholds[i]) {
+        return i;
+      }
+    }
+
+    return 0;
+  }
+
+  static String getRank(int xp) {
+    
+    for (int i = 0; i < rankList.length; i++) {
+      if (xp < rankThesholds[i]) {
+        return rankList[i];
+      }
+    }
+
+    return rankList[0];
+  }
 }
 
 // adds gained xp from quiz to total xp - called after user completes a quiz
@@ -21,7 +47,7 @@ void setXp(BuildContext context, int quizXp){
   if(checkIfLeveledUp() == true){
     // only need to set level and rank if user has leveled up, otherwise just wasting time
     level = getLevel();
-    rank = getRank();
+    //rank = getRank();
     if(reachedMaxLevel == true){
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -73,11 +99,11 @@ bool checkIfLeveledUp(){
 }
 
 // returns the rank based on users level
-String getRank(){
-  List<String> rankList = ['Copper', 'Silver', 'Gold', 'Pearl', 'Jade', 'Ruby', 'Sapphire', 'Emerald', 'Opal', 'Diamond'];
+String getRank(int xp){
+  List<String> rankList = ['Bronze', 'Silver', 'Gold', 'Platinum', 'Emerald'];
   String rank = '';
   for(int i=0;i<=9;i++){
-    if(level == i){
+    if(xp == i){
       rank = rankList[i];
     }
   }

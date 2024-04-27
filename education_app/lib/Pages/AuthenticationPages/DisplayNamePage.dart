@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:education_app/Pages/QuizPages/QuizPage.dart';
+import 'package:education_app/Quizzes/quizManager.dart';
 import 'package:education_app/Widgets/Button.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:education_app/Pages/LandingPage.dart';
+import 'package:flutter/widgets.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:education_app/Theme/AppTheme.dart';
 import 'package:education_app/Pages/AuthenticationPages/ErrorDisplayer.dart';
@@ -18,6 +21,7 @@ class _DisplayUserState extends State<DisplayUser> {
   List<String> _selectedInterests = [];
   List<String> _interestsList = [];
   String _displayName = '';
+  QuizManager quizManager = QuizManager(); 
 
   @override
   void initState() {
@@ -113,92 +117,110 @@ class _DisplayUserState extends State<DisplayUser> {
                                   fontSize: 26, fontWeight: FontWeight.w600))
                         ],
                       ),
-                    ),
-                    SizedBox(height: 20),
-                    Center(
-                      child: Container(
-                        width: 600,
-                        child: TextFormField(
-                          controller: _nameController,
-                          decoration: InputDecoration(
-                            labelText: 'Display Name',
-                            contentPadding:
-                                EdgeInsets.symmetric(horizontal: 20, vertical: 15),
-                            focusedBorder: OutlineInputBorder(
-                              borderSide: BorderSide(
-                                  color: Theme.of(context).textTheme.bodyMedium!.color!),
-                              borderRadius: BorderRadius.circular(30.0),
-                            ),
-                          ),
-                          style: GoogleFonts.nunito(fontSize: 20.0),
-                          cursorColor: Theme.of(context).textTheme.bodyMedium!.color!,
+                  ),
+                SizedBox(height: 20),
+                Center(
+                  child: Container(
+                    width: 600,
+                    child: TextFormField(
+                      controller: _nameController,
+                      decoration: InputDecoration(
+                        labelText: 'Display Name',
+                        contentPadding:
+                            EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+                        focusedBorder: OutlineInputBorder(
+                          borderSide: BorderSide(
+                              color: Theme.of(context).textTheme.bodyMedium!.color!),
+                          borderRadius: BorderRadius.circular(30.0),
+                        ),
+                        border: OutlineInputBorder(
+                          borderSide: BorderSide(
+                              color: Theme.of(context).textTheme.bodyMedium!.color!),
+                          borderRadius: BorderRadius.circular(30.0),
                         ),
                       ),
+                      style: GoogleFonts.nunito(fontSize: 20.0),
+                      cursorColor: Theme.of(context).textTheme.bodyMedium!.color!,
+                      onChanged: (value) {
+                        _displayName = value; 
+                      },
                     ),
-                    SizedBox(height: 30),
-                    Text(
-                      'What do you wanna learn?',
-                      style: GoogleFonts.nunito(
-                        fontSize: 26.0,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    Text(
-                      'psst. Don\'t worry you can still access the others later!',
-                      style: GoogleFonts.nunito(
-                        fontSize: 16.0,
-                        fontWeight: FontWeight.w600,
-                        fontStyle: FontStyle.italic,
-                      ),
-                    ),
-                    SizedBox(height: 16),
-                    Container(
-                      width: 400,
-                      child: ListView.builder(
-                        shrinkWrap: true,
-                        itemCount: _interestsList.length,
-                        itemBuilder: (context, index) {
-                          final interest = _interestsList[index];
-                          return Padding(
-                            padding: const EdgeInsets.only(bottom: 16.0),
-                            child: InkWell(
-                              splashColor: !_selectedInterests.contains(interest)
-                                  ? Color(0xFF19c37d)
-                                  : Colors.white,
-                              borderRadius: BorderRadius.circular(24),
-                              onTap: () {
-                                setState(() {
-                                  if (_selectedInterests.contains(interest)) {
-                                    _selectedInterests.remove(interest);
-                                  } else {
-                                    _selectedInterests.add(interest);
-                                  }
-                                });
-                              },
-                              child: Ink(
-                                height: 94,
-                                padding: EdgeInsets.all(8),
-                                decoration: BoxDecoration(
-                                  color: _selectedInterests.contains(interest)
-                                      ? Color(0xFF19c37d)
-                                      : Colors.white,
-                                  borderRadius: BorderRadius.circular(24),
-                                ),
-                                child: Center(
-                                  child: Text(
-                                    interest,
-                                    style: GoogleFonts.nunito(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.bold,
-                                      color: _selectedInterests.contains(interest)
-                                          ? Colors.white
-                                          : Colors.black,
-                                    ),
+                  ),
+                ),
+                SizedBox(height: 30),
+                Text(
+                  'What do you wanna learn?',
+                  style: GoogleFonts.nunito(
+                    fontSize: 26.0,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                Text(
+                  'psst. Don\'t worry you can still access the others later!',
+                  style: GoogleFonts.nunito(
+                    fontSize: 16.0,
+                    fontWeight: FontWeight.w600,
+                    fontStyle: FontStyle.italic,
+                  ),
+                ),
+                SizedBox(height: 16),
+                SizedBox(
+                  width: 400,
+                  child: GridView.builder(
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                  ),
+                    shrinkWrap: true,
+                    itemCount: _interestsList.length,
+                    itemBuilder: (context, index) {
+                      final interest = _interestsList[index];
+                      return Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: InkWell(
+                          splashColor: Colors.white,
+                          borderRadius: BorderRadius.circular(24),
+                          onTap: () {
+                            setState(() {
+                              if (_selectedInterests.contains(interest)) {
+                                _selectedInterests.remove(interest);
+                              } else {
+                                _selectedInterests.add(interest);
+                              }
+                            });
+                          },
+                          child: Ink(
+                            padding: EdgeInsets.all(8),
+                            decoration: BoxDecoration(
+                              color: _selectedInterests.contains(interest) ? Theme.of(context).colorScheme.primary.withOpacity(1) : Theme.of(context).colorScheme.primary.withOpacity(0.2),
+                              borderRadius: BorderRadius.circular(32),
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+
+                                Container(
+
+                                  decoration: BoxDecoration(
+                                    color: Theme.of(context).scaffoldBackgroundColor,
+                                    borderRadius: BorderRadius.circular(20),
                                   ),
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Image.asset("assets/images/${interest.toLowerCase()}.png", color: Theme.of(context).colorScheme.primary, width: 48, height: 48)
+                                ),
+
+                                SizedBox(height: 8.0), 
+                                 Text(
+                                interest,
+                                style: GoogleFonts.nunito(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                  color: _selectedInterests.contains(interest) ? Colors.white : Theme.of(context).colorScheme.primary,
                                 ),
                               ),
+                              ]
                             ),
-                          );
+                          )));
                         },
                       ),
                     ),
@@ -225,10 +247,8 @@ class _DisplayUserState extends State<DisplayUser> {
                               _setDisplayName(_user!.uid, displayName);
                               _saveInterests(_user!.uid, _selectedInterests);
                               // Navigate to the landing page
-                              Navigator.pushReplacement(
-                                  context,
-                                  MaterialPageRoute(builder: (context) => LandingPage()),
-                              );
+                               // Let's do a diagnostic test
+                              pushDiagnostic(_selectedInterests);
                           }
                         },
                         child: Text('Let\'s go!',
@@ -239,15 +259,14 @@ class _DisplayUserState extends State<DisplayUser> {
                       ),
                     ),
                     SizedBox(height: 20),
-                  ],
-                ),
-              ),
-            ),
-          ),
+                  
+        ]),
 
           // Add ErrorDisplayer widget to display error messages
-          ErrorDisplayer(),
-        ],
+         
+      ))),
+       ErrorDisplayer(),
+      ],
       ),
     );
   }
@@ -278,5 +297,34 @@ class _DisplayUserState extends State<DisplayUser> {
     }).catchError((error) {
       print('Failed to save Interests: $error');
     });
+  }
+
+  void pushDiagnostic(List<String> interests) async {
+
+    // TODO: This does nothing...
+    if (await quizManager.hasUserDoneDiagnostic(_user!.uid)) {
+
+      print("User has done diagnostic");
+
+      // If the user has done the diagnostic push them to home
+      // I think we should make a settings page 
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => LandingPage()),
+      );
+
+      return; 
+    }
+
+    final users = FirebaseFirestore.instance.collection('users');
+    users.doc(_user!.uid).update({ "doneDiagnostic": true });
+
+    String quizId = await quizManager.generateQuiz(_selectedInterests, 15, 60, 8, name: "Diagnostic Test");
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => QuizPage(quizId: quizId, multiplier: 1.0)),
+    );
+
+   
   }
 }
