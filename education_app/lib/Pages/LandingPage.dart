@@ -473,7 +473,10 @@ class _LandingPageState extends State<LandingPage> {
                 
                 Expanded(
                   flex: 1,
-                  child: UserInfoWidget(userId: _user!.uid)
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(0.0, 30.0, 30.0, 30.0),
+                    child: UserInfoWidget(userId: _user!.uid)
+                  ),
                 ),
               ],
             )
