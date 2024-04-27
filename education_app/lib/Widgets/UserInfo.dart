@@ -3,6 +3,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:education_app/Quizzes/xpLogic.dart';
 import 'package:education_app/Widgets/RecentQuizzes.dart';
+import 'package:education_app/Widgets/TabBar.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -191,6 +192,10 @@ class UserInfoWidgetState extends State<UserInfoWidget> {
             ])),
 
             // End of XP box and rank box
+
+            const SizedBox(height: 16),
+
+            TabBarCustom(options: ["Recent", "Milestones"],),
 
             const SizedBox(height: 16),
 
