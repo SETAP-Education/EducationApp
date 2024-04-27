@@ -195,7 +195,7 @@ class UserInfoWidgetState extends State<UserInfoWidget> {
 
             const SizedBox(height: 16),
 
-            TabBarCustom(options: ["Recent", "Milestones"],),
+            TabBarCustom(options: const ["Recent" /*, "Milestones" */],),
 
             const SizedBox(height: 16),
 

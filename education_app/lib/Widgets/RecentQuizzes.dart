@@ -23,6 +23,7 @@ class RecentQuizzesState extends State<RecentQuizzes> {
   late List<QuizQuestion> loadedQuestions = [];
   Map<String, dynamic> quizAttemptData = {};
   Map<String, dynamic> userSummary = {};
+  int earnedXp = 0; 
   late Quiz quiz; 
 
   @override
@@ -91,6 +92,7 @@ class RecentQuizzesState extends State<RecentQuizzes> {
                             onTap: () async {
                               await _getloadedQuestions(quizzes[index].id);
                               await _loadQuizAttemptData(quizzes[index].id);
+                              earnedXp = quizzes[index].xpEarned;
                               _quizSummaryButton(loadedQuestions, quizAttemptData);
                             },
                             child: Padding(
@@ -221,6 +223,7 @@ class RecentQuizzesState extends State<RecentQuizzes> {
         builder: (context) => QuizSummaryPage(
           loadedQuestions: loadedQuestions,
           quizAttemptData: quizData,
+          earnedXp: earnedXp,
         ),
       ),
     );

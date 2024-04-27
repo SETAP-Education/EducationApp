@@ -1,16 +1,20 @@
 import 'package:education_app/Pages/LandingPage.dart';
+import 'package:education_app/Widgets/Button.dart';
 import 'package:flutter/material.dart';
 import 'package:education_app/Quizzes/quiz.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:education_app/Theme/AppTheme.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class QuizSummaryPage extends StatelessWidget {
   final List<QuizQuestion> loadedQuestions;
   final Map<String, dynamic> quizAttemptData;
+  final int earnedXp; 
 
   QuizSummaryPage({
     required this.loadedQuestions,
     required this.quizAttemptData,
+    required this.earnedXp, 
   });
 
   @override
@@ -37,9 +41,13 @@ class QuizSummaryPage extends StatelessWidget {
               for (int i = 0; i < loadedQuestions.length; i++)
                 FractionallySizedBox(
                   widthFactor: 2 / 3,
-                  child: Card(
+                  child: Container(
                     margin: EdgeInsets.only(bottom: 16.0),
-                    elevation: 3,
+                   
+                    decoration: BoxDecoration(
+                       color: Theme.of(context).colorScheme.primaryContainer,
+                       borderRadius: BorderRadius.circular(24),
+                    ),
                     child: Padding(
                       padding: const EdgeInsets.all(16.0),
                       child: loadedQuestions.isNotEmpty
@@ -49,19 +57,23 @@ class QuizSummaryPage extends StatelessWidget {
                   ),
                 ),
               SizedBox(height: 16.0),
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => LandingPage(),
+                FractionallySizedBox(
+                  widthFactor: 2 / 3,
+                  child: Button(
+                    important: true,
+                    onClick: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => LandingPage(),
+                        ),
+                      );
+                    },
+                    child: Text(
+                      'Back to Home',
+                      style: GoogleFonts.nunito(fontSize: 18, color: Colors.white, fontWeight: FontWeight.bold),
                     ),
-                  );
-                },
-                child: const Text(
-                  'Back to Home',
-                  style: TextStyle(color: Colors.black),
-                ),
+                 )
               ),
             ],
           ),
@@ -123,12 +135,13 @@ class QuizSummaryPage extends StatelessWidget {
 
     return FractionallySizedBox(
       widthFactor: 2 / 3,
-      child: Card(
+      child: Container(
         margin: EdgeInsets.symmetric(vertical: 16.0),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12.0),
+        decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.primaryContainer,
+          borderRadius: BorderRadius.circular(24.0),
         ),
-        elevation: 5,
+       
         child: Container(
           padding: EdgeInsets.all(16.0),
           child: Column(
@@ -236,7 +249,7 @@ class QuizSummaryPage extends StatelessWidget {
           child: Text(
             option,
             style: TextStyle(
-              color: isSelected ? Colors.white : Colors.black,
+              color: isSelected ? Colors.white : Colors.grey,
             ),
           ),
         );
