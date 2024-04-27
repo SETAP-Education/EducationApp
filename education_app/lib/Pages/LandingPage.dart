@@ -1,5 +1,6 @@
 import 'package:education_app/Pages/AuthenticationPages/LoginPage.dart';
 import 'package:education_app/Pages/QuizPages/QuizPage.dart';
+import 'package:education_app/Widgets/UserInfo.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -149,83 +150,7 @@ class _LandingPageState extends State<LandingPage> {
 
  
 
-  Future<void> _getloadedQuestions(String quizId) async {
-    // int currentQuestionIndex = 0;
-
-    if (mounted) {
-      // print("Loading quiz with ID: $quizId");
-
-      Quiz? loadedQuiz = await quizManager.getQuizWithId(quizId);
-
-      if (loadedQuiz != null) {
-        setState(() {
-          quiz = loadedQuiz;
-        });
-
-        List<QuizQuestion> questions = [];
-        for (String questionId in quiz.questionIds) {
-          QuizQuestion? question = await QuizManager().getQuizQuestionById(questionId);
-
-          if (question != null) {
-            questions.add(question);
-          } else {
-            // Handle case where question doesn't exist
-          }
-        }
-
-        if (mounted) {
-          setState(() {
-            loadedQuestions = questions;
-          });
-        }
-      }
-    } else {
-      // Handle the case where the quiz is not found
-      // may want to show an error message or navigate back
-      print("Quiz not found with ID: $quizId");
-    }
-  }
-
-  Future<void> _loadQuizAttemptData(String quizId) async {
-    if (_user != null && mounted) {
-      try {
-        final CollectionReference userCollection = FirebaseFirestore.instance.collection('users');
-        final DocumentReference userDoc = userCollection.doc(_user!.uid);
-
-        final CollectionReference quizHistoryCollection = userDoc.collection('quizHistory').doc(quizId).collection('attempts');
-
-        final QuerySnapshot attemptsSnapshot = await quizHistoryCollection.orderBy('timestamp', descending: true).limit(1).get();
-
-        if (attemptsSnapshot.docs.isNotEmpty && mounted) {
-          final attemptData = attemptsSnapshot.docs.first.data();
-          setState(() {
-            if (attemptData != null) {
-              Map<String, dynamic> attemptDataMap = attemptData as Map<String, dynamic>;
-              Map<String, dynamic> userResults = attemptDataMap['userResults'];
-              Map<String, dynamic> userSummary = attemptDataMap['userSummary'];
-              Timestamp? timestamp = attemptDataMap['timestamp'];
-
-              if (userResults.isNotEmpty && userSummary.isNotEmpty && timestamp != null) {
-                quizAttemptData = {
-                  'timestamp': FieldValue.serverTimestamp(),
-                  'userResults': {
-                    'quizTotal': userResults['quizTotal'],
-                    'userTotal': userResults['userTotal'],
-                  },
-                  'userSummary': userSummary,
-                };
-              }
-            }
-          });
-        } else {
-          print('No attempts found for quiz $quizId');
-        }
-      } catch (e) {
-        print('Error loading quiz attempt data: $e');
-      }
-    }
-  }
-
+  
   Map<String, dynamic> createQuizAttemptData(Map<String, dynamic> userSummary) {
     int quizTotal = loadedQuestions.length;
 
@@ -239,17 +164,6 @@ class _LandingPageState extends State<LandingPage> {
     };
   }
 
-  void _quizSummaryButton(loadedQuestions, quizData) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => QuizSummaryPage(
-          loadedQuestions: loadedQuestions,
-          quizAttemptData: quizData,
-        ),
-      ),
-    );
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -265,34 +179,53 @@ class _LandingPageState extends State<LandingPage> {
                 Expanded(
                   flex: 2,
                   child: Container(
-                    height: MediaQuery.of(context).size.height,
-                    margin: const EdgeInsets.fromLTRB(30.0, 30.0, 30.0, 30.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Expanded(
-                          child: Container(
-                            width: MediaQuery.of(context).size.width * 2 / 3,
-                            padding: EdgeInsets.all(16.0),
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(12),
-                              color: Theme.of(context).colorScheme.primaryContainer,
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withOpacity(0.2),
-                                  spreadRadius: 5,
-                                  blurRadius: 10,
-                                  offset: const Offset(0, 3),
-                                ),
-                              ],
-                            ),
-                            child: SingleChildScrollView(
+                    clipBehavior: Clip.none,
+                    height: double.infinity,
+                    padding: const EdgeInsets.all(30),
+                    child:  SingleChildScrollView(
+                      clipBehavior: Clip.none,
                               child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
+                                  InkWell(
+                                    borderRadius: BorderRadius.circular(24),
+                                    onTap: () async {
+                                      // We want to run a review quiz 
+
+                                      // Since we use all questions from all difficulties just fluke user stuff
+                                      String quizId = await quizManager.generateQuiz(userInterests, 50, 100, 8, name: "Review");
+                                      // Reviews grant even less xp 
+                                      Navigator.push(context, MaterialPageRoute(builder:(context) => QuizPage(quizId: quizId, multiplier: 0.15)));
+                                    },
+                                    child: Ink(
+                                      width: double.infinity,
+                                      decoration: BoxDecoration(
+                                        color: Theme.of(context).colorScheme.primary.withOpacity(0.3),
+                                        borderRadius: BorderRadius.circular(24),
+                                      ),
+                                      padding: EdgeInsets.all(24.0),
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Container(
+                                            decoration: BoxDecoration(
+                                              borderRadius: BorderRadius.circular(12),
+                                              color: Theme.of(context).colorScheme.primary
+                                            ),
+                                            padding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 6.0),
+                                            child: Text("Review", style: GoogleFonts.nunito(fontSize: 20, fontWeight: FontWeight.w800))
+                                          ),
+                                          SizedBox(height: 12.0),
+                                          Text("Take a review of all topics and difficulties to see how much you've improved!", style: GoogleFonts.nunito(fontSize: 18, fontWeight: FontWeight.bold)),
+                                          SizedBox(height: 6.0),
+                                          Text("8 Questions • ${userInterests.toString().substring(1, userInterests.toString().length - 1)}", style: GoogleFonts.nunito(fontSize: 14, fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.primary))
+                                        ],
+                                      )
+                                    )
+                                  ),  
                                   const SizedBox(height: 20),
                                   Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    mainAxisAlignment: MainAxisAlignment.start,
                                     children: [
                                       const SizedBox(), // Empty space on the left
                                       Row(
@@ -300,23 +233,28 @@ class _LandingPageState extends State<LandingPage> {
                                         children: [
                                           Text(
                                             'Your Interests',
-                                            style: GoogleFonts.nunito(fontSize: 28),
+                                            style: GoogleFonts.nunito(fontSize: 28, fontWeight: FontWeight.bold),
                                           ),
                                         ],
                                       ),
-                                      IconButton(
-                                        icon: const Icon(Icons.remove),
-                                        onPressed: () {
-                                          // Navigate to DisplayUser page
-                                          Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                              builder: (context) => DisplayUser(),
-                                            ),
-                                          );
-                                        },
-                                      ),
+                                      // IconButton(
+                                      //   icon: const Icon(Icons.remove),
+                                      //   onPressed: () {
+                                      //     // Navigate to DisplayUser page
+                                      //     Navigator.push(
+                                      //       context,
+                                      //       MaterialPageRoute(
+                                      //         builder: (context) => DisplayUser(),
+                                      //       ),
+                                      //     );
+                                      //   },
+                                      // ),
                                     ],
+                                  ),
+
+                                  Text(
+                                    'Pick a topic to begin a quiz!',
+                                    style: GoogleFonts.nunito(fontSize: 18),
                                   ),
 
                                   const SizedBox(height: 20),
@@ -342,22 +280,8 @@ class _LandingPageState extends State<LandingPage> {
                                                 Flexible(
                                                   child: Padding(
                                                     padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 10),
-                                                    child: Container(
-                                                      height: 200,
-                                                      decoration: BoxDecoration(
-                                                        borderRadius: BorderRadius.circular(10),
-                                                        color: Theme.of(context).colorScheme.secondaryContainer,
-                                                        boxShadow: [
-                                                          BoxShadow(
-                                                            color: Colors.black.withOpacity(0.2),
-                                                            spreadRadius: 1,
-                                                            blurRadius: 2,
-                                                            offset: const Offset(0, 1),
-                                                          ),
-                                                        ],
-                                                      ),
-                                                      child: InkWell(
-                                                        onTap: () async {
+                                                    child: InkWell(
+                                                      onTap: () async {
                                                           print('Interest ${index + 1}: ${interests[index]} pressed');
 
                                                           // Generate a new quiz
@@ -367,20 +291,32 @@ class _LandingPageState extends State<LandingPage> {
                                                             return QuizPage(quizId: id);
                                                           },));
                                                         },
+                                                      
+                                                      child: Ink(
+                                                        height: 200,
+                                                        decoration: BoxDecoration(
+                                                        borderRadius: BorderRadius.circular(10),
+                                                        color: Theme.of(context).colorScheme.primary.withOpacity(0.3),
+                                                        
+                                                      ),
                                                         child: Center(
                                                           child: Column(
                                                             mainAxisAlignment: MainAxisAlignment.center,
                                                             crossAxisAlignment: CrossAxisAlignment.center,
                                                             children: [
-                                                              const Icon(
-                                                                Icons.history,
-                                                                size: 60,
-                                                                color: Colors.blue,
+                                                               Container(
+
+                                                                decoration: BoxDecoration(
+                                                                  color: Theme.of(context).scaffoldBackgroundColor,
+                                                                  borderRadius: BorderRadius.circular(20),
+                                                                ),
+                                                                padding: const EdgeInsets.all(8.0),
+                                                                child: Image.asset("assets/images/${interests[index].toLowerCase()}.png", color: Theme.of(context).colorScheme.primary, width: 48, height: 48)
                                                               ),
                                                               const SizedBox(height: 10),
                                                               Text(
                                                                 interests[index],
-                                                                style: const TextStyle(fontSize: 16),
+                                                                style:  GoogleFonts.nunito(fontSize: 18,  fontWeight: FontWeight.bold),
                                                                 textAlign: TextAlign.center,
                                                               ),
                                                             ],
@@ -408,7 +344,7 @@ class _LandingPageState extends State<LandingPage> {
                                   ),
                                   const SizedBox(height: 20),
                                   Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    mainAxisAlignment: MainAxisAlignment.start,
                                     children: [
                                       const SizedBox(), // Empty space on the left
                                       Row(
@@ -416,23 +352,27 @@ class _LandingPageState extends State<LandingPage> {
                                         children: [
                                           Text(
                                             'Other Topics',
-                                            style: GoogleFonts.nunito(fontSize: 28),
+                                            style: GoogleFonts.nunito(fontSize: 28, fontWeight: FontWeight.bold),
                                           ),
                                         ],
                                       ),
-                                      IconButton(
-                                        icon: const Icon(Icons.add),
-                                        onPressed: () {
-                                          // Navigate to DisplayUser page
-                                          Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                              builder: (context) => DisplayUser(),
-                                            ),
-                                          );
-                                        },
-                                      ),
+                                      // IconButton(
+                                      //   icon: const Icon(Icons.add),
+                                      //   onPressed: () {
+                                      //     // Navigate to DisplayUser page
+                                      //     Navigator.push(
+                                      //       context,
+                                      //       MaterialPageRoute(
+                                      //         builder: (context) => DisplayUser(),
+                                      //       ),
+                                      //     );
+                                      //   },
+                                      // ),
                                     ],
+                                  ),
+                                  Text(
+                                    'Other topics you can take quiz on that didn\'t interest you as much!',
+                                    style: GoogleFonts.nunito(fontSize: 18),
                                   ),
                                   const SizedBox(height: 20),
                                   FutureBuilder<List<String>>(
@@ -463,24 +403,9 @@ class _LandingPageState extends State<LandingPage> {
                                                 Flexible(
                                                   child: Padding(
                                                     padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 10),
-                                                    child: Container(
-                                                      height: 200,
-                                                      decoration: BoxDecoration(
-                                                        borderRadius: BorderRadius.circular(10),
-                                                        color: Theme.of(context).colorScheme.secondaryContainer,
-                                                        boxShadow: [
-                                                          BoxShadow(
-                                                            color: Colors.black.withOpacity(0.2),
-                                                            spreadRadius: 1,
-                                                            blurRadius: 2,
-                                                            offset: const Offset(0, 1),
-                                                          ),
-                                                        ],
-                                                      ),
-                                                      child: InkWell(
-                                                        onTap: () async {
-                                                          print('${remainingTopics[index]} pressed');
-                                                          // Add functionality here if needed
+                                                    child: InkWell(
+                                                      onTap: () async {
+                                                          print('Interest ${index + 1}: ${remainingTopics[index]} pressed');
 
                                                           // Generate a new quiz
                                                           String id = await quizManager.generateQuiz([ remainingTopics[index] ], xpLevel, 20, 5);
@@ -489,20 +414,32 @@ class _LandingPageState extends State<LandingPage> {
                                                             return QuizPage(quizId: id);
                                                           },));
                                                         },
+                                                      
+                                                      child: Ink(
+                                                        height: 200,
+                                                        decoration: BoxDecoration(
+                                                        borderRadius: BorderRadius.circular(10),
+                                                        color: Theme.of(context).colorScheme.primary.withOpacity(0.3),
+                                                        
+                                                      ),
                                                         child: Center(
                                                           child: Column(
                                                             mainAxisAlignment: MainAxisAlignment.center,
                                                             crossAxisAlignment: CrossAxisAlignment.center,
                                                             children: [
-                                                              const Icon(
-                                                                Icons.topic, // Replace with appropriate icon
-                                                                size: 60,
-                                                                color: Colors.blue,
+                                                               Container(
+
+                                                                decoration: BoxDecoration(
+                                                                  color: Theme.of(context).scaffoldBackgroundColor,
+                                                                  borderRadius: BorderRadius.circular(20),
+                                                                ),
+                                                                padding: const EdgeInsets.all(8.0),
+                                                                child: Image.asset("assets/images/${remainingTopics[index].toLowerCase()}.png", color: Theme.of(context).colorScheme.primary, width: 48, height: 48)
                                                               ),
                                                               const SizedBox(height: 10),
                                                               Text(
-                                                                remainingTopics[index], // Use remainingTopics instead of topics
-                                                                style: const TextStyle(fontSize: 16),
+                                                                remainingTopics[index],
+                                                                style:  GoogleFonts.nunito(fontSize: 18,  fontWeight: FontWeight.bold),
                                                                 textAlign: TextAlign.center,
                                                               ),
                                                             ],
@@ -510,8 +447,8 @@ class _LandingPageState extends State<LandingPage> {
                                                         ),
                                                       ),
                                                     ),
+                                                    ),
                                                   ),
-                                                ),
                                               );
                                             } else {
                                               rowChildren.add(Flexible(child: SizedBox())); // Add an empty Flexible widget for even distribution
@@ -529,227 +466,16 @@ class _LandingPageState extends State<LandingPage> {
                                     },
                                   ),
                                 ],
-                              ),
+                              ))),
                             ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
+                          
+                        
+                
                 Expanded(
                   flex: 1,
-                  child: Container(
-                    height: MediaQuery.of(context).size.height,
-                    width: MediaQuery.of(context).size.width * 1 / 3,
-                    margin: const EdgeInsets.fromLTRB(0, 30, 30, 30),
-                    child: Column(
-                      children: [
-                        Container(
-                          
-                          padding: EdgeInsets.all(16.0),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(12),
-                            color: Theme.of(context).colorScheme.primaryContainer,
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.2),
-                                spreadRadius: 5,
-                                blurRadius: 10,
-                                offset: const Offset(0, 3),
-                              ),
-                            ],
-                          ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(
-                                'XP Level',
-                                style: GoogleFonts.nunito(fontSize: 26,),
-                              ),
-                              SizedBox(height: 10),
-                              Container(
-                                width: double.infinity,
-                                height: 40,
-                                decoration: BoxDecoration(
-                                    border: Border.all(color: Colors.black),
-                                    borderRadius: BorderRadius.circular(20),
-                                ),
-                                child: Stack(
-                                    children: [
-                                        // Inner Container with FractionallySizedBox
-                                        FractionallySizedBox(
-                                            widthFactor: xpLevel / 100,
-                                            child: Container(
-                                                decoration: BoxDecoration(
-                                                    color: Colors.blue,
-                                                    borderRadius: BorderRadius.circular(20),
-                                                ),
-                                            ),
-                                        ),
-                                        // Text widget aligned in the center
-                                        Center(
-                                            child: Text(
-                                                '$xpLevel XP - ${_getXPLevelDescription(xpLevel)}',
-                                                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                                            ),
-                                        ),
-                                    ],
-                                ),
-                            ),
-                            SizedBox(height: 10),
-                            ],
-                          ),
-                        ),
-                        SizedBox(height: 30),
-                        Expanded(
-                          flex: 7,
-                          child: Container(
-                            width: MediaQuery.of(context).size.width * 1 / 3,
-                            padding: EdgeInsets.all(8.0),
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(12),
-                              color: Theme.of(context).colorScheme.primaryContainer,
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withOpacity(0.2),
-                                  spreadRadius: 5,
-                                  blurRadius: 10,
-                                  offset: const Offset(0, 3),
-                                ),
-                              ],
-                            ),
-                            child: SingleChildScrollView(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  const SizedBox(height: 20),
-                                  Padding( 
-                                    padding: const EdgeInsets.symmetric(horizontal: 12.0),
-                                    child: Row(
-                                    children: [
-                                      
-                                      Text(
-                                        'Recent',
-                                        style: GoogleFonts.nunito(fontSize: 28),
-                                      ),
-                                      const Spacer(), 
-                                      ElevatedButton(
-                                        style: ElevatedButton.styleFrom(
-                                          backgroundColor: Theme.of(context).colorScheme.primary,
-                                        ),
-                                        onPressed: () {
-                                          Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                              builder: (context) => QuizHistoryPage(),
-                                            ),
-                                          );
-                                        },
-                                        child: Text(
-                                          'View All',
-                                          style: TextStyle(
-                                            color: Theme.of(context).colorScheme.secondary,
-                                          ),
-                                        ),
-                                        ),
-                                        
-                                    ],
-                                  )),
-                                  const SizedBox(height: 20),
-                                  FutureBuilder<List<RecentQuiz>>(
-                                    future: quizManager.getRecentQuizzesForUser(_user!.uid),
-                                    builder: (context, snapshot) {
-                                      if (snapshot.connectionState == ConnectionState.waiting) {
-                                        return Center(child: CircularProgressIndicator());
-                                      } else if (snapshot.hasError) {
-                                        return Center(child: Text('Error loading quiz names'));
-                                      } else {
-                                        List<RecentQuiz> quizzes = snapshot.data! ?? [];
-                                        int numRecentQuizzes = quizzes.length;
-                                        int numQuizzesPerRow = 1;
-                                        int numRows = (numRecentQuizzes / numQuizzesPerRow).ceil();
-                                        List<Widget> rows = List.generate(numRows, (rowIndex) {
-                                          List<Widget> rowChildren = [];
-                                          for (int i = 0; i < numQuizzesPerRow; i++) {
-                                            int index = rowIndex * numQuizzesPerRow + i;
-                                            const SizedBox(height: 10);
-                                            if (index < numRecentQuizzes) {
-                                              rowChildren.add(
-                                                Expanded(
-                                                  child: Padding(
-                                                    padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 10),
-                                                    child: Container(
-                                                      height: 100,
-                                                      decoration: BoxDecoration(
-                                                        borderRadius: BorderRadius.circular(10),
-                                                        color: Theme.of(context).colorScheme.secondaryContainer,
-                                                        boxShadow: [
-                                                          BoxShadow(
-                                                            color: Colors.black.withOpacity(0.2),
-                                                            spreadRadius: 1,
-                                                            blurRadius: 2,
-                                                            offset: const Offset(0, 1),
-                                                          ),
-                                                        ],
-                                                      ),
-                                                      child: InkWell(
-                                                        onTap: () async {
-                                                          await _getloadedQuestions(quizzes[index].id);
-                                                          await _loadQuizAttemptData(quizzes[index].id);
-                                                          _quizSummaryButton(loadedQuestions, quizAttemptData);
-                                                        },
-                                                        child: Padding(
-                                                          padding: const EdgeInsets.symmetric(horizontal: 14),
-                                                          child: Row(
-                                                            children: [ 
-                                                              Column(
-                                                                mainAxisAlignment: MainAxisAlignment.center,
-                                                                crossAxisAlignment: CrossAxisAlignment.start,
-                                                                children: [
-                                                                  Text(quizzes[index].name, 
-                                                                    style: GoogleFonts.nunito(fontSize: 20, fontWeight: FontWeight.bold),
-                                                                  ),
-                                                                  Text(_nicifyDateTime(DateTime.fromMillisecondsSinceEpoch(quizzes[index].timestamp.millisecondsSinceEpoch)), 
-                                                                    style: GoogleFonts.nunito(color: Colors.grey, fontSize: 16, fontWeight: FontWeight.w600, fontStyle: FontStyle.italic),
-                                                                  )
-                                                                ],
-                                                              ),
-                                                              Spacer(), 
-
-                                                              Text("+ ${quizzes[index].xpEarned}xp",
-                                                                style: GoogleFonts.nunito(color: Theme.of(context).colorScheme.primary, fontSize: 18, fontWeight: FontWeight.w600, fontStyle: FontStyle.italic),
-                                                              ),
-                                                            ]
-                                                          )
-                                                        ),
-                                                      ),
-                                                    ),
-                                                  ),
-                                                ),
-                                              );
-                                            }
-                                          }
-                                          return Row(
-                                            children: rowChildren,
-                                          );
-                                        });
-                                        return Column(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                          children: rows,
-                                        );
-                                      }
-                                    },
-                                  ),
-                                  const SizedBox(height: 20),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(0.0, 30.0, 30.0, 30.0),
+                    child: UserInfoWidget(userId: _user!.uid)
                   ),
                 ),
               ],
@@ -763,42 +489,5 @@ class _LandingPageState extends State<LandingPage> {
               ),
             ),
     );
-  }
-
-
-  String _getXPLevelDescription(int xp) {
-    if (xp >= 0 && xp <= 20) {
-      return 'Beginner';
-    } else if (xp >= 21 && xp <= 40) {
-      return 'Intermediate';
-    } else if (xp >= 41 && xp <= 60) {
-      return 'Advanced';
-    } else if (xp >= 61 && xp <= 80) {
-      return 'Expert';
-    } else {
-      return 'Master';
-    }
-  }
-
-  String _nicifyDateTime(DateTime dateTime) {
-    
-
-    List<String> months = [
-      'January',
-      'February',
-      'March',
-      'April',
-      'May',
-      'June',
-      'July',
-      'August',
-      'September',
-      'October',
-      'November',
-      'December'
-    ];
-
-    return "${dateTime.day} ${months[dateTime.month - 1]}";
-
   }
 }

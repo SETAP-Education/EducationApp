@@ -1,16 +1,20 @@
 import 'package:education_app/Pages/LandingPage.dart';
+import 'package:education_app/Widgets/Button.dart';
 import 'package:flutter/material.dart';
 import 'package:education_app/Quizzes/quiz.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:education_app/Theme/AppTheme.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class QuizSummaryPage extends StatelessWidget {
   final List<QuizQuestion> loadedQuestions;
   final Map<String, dynamic> quizAttemptData;
+  final int earnedXp; 
 
   QuizSummaryPage({
     required this.loadedQuestions,
     required this.quizAttemptData,
+    required this.earnedXp, 
   });
 
   @override
@@ -30,16 +34,20 @@ class QuizSummaryPage extends StatelessWidget {
             children: [
               Text(
                 'Your Quiz Summary',
-                style: TextStyle(fontSize: 24.0, fontWeight: FontWeight.bold),
+                style: GoogleFonts.nunito(fontSize: 24.0, fontWeight: FontWeight.bold),
               ),
               SizedBox(height: 16.0),
               buildQuizResults(quizAttemptData, context),
               for (int i = 0; i < loadedQuestions.length; i++)
                 FractionallySizedBox(
                   widthFactor: 2 / 3,
-                  child: Card(
+                  child: Container(
                     margin: EdgeInsets.only(bottom: 16.0),
-                    elevation: 3,
+                   
+                    decoration: BoxDecoration(
+                       color: Theme.of(context).colorScheme.primaryContainer,
+                       borderRadius: BorderRadius.circular(24),
+                    ),
                     child: Padding(
                       padding: const EdgeInsets.all(16.0),
                       child: loadedQuestions.isNotEmpty
@@ -48,20 +56,25 @@ class QuizSummaryPage extends StatelessWidget {
                     ),
                   ),
                 ),
-              SizedBox(height: 16.0),
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => LandingPage(),
-                    ),
-                  );
-                },
-                child: const Text(
-                  'Back to Home',
-                  style: TextStyle(color: Colors.black),
-                ),
+              const SizedBox(height: 16.0),
+
+              FractionallySizedBox(
+                widthFactor: 2 / 3,
+                child: Button(
+                  important: true,
+                  onClick: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => LandingPage(),
+                      ),
+                    );
+                  },
+                  child: Text(
+                    'Back to Home',
+                    style: GoogleFonts.nunito(fontSize: 18, color: Colors.white, fontWeight: FontWeight.bold),
+                  ),
+                )
               ),
             ],
           ),
@@ -123,26 +136,54 @@ class QuizSummaryPage extends StatelessWidget {
 
     return FractionallySizedBox(
       widthFactor: 2 / 3,
-      child: Card(
+      child: Container(
         margin: EdgeInsets.symmetric(vertical: 16.0),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12.0),
+        decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.primaryContainer,
+          borderRadius: BorderRadius.circular(24.0),
         ),
-        elevation: 5,
+       
         child: Container(
           padding: EdgeInsets.all(16.0),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
-                'Quiz overview',
-                style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),
+                'How did you do?',
+                style: GoogleFonts.nunito(fontSize: 28.0, fontWeight: FontWeight.bold),
               ),
               SizedBox(height: 5.0),
-              Text(
-                "                   ${(userTotal / quizTotal) * 100}% \n $userTotal / $quizTotal answered correctly ",
-                style: TextStyle(fontSize: 17.0),
-              ),
+              // Text(
+              //   "                   ${(userTotal / quizTotal) * 100}% \n $userTotal / $quizTotal answered correctly ",
+              //   style: GoogleFonts.nunito(fontSize: 17.0),
+              // ),
+
+              RichText(text: TextSpan(
+                text: "$userTotal",
+                style: GoogleFonts.nunito(fontSize: 22.0, color: Theme.of(context).textTheme.bodyMedium!.color),
+                children: [
+                  TextSpan(
+                    text: " / $quizTotal",
+                    style: GoogleFonts.nunito(fontSize: 16.0, color: Theme.of(context).textTheme.bodyMedium!.color!.withOpacity(0.5))
+                  ),
+                  TextSpan(
+                    text: " answered correctly",
+                    style: GoogleFonts.nunito(fontSize: 20.0, color: Theme.of(context).textTheme.bodyMedium!.color)
+                  )
+                ]
+              )),
+
+              Text("${(userTotal / quizTotal) * 100}%", style: GoogleFonts.nunito(fontSize: 32.0, fontStyle: FontStyle.italic, fontWeight: FontWeight.bold)),
+
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Text("You earned:  ", style: GoogleFonts.nunito(fontSize: 22)),
+                  Text("${earnedXp}xp" , style: GoogleFonts.nunito(fontSize: 28, color: Theme.of(context).colorScheme.primary, fontStyle: FontStyle.italic, fontWeight: FontWeight.bold))
+                ],
+              )
+             
             ],
           ),
         ),
@@ -189,7 +230,7 @@ class QuizSummaryPage extends StatelessWidget {
         SizedBox(height: 10),
         Text(
           question.questionText,
-          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+          style: GoogleFonts.nunito(fontSize: 20, fontWeight: FontWeight.bold),
         ),
         SizedBox(height: 20),
         if (question.type == QuestionType.multipleChoice)
@@ -220,14 +261,14 @@ class QuizSummaryPage extends StatelessWidget {
 
         Color borderColour = isSelected
             ? (isSelected && isCorrect ? Colors.green : Colors.red)
-            : (isCorrect ? Colors.green : Colors.blue);
+            : (isCorrect ? Colors.green : Colors.grey);
 
         return Container(
           padding: EdgeInsets.all(10),
           margin: EdgeInsets.symmetric(vertical: 5),
           decoration: BoxDecoration(
             color: backgroundColour,
-            borderRadius: BorderRadius.circular(8),
+            borderRadius: BorderRadius.circular(14),
             border: Border.all(
               color: borderColour,
               width: 2,
@@ -235,8 +276,9 @@ class QuizSummaryPage extends StatelessWidget {
           ),
           child: Text(
             option,
-            style: TextStyle(
-              color: isSelected ? Colors.white : Colors.black,
+            style: GoogleFonts.nunito(
+              color: isSelected ? Colors.white : Colors.grey,
+              fontWeight: isSelected || isCorrect ? FontWeight.bold : FontWeight.normal
             ),
           ),
         );
@@ -269,7 +311,7 @@ class QuizSummaryPage extends StatelessWidget {
           color: borderColour,
           width: 2,
         ),
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(14),
       ),
       child: Center(
         child: Text(
@@ -278,8 +320,9 @@ class QuizSummaryPage extends StatelessWidget {
               : userResponse.toLowerCase() == question.correctAnswer.toLowerCase()
                   ? 'Correct! Your answer: ${userResponse} ✓'
                   : 'Incorrect. Your answer: ${userResponse} ✘ | The correct Answer is: "${question.correctAnswer}"',
-          style: const TextStyle(
-              color: Colors.black,
+          style: GoogleFonts.nunito(
+            color: Colors.white,
+            fontWeight: FontWeight.bold
           ),
       ),
       ),

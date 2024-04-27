@@ -231,7 +231,7 @@ class QuizManager {
       quizName = name; 
     }
 
-    outputQuizId = await addQuizToDatabase(name, "System", questionIds);
+    outputQuizId = await addQuizToDatabase(quizName, "System", questionIds);
 
     print(outputQuizId);
 
