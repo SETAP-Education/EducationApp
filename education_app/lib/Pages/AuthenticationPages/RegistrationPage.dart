@@ -10,6 +10,7 @@ import 'package:flutter/widgets.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:education_app/Pages/AuthenticationPages/DisplayNamePage.dart';
 import 'package:education_app/Theme/AppTheme.dart';
+import 'dart:async';
 
 // Basic color scheme - will come up with one on Friday with Max
 Color primaryColour = Colors.white;
@@ -243,6 +244,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
         )
       );
   }
+
 
   Future<void> _register() async {
     try {
