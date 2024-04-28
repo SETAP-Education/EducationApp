@@ -251,7 +251,7 @@ class _SettingsDisplayUserState extends State<SettingsDisplayUser> {
                                         child: Ink(
                                           padding: EdgeInsets.all(8),
                                           decoration: BoxDecoration(
-                                            color: _selectedInterests.contains(interest) ? Color(0xFFF45B69).withOpacity(0.5) : Theme.of(context).colorScheme.primary.withOpacity(0.2),
+                                            color: _selectedInterests.contains(interest) ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.primary.withOpacity(0.2),
                                             borderRadius: BorderRadius.circular(32),
                                           ),
                                           child: Column(
@@ -275,7 +275,7 @@ class _SettingsDisplayUserState extends State<SettingsDisplayUser> {
                                                   style: GoogleFonts.nunito(
                                                     fontSize: 18,
                                                     fontWeight: FontWeight.bold,
-                                                    color: Theme.of(context).colorScheme.primary,
+                                                    color: _selectedInterests.contains(interest) ? Colors.white : Theme.of(context).colorScheme.primary,
                                                   ),
                                                 ),
                                               ]
