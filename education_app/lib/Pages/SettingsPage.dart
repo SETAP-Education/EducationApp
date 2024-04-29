@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:education_app/Pages/AuthenticationPages/LoginPage.dart';
 import 'package:education_app/Theme/AppTheme.dart';
 import 'package:education_app/Pages/SplashPage.dart';
 import 'package:flutter/material.dart';
@@ -46,20 +47,20 @@ class SettingsPageState extends State<SettingsPage> {
                 child: Text('Change display name/ interests', style: GoogleFonts.nunito(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
               ),
               SizedBox(height: 20),
-              // Button(
-              //   important: true,
-              //   width: 450,
-              //   onClick: () {
-              //     FirebaseAuth.instance.signOut();
-              //     Navigator.push(
-              //       context,
-              //       MaterialPageRoute(
-              //         builder: (context) => SplashPage(),
-              //       ),
-              //     );
-              //   },
-              //   child: Text('Sign out', style: GoogleFonts.nunito(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
-              // ),
+              Button(
+                important: true,
+                width: 450,
+                onClick: () {
+                  FirebaseAuth.instance.signOut();
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => LoginPage(),
+                    ),
+                  );
+                },
+                child: Text('Sign out', style: GoogleFonts.nunito(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
+              ),
             ],
           ),
         )
