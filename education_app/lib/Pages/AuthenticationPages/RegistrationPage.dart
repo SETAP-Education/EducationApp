@@ -4,13 +4,13 @@ import 'package:education_app/Widgets/Button.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:education_app/Pages/LandingPage.dart';
 import 'package:education_app/Pages/AuthenticationPages/LoginPage.dart';
 import 'package:flutter/widgets.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:education_app/Pages/AuthenticationPages/DisplayNamePage.dart';
 import 'package:education_app/Theme/AppTheme.dart';
 import 'dart:async';
+import 'package:education_app/Pages/LandingPage.dart';
 
 // Basic color scheme - will come up with one on Friday with Max
 Color primaryColour = Colors.white;

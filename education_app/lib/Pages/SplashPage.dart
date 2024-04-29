@@ -54,10 +54,6 @@ class _SplashPageState extends State<SplashPage> {
               Container(
                 width: 400,
                 height: 400,
-                // decoration: BoxDecoration(
-                //   border: Border.all(color: Colors.black),
-                //   borderRadius: BorderRadius.circular(15),
-                // ),
                 child: Center(
                   child: Image.asset(
                     'images/quiz_app_logo_2.png', // Change to your image asset path
