@@ -9,7 +9,7 @@ import 'package:education_app/Pages/AuthenticationPages/DisplayNamePage.dart';
 //this test does actually pass but the page it takes you to means the test cant end itself so a timeout
 //has been put in to force it to stop as the test passes but cannot sign out
 void main() {
-  testWidgets('DisplayName success', (WidgetTester tester) async {
+  testWidgets('DisplayName Failed', (WidgetTester tester) async {
     // Mock Firebase Auth and Firestore
     final auth = MockFirebaseAuth();
     final firestore = FakeFirebaseFirestore();
