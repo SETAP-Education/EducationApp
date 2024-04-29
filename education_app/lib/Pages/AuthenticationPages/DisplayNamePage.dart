@@ -249,6 +249,7 @@ class _DisplayUserState extends State<DisplayUser> {
                               // Add an error message to the error manager
                               print("No interests");
                               globalErrorManager.pushError('You must select at least one interest');
+                              
                           } else {
                               // If there are no errors, proceed with setting the display name and interests
                               _setDisplayName(_user!.uid, displayName);
@@ -297,6 +298,8 @@ class _DisplayUserState extends State<DisplayUser> {
     // Saving the interests for the user
     users.doc(userId).set({
       'interests': interests,
+      'darkMode': true,
+      // 'xpLvl': _findXpLvl(userId),
     }, SetOptions(merge: true)).then((_) {
       print('Interests saved successfully!');
     }).catchError((error) {
