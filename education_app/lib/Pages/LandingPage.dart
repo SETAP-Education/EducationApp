@@ -231,18 +231,6 @@ class _LandingPageState extends State<LandingPage> {
                                           ),
                                         ],
                                       ),
-                                      // IconButton(
-                                      //   icon: const Icon(Icons.remove),
-                                      //   onPressed: () {
-                                      //     // Navigate to DisplayUser page
-                                      //     Navigator.push(
-                                      //       context,
-                                      //       MaterialPageRoute(
-                                      //         builder: (context) => DisplayUser(),
-                                      //       ),
-                                      //     );
-                                      //   },
-                                      // ),
                                     ],
                                   ),
 
@@ -350,18 +338,6 @@ class _LandingPageState extends State<LandingPage> {
                                           ),
                                         ],
                                       ),
-                                      // IconButton(
-                                      //   icon: const Icon(Icons.add),
-                                      //   onPressed: () {
-                                      //     // Navigate to DisplayUser page
-                                      //     Navigator.push(
-                                      //       context,
-                                      //       MaterialPageRoute(
-                                      //         builder: (context) => DisplayUser(),
-                                      //       ),
-                                      //     );
-                                      //   },
-                                      // ),
                                     ],
                                   ),
                                   Text(
