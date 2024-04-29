@@ -253,7 +253,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
       if (!satisfysMinCharacters || !hasOneNumber) {
         // Password does not satisfy constraints 
 
-        globalErrorManager.pushError("Bad password");
+        globalErrorManager.pushError("Password does not meet requirements");
 
         // Break out
         return; 
