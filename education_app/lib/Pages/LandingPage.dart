@@ -1,19 +1,13 @@
-import 'package:education_app/Pages/AuthenticationPages/LoginPage.dart';
 import 'package:education_app/Pages/QuizPages/QuizPage.dart';
 import 'package:education_app/Widgets/UserInfo.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:education_app/Pages/QuizBuilder.dart';
-import 'package:education_app/Pages/QuizPages/HistoryPages/QuizSummaryPage.dart';
 import 'package:education_app/Quizzes/quiz.dart';
 import 'package:education_app/Quizzes/quizManager.dart';
 import 'package:flutter/widgets.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:education_app/Theme/AppTheme.dart';
-import 'package:education_app/Pages/QuizPages/HistoryPages/AllQuizzesPage.dart';
-import 'package:education_app/Pages/AuthenticationPages/DisplayNamePage.dart';
-
 
 class LandingPage extends StatefulWidget {
   @override
@@ -236,18 +230,6 @@ class _LandingPageState extends State<LandingPage> {
                                           ),
                                         ],
                                       ),
-                                      // IconButton(
-                                      //   icon: const Icon(Icons.remove),
-                                      //   onPressed: () {
-                                      //     // Navigate to DisplayUser page
-                                      //     Navigator.push(
-                                      //       context,
-                                      //       MaterialPageRoute(
-                                      //         builder: (context) => DisplayUser(),
-                                      //       ),
-                                      //     );
-                                      //   },
-                                      // ),
                                     ],
                                   ),
 
@@ -355,18 +337,6 @@ class _LandingPageState extends State<LandingPage> {
                                           ),
                                         ],
                                       ),
-                                      // IconButton(
-                                      //   icon: const Icon(Icons.add),
-                                      //   onPressed: () {
-                                      //     // Navigate to DisplayUser page
-                                      //     Navigator.push(
-                                      //       context,
-                                      //       MaterialPageRoute(
-                                      //         builder: (context) => DisplayUser(),
-                                      //       ),
-                                      //     );
-                                      //   },
-                                      // ),
                                     ],
                                   ),
                                   Text(

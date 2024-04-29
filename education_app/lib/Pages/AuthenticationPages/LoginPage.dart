@@ -10,7 +10,6 @@ import 'package:education_app/Pages/AuthenticationPages/RegistrationPage.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'dart:async';
 import 'package:provider/provider.dart';
-import '../SplashPage.dart';
 import 'package:education_app/Pages/AuthenticationPages/DisplayNamePage.dart';
 import 'package:education_app/Theme/AppTheme.dart';
 
@@ -206,20 +205,6 @@ class _LoginPageState extends State<LoginPage> {
               },
              
               child: Text('Log in', style: GoogleFonts.nunito(color: Theme.of(context).colorScheme.secondary, fontSize: 18, fontWeight: FontWeight.bold)),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => DisplayUser(),
-                  ),
-                );
-              },
-              child: Text('Bypass', style: TextStyle(color: Colors.white)),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Color(0xFF19c37d),
-              ),
             ),
             const SizedBox(height: 20.0),
             // sign up text and button
