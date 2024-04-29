@@ -31,7 +31,7 @@ class MyApp extends StatelessWidget {
       theme: context.watch<ThemeNotifier>().isDarkMode
           ? AppTheme.darkTheme
           : AppTheme.lightTheme,
-      home: OpeningPage(),
+      home: SplashPage(),
     );
   }
 }
