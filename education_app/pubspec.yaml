@@ -41,7 +41,6 @@ dependencies:
   google_fonts: 6.2.1
   provider: ^6.1.2
   fake_cloud_firestore: ^2.5.1
-  mockito: ^5.4.4
   firebase_auth_mocks: ^0.13.0
 
 dev_dependencies:
