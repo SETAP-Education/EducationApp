@@ -207,20 +207,20 @@ class _LoginPageState extends State<LoginPage> {
              
               child: Text('Log in', style: GoogleFonts.nunito(color: Theme.of(context).colorScheme.secondary, fontSize: 18, fontWeight: FontWeight.bold)),
             ),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => DisplayUser(),
-                  ),
-                );
-              },
-              child: Text('Bypass', style: TextStyle(color: Colors.white)),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Color(0xFF19c37d),
-              ),
-            ),
+            // ElevatedButton(
+            //   onPressed: () {
+            //     Navigator.push(
+            //       context,
+            //       MaterialPageRoute(
+            //         builder: (context) => DisplayUser(),
+            //       ),
+            //     );
+            //   },
+            //   child: Text('Bypass', style: TextStyle(color: Colors.white)),
+            //   style: ElevatedButton.styleFrom(
+            //     backgroundColor: Color(0xFF19c37d),
+            //   ),
+            // ),
             const SizedBox(height: 20.0),
             // sign up text and button
             Row(

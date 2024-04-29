@@ -249,13 +249,23 @@ class _RegistrationPageState extends State<RegistrationPage> {
   Future<void> _register() async {
     try {
 
+      bool noEmail = _emailController.text.length == 0;
       bool satisfysMinCharacters = _passwordController.text.length >= minCharacters;
       bool hasOneNumber = _passwordController.text.contains(RegExp(r'[0-9]'));
+
+      if (noEmail) {
+        // Password does not satisfy constraints 
+
+        globalErrorManager.pushError("You must enter a valid email");
+
+        // Break out
+        return; 
+      }
 
       if (!satisfysMinCharacters || !hasOneNumber) {
         // Password does not satisfy constraints 
 
-        globalErrorManager.pushError("Bad password");
+        globalErrorManager.pushError("Password does not satisfy requirements");
 
         // Break out
         return; 

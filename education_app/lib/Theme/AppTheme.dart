@@ -170,23 +170,23 @@ class AppTheme {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => DisplayUser(),
+                          builder: (context) => SettingsPage(),
                         ),
                       );
                     },
                   ),
-                  // IconButton(
-                  //   icon: Icon(Icons.exit_to_app, color: Theme.of(context).colorScheme.secondary),
-                  //   onPressed: () {
-                  //     FirebaseAuth.instance.signOut();
-                  //     Navigator.push(
-                  //       context,
-                  //       MaterialPageRoute(
-                  //         builder: (context) => LoginPage(),
-                  //       ),
-                  //     );
-                  //   },
-                  // ),
+                  IconButton(
+                    icon: Icon(Icons.exit_to_app, color: Theme.of(context).colorScheme.secondary),
+                    onPressed: () {
+                      FirebaseAuth.instance.signOut();
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => LoginPage(),
+                        ),
+                      );
+                    },
+                  ),
                 ],
               ),
             )
@@ -256,23 +256,23 @@ class AppTheme {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => SettingsPage()
+                          builder: (context) => SettingsPage()
                         ),
                       );
                     },
                   ),
-                  // IconButton(
-                  //   icon: Icon(Icons.exit_to_app, color: Theme.of(context).colorScheme.secondary),
-                  //   onPressed: () {
-                  //     FirebaseAuth.instance.signOut();
-                  //     Navigator.push(
-                  //       context,
-                  //       MaterialPageRoute(
-                  //         builder: (context) => LoginPage(),
-                  //       ),
-                  //     );
-                  //   },
-                  // ),
+                  IconButton(
+                    icon: Icon(Icons.exit_to_app, color: Theme.of(context).colorScheme.secondary),
+                    onPressed: () {
+                      FirebaseAuth.instance.signOut();
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => LoginPage(),
+                        ),
+                      );
+                    },
+                  ),
                 ],
               ),
             )
