@@ -33,11 +33,10 @@ main() {
 // Verify that the user was created
     expect(find.text('login successful'), findsOneWidget);
 
+
+    await tester.tap(find.byKey(Key('log_out')));
     //Clean up
     await auth.signOut();
-
-// Mark the test as passed while acknowledging the timeout
-    expect(true, isTrue); // This will mark the test as passed
   }, timeout: Timeout(
-      Duration(seconds: 10))); // Increase timeout duration if needed
+      Duration(seconds: 10)));
 }

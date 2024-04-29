@@ -36,8 +36,7 @@ main() {
     //Clean up
     await auth.signOut();
 
-// Mark the test as passed while acknowledging the timeout
-    expect(true, isTrue); // This will mark the test as passed
+
   }, timeout: Timeout(
       Duration(seconds: 10))); // Increase timeout duration if needed
 }
