@@ -101,7 +101,6 @@ class _LandingPageState extends State<LandingPage> {
     }
   }
 
-
   void _getUserXPLevel(String uid) async {
     try {
       DocumentSnapshot userSnapshot =
