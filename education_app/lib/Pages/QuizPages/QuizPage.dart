@@ -1,16 +1,19 @@
+import 'package:education_app/Pages/AuthenticationPages/RegistrationPage.dart';
 import 'package:flutter/material.dart';
 import 'package:education_app/Quizzes/quiz.dart';
 import 'package:education_app/Quizzes/quizManager.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:education_app/Pages/QuizPages/HistoryPages/QuizSummaryPage.dart';
+import 'package:education_app/Theme/AppTheme.dart';
+import 'package:education_app/Pages/LandingPage.dart';
 
 class QuizPage extends StatefulWidget {
 
-  QuizPage({ required this.quizId });
+  QuizPage({ required this.quizId, this.multiplier = 0.5 });
 
   String quizId = ""; 
-
+  double multiplier  = 0.0; 
 
   @override
   _QuizPageState createState() => _QuizPageState();
@@ -25,6 +28,7 @@ class _QuizPageState extends State<QuizPage> {
   bool quizCompleted = false;
   Map<String, dynamic> userSummary = {};
   bool quizSubmitted = false;
+  int earnedXp = 0; 
   // Replace the quizId being passed in, it is static for testing purposes.
   Map<String, dynamic> quizAttemptData = {};
 
@@ -180,6 +184,7 @@ class _QuizPageState extends State<QuizPage> {
           builder: (context) => QuizSummaryPage(
             loadedQuestions: loadedQuestions,
             quizAttemptData: quizAttemptData,
+            earnedXp: earnedXp,
           ),
         ),
       );
@@ -207,9 +212,12 @@ class _QuizPageState extends State<QuizPage> {
     double containerWidth = MediaQuery.of(context).size.width * 2 / 3;
     double containerHeight = MediaQuery.of(context).size.height * 2 / 3;
 
+    Color primaryColour = Theme.of(context).colorScheme.primary;
+    Color secondaryColour = Theme.of(context).colorScheme.secondary;
+
     return Scaffold(
-      appBar: AppBar(
-      ),
+      backgroundColor: Theme.of(context).colorScheme.background,
+      appBar: AppTheme.buildAppBar(context, 'Quiz App', false, false, "Welcome to our quiz app", Text('')),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -220,7 +228,7 @@ class _QuizPageState extends State<QuizPage> {
                 height: containerHeight,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(12),
-                  color: Color(0xFFf3edf6).withOpacity(1),
+                  color: primaryColour.withOpacity(1),
                   boxShadow: [
                     BoxShadow(
                       color: Colors.black.withOpacity(0.2),
@@ -240,7 +248,7 @@ class _QuizPageState extends State<QuizPage> {
             ),
           ),
           Padding(
-            padding: const EdgeInsets.only(left: 250),
+            padding: const EdgeInsets.only(left: 0),
             child: Column(
               children: [
                 Row(
@@ -248,11 +256,11 @@ class _QuizPageState extends State<QuizPage> {
                   children: [
                     if (currentQuestionIndex > 0)
                       Padding(
-                        padding: const EdgeInsets.only(left: 350),
+                        padding: const EdgeInsets.only(left: 550),
                         child: IconButton(
                           // color: tertiary,
                           // hoverColor: secondary,
-                          icon: const Icon(Icons.arrow_left),
+                          icon: Icon(Icons.arrow_left, color: Theme.of(context).colorScheme.primary,),
                           tooltip: 'Previous question',
                           onPressed: () {
                             if (currentQuestionIndex > 0) {
@@ -273,7 +281,7 @@ class _QuizPageState extends State<QuizPage> {
                       child: IconButton(
                         // color: tertiary,
                         // hoverColor: secondary,
-                        icon: const Icon(Icons.arrow_right),
+                        icon: Icon(Icons.arrow_right, color: Theme.of(context).colorScheme.primary),
                         tooltip: currentQuestionIndex < loadedQuestions.length - 1
                             ? 'Next Question'
                             : 'Submit Quiz',
@@ -289,10 +297,84 @@ class _QuizPageState extends State<QuizPage> {
                     ),
                   ],
                 ),
-
+                SizedBox(height: 16),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 0.0),
+                      child: ElevatedButton(
+                        onPressed: () async {
+                          // Show the alert dialog
+                          bool? userConfirmed = await showDialog(
+                            context: context,
+                            builder: (context) {
+                              return AlertDialog(
+                                title: Text(
+                                  'Are you sure?',
+                                  style: TextStyle(
+                                    color: secondaryColour,
+                                  ),
+                                ),
+                                content: Text(
+                                  'Do you really want to quit?',
+                                  style: TextStyle(
+                                    color: secondaryColour,
+                                  ),
+                                ),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () {
+                                      // User pressed 'Cancel'
+                                      Navigator.pop(context, false);
+                                    },
+                                    child: Text(
+                                      'Cancel',
+                                      style: TextStyle(
+                                        color: secondaryColour,
+                                      ),
+                                    ),
+                                  ),
+                                  TextButton(
+                                    onPressed: () {
+                                      // User pressed 'Yes'
+                                      Navigator.pop(context, true);
+                                    },
+                                    child: Text(
+                                      'Yes',
+                                      style: TextStyle(
+                                        color: secondaryColour, // Secondary color
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              );
+                            },
+                          );
+                          // If the user confirmed the action, navigate to the LandingPage
+                          if (userConfirmed == true) {
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(builder: (context) => LandingPage()),
+                            );
+                          }
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: primaryColour, // Set the desired color for the button
+                        ),
+                        child: Text(
+                          'Quit',
+                          style: TextStyle(
+                            color: secondaryColour, // Set the desired text color for the button
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
                 SizedBox(height: 16),
                 Padding(
-                  padding: const EdgeInsets.only(bottom: 50, right: 190),
+                  padding: const EdgeInsets.only(bottom: 50, right: 0),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: loadedQuestions.map((id) {
@@ -305,7 +387,7 @@ class _QuizPageState extends State<QuizPage> {
                           shape: BoxShape.circle,
                           color: index == currentQuestionIndex
                               ? Colors.blue
-                              : Colors.grey,
+                              : Theme.of(context).colorScheme.secondary,
                         ),
                       );
                     }).toList(),
@@ -404,7 +486,7 @@ class _QuizPageState extends State<QuizPage> {
             borderRadius: BorderRadius.circular(25),
           ),
           filled: true,
-          fillColor: Colors.white,
+          fillColor: primaryColour,
         ),
       )
     );
@@ -626,10 +708,34 @@ class _QuizPageState extends State<QuizPage> {
       // Store data in Firebase
       await quizAttemptDocument.set(quizAttemptData);
 
+      // Calculate the User XP to add
+
+
+      int xpGain = calculateXpGain(userSummary, widget.multiplier);
+
+      earnedXp = xpGain; 
+
       // Now, update the timestamp field in the quizId2 document
       await FirebaseFirestore.instance.collection('users').doc(userId).collection('quizHistory').doc(widget.quizId).set({
         'timestamp': FieldValue.serverTimestamp(),
+        'xpGain': xpGain,
+        'name': quiz.name,
       }, SetOptions(merge: true));
+
+      // We want to add xp to user now
+      var userDoc = await FirebaseFirestore.instance.collection("users").doc(userId).get();
+      int currentXp = 0; 
+
+      if (userDoc.data() != null) {
+        if (userDoc.data()!.containsKey("xpLvl")) {
+          currentXp = userDoc.data()!["xpLvl"];
+        }
+      }
+
+      currentXp += xpGain;
+
+      FirebaseFirestore.instance.collection("users").doc(userId).update({ "xpLvl": currentXp }, );
+
 
       // Print success message
       print("User answers and summary stored successfully!");
@@ -668,5 +774,22 @@ class _QuizPageState extends State<QuizPage> {
     });
 
     return userTotal;
+  }
+
+  int calculateXpGain(Map<String, dynamic> userSummary, double multiplier) {
+    int xp = 0; 
+
+    userSummary.forEach((questionId, details) {
+      if (details['correctIncorrect'] == 'Correct') {
+        var q = loadedQuestions.where((element)  { return element.questionId == questionId; });
+        xp +=  q.first.difficulty;
+      }
+    });
+
+    xp = xp ~/ loadedQuestions.length;
+
+    xp = (xp.toDouble() * multiplier).toInt();
+
+    return xp;
   }
 }

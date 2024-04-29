@@ -21,11 +21,11 @@ class Button extends StatelessWidget {
           onClick!() 
         }
       },
-      borderRadius: BorderRadius.circular(100),
+      borderRadius: BorderRadius.circular(20),
       child: Ink(
         decoration: BoxDecoration(
-          color: important ? const Color(0xFF19c37d) : Colors.white,
-          borderRadius: BorderRadius.circular(100),
+          color: important ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.primaryContainer,
+          borderRadius: BorderRadius.circular(20),
         ),
         width: width,
         child: Padding(

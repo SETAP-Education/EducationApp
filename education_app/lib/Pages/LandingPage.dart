@@ -1,15 +1,19 @@
 import 'package:education_app/Pages/AuthenticationPages/LoginPage.dart';
 import 'package:education_app/Pages/QuizPages/QuizPage.dart';
+import 'package:education_app/Widgets/UserInfo.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-
-import 'package:education_app/Pages/QuizPages/HistoryPages/AllQuizzes.dart';
 import 'package:education_app/Pages/QuizBuilder.dart';
 import 'package:education_app/Pages/QuizPages/HistoryPages/QuizSummaryPage.dart';
 import 'package:education_app/Quizzes/quiz.dart';
 import 'package:education_app/Quizzes/quizManager.dart';
+import 'package:flutter/widgets.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:education_app/Theme/AppTheme.dart';
+import 'package:education_app/Pages/QuizPages/HistoryPages/AllQuizzesPage.dart';
+import 'package:education_app/Pages/AuthenticationPages/DisplayNamePage.dart';
+
 
 class LandingPage extends StatefulWidget {
   @override
@@ -23,7 +27,6 @@ class _LandingPageState extends State<LandingPage> {
   late String _displayName = "Placeholder";
   late List<String> otherTopics = [];
 
-  List<String> recentQuizzes = [];
   late List<QuizQuestion> loadedQuestions = [];
   Map<String, dynamic> quizAttemptData = {};
   Map<String, dynamic> userSummary = {};
@@ -49,7 +52,6 @@ class _LandingPageState extends State<LandingPage> {
           _getUserInterests(user.uid);
           _getUserXPLevel(user.uid);
           _getUserDisplayName(user.uid); // Call to get user display name
-          _checkQuizHistory();
         }
       }
     });
@@ -146,109 +148,9 @@ class _LandingPageState extends State<LandingPage> {
     }
   }
 
-  void _checkQuizHistory() async {
-    if (_user != null) {
-      try {
-        final CollectionReference userCollection = FirebaseFirestore.instance.collection('users');
-        final DocumentReference userDoc = userCollection.doc(_user!.uid);
+ 
 
-        final CollectionReference quizHistoryCollection = userDoc.collection('quizHistory');
-
-        final QuerySnapshot quizHistorySnapshot = await quizHistoryCollection.orderBy('timestamp', descending: true).limit(3).get();
-
-        if (quizHistorySnapshot.docs.isNotEmpty) {
-          // Quiz history exists, get the three most recent quiz IDs
-          final recentQuizIds = quizHistorySnapshot.docs.map((doc) => doc.id).toList();
-
-          setState(() {
-            recentQuizzes = recentQuizIds;
-          });
-        } else {
-          print('No quizzes have been attempted.');
-        }
-      } catch (e) {
-        print('Error checking quiz history: $e');
-      }
-    }
-  }
-
-  Future<void> _getloadedQuestions(String quizId) async {
-    // int currentQuestionIndex = 0;
-
-    if (mounted) {
-      // print("Loading quiz with ID: $quizId");
-
-      Quiz? loadedQuiz = await quizManager.getQuizWithId(quizId);
-
-      if (loadedQuiz != null) {
-        setState(() {
-          quiz = loadedQuiz;
-        });
-
-        List<QuizQuestion> questions = [];
-        for (String questionId in quiz.questionIds) {
-          QuizQuestion? question = await QuizManager().getQuizQuestionById(questionId);
-
-          if (question != null) {
-            questions.add(question);
-          } else {
-            // Handle case where question doesn't exist
-          }
-        }
-
-        if (mounted) {
-          setState(() {
-            loadedQuestions = questions;
-          });
-        }
-      }
-    } else {
-      // Handle the case where the quiz is not found
-      // may want to show an error message or navigate back
-      print("Quiz not found with ID: $quizId");
-    }
-  }
-
-  Future<void> _loadQuizAttemptData(String quizId) async {
-    if (_user != null && mounted) {
-      try {
-        final CollectionReference userCollection = FirebaseFirestore.instance.collection('users');
-        final DocumentReference userDoc = userCollection.doc(_user!.uid);
-
-        final CollectionReference quizHistoryCollection = userDoc.collection('quizHistory').doc(quizId).collection('attempts');
-
-        final QuerySnapshot attemptsSnapshot = await quizHistoryCollection.orderBy('timestamp', descending: true).limit(1).get();
-
-        if (attemptsSnapshot.docs.isNotEmpty && mounted) {
-          final attemptData = attemptsSnapshot.docs.first.data();
-          setState(() {
-            if (attemptData != null) {
-              Map<String, dynamic> attemptDataMap = attemptData as Map<String, dynamic>;
-              Map<String, dynamic> userResults = attemptDataMap['userResults'];
-              Map<String, dynamic> userSummary = attemptDataMap['userSummary'];
-              Timestamp? timestamp = attemptDataMap['timestamp'];
-
-              if (userResults.isNotEmpty && userSummary.isNotEmpty && timestamp != null) {
-                quizAttemptData = {
-                  'timestamp': FieldValue.serverTimestamp(),
-                  'userResults': {
-                    'quizTotal': userResults['quizTotal'],
-                    'userTotal': userResults['userTotal'],
-                  },
-                  'userSummary': userSummary,
-                };
-              }
-            }
-          });
-        } else {
-          print('No attempts found for quiz $quizId');
-        }
-      } catch (e) {
-        print('Error loading quiz attempt data: $e');
-      }
-    }
-  }
-
+  
   Map<String, dynamic> createQuizAttemptData(Map<String, dynamic> userSummary) {
     int quizTotal = loadedQuestions.length;
 
@@ -262,79 +164,99 @@ class _LandingPageState extends State<LandingPage> {
     };
   }
 
-  void _quizSummaryButton(loadedQuestions, quizData) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => QuizSummaryPage(
-          loadedQuestions: loadedQuestions,
-          quizAttemptData: quizData,
-        ),
-      ),
-    );
-  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        centerTitle: true,
-        title: Text('Quiz App'),
-        actions: _user != null
-            ? [
-                IconButton(
-                  icon: Icon(Icons.logout),
-                  onPressed: () async {
-                    await FirebaseAuth.instance.signOut();
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => LoginPage(),
-                      ),
-                    );
-                  },
-                ),
-              ]
-            : null,
-      ),
+      appBar: AppTheme.buildAppBar(context, '', true, false, "Welcome to our quiz app", Text(
+        'Hi there! This is the landing page for quizzical. '
+        )),
       body: _user != null
           ? Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                
                 Expanded(
                   flex: 2,
                   child: Container(
-                    height: MediaQuery.of(context).size.height,
-                    margin: const EdgeInsets.all(30.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Expanded(
-                          child: Container(
-                            width: MediaQuery.of(context).size.width * 2 / 3,
-                            padding: EdgeInsets.all(16.0),
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(12),
-                              color: const Color(0xFFf3edf6).withOpacity(1),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withOpacity(0.2),
-                                  spreadRadius: 5,
-                                  blurRadius: 10,
-                                  offset: const Offset(0, 3),
-                                ),
-                              ],
-                            ),
-                            child: SingleChildScrollView(
+                    clipBehavior: Clip.none,
+                    height: double.infinity,
+                    padding: const EdgeInsets.all(30),
+                    child:  SingleChildScrollView(
+                      clipBehavior: Clip.none,
                               child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
+                                  InkWell(
+                                    borderRadius: BorderRadius.circular(24),
+                                    onTap: () async {
+                                      // We want to run a review quiz 
+
+                                      // Since we use all questions from all difficulties just fluke user stuff
+                                      String quizId = await quizManager.generateQuiz(userInterests, 50, 100, 8, name: "Review");
+                                      // Reviews grant even less xp 
+                                      Navigator.push(context, MaterialPageRoute(builder:(context) => QuizPage(quizId: quizId, multiplier: 0.15)));
+                                    },
+                                    child: Ink(
+                                      width: double.infinity,
+                                      decoration: BoxDecoration(
+                                        color: Theme.of(context).colorScheme.primary.withOpacity(0.3),
+                                        borderRadius: BorderRadius.circular(24),
+                                      ),
+                                      padding: EdgeInsets.all(24.0),
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Container(
+                                            decoration: BoxDecoration(
+                                              borderRadius: BorderRadius.circular(12),
+                                              color: Theme.of(context).colorScheme.primary
+                                            ),
+                                            padding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 6.0),
+                                            child: Text("Review", style: GoogleFonts.nunito(fontSize: 20, fontWeight: FontWeight.w800))
+                                          ),
+                                          SizedBox(height: 12.0),
+                                          Text("Take a review of all topics and difficulties to see how much you've improved!", style: GoogleFonts.nunito(fontSize: 18, fontWeight: FontWeight.bold)),
+                                          SizedBox(height: 6.0),
+                                          Text("8 Questions • ${userInterests.toString().substring(1, userInterests.toString().length - 1)}", style: GoogleFonts.nunito(fontSize: 14, fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.primary))
+                                        ],
+                                      )
+                                    )
+                                  ),  
                                   const SizedBox(height: 20),
-                                  Text(
-                                    'Your Interests',
-                                    style: GoogleFonts.nunito(color: Colors.black, fontSize: 28),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    children: [
+                                      const SizedBox(), // Empty space on the left
+                                      Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          Text(
+                                            'Your Interests',
+                                            style: GoogleFonts.nunito(fontSize: 28, fontWeight: FontWeight.bold),
+                                          ),
+                                        ],
+                                      ),
+                                      // IconButton(
+                                      //   icon: const Icon(Icons.remove),
+                                      //   onPressed: () {
+                                      //     // Navigate to DisplayUser page
+                                      //     Navigator.push(
+                                      //       context,
+                                      //       MaterialPageRoute(
+                                      //         builder: (context) => DisplayUser(),
+                                      //       ),
+                                      //     );
+                                      //   },
+                                      // ),
+                                    ],
                                   ),
+
+                                  Text(
+                                    'Pick a topic to begin a quiz!',
+                                    style: GoogleFonts.nunito(fontSize: 18),
+                                  ),
+
                                   const SizedBox(height: 20),
                                   FutureBuilder<List<String>>(
                                     future: Future.value(userInterests),
@@ -358,45 +280,43 @@ class _LandingPageState extends State<LandingPage> {
                                                 Flexible(
                                                   child: Padding(
                                                     padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 10),
-                                                    child: Container(
-                                                      height: 200,
-                                                      decoration: BoxDecoration(
-                                                        borderRadius: BorderRadius.circular(10),
-                                                        color: Colors.white,
-                                                        boxShadow: [
-                                                          BoxShadow(
-                                                            color: Colors.black.withOpacity(0.2),
-                                                            spreadRadius: 1,
-                                                            blurRadius: 2,
-                                                            offset: const Offset(0, 1),
-                                                          ),
-                                                        ],
-                                                      ),
-                                                      child: InkWell(
-                                                        onTap: () async {
+                                                    child: InkWell(
+                                                      onTap: () async {
                                                           print('Interest ${index + 1}: ${interests[index]} pressed');
 
                                                           // Generate a new quiz
-                                                          String id = await quizManager.generateQuiz([ interests[index] ], 30, 20, 5);
+                                                          String id = await quizManager.generateQuiz([ interests[index] ], xpLevel, 20, 5);
                                                           
                                                           Navigator.push(context, MaterialPageRoute(builder:(context) {
                                                             return QuizPage(quizId: id);
                                                           },));
                                                         },
+                                                      
+                                                      child: Ink(
+                                                        height: 200,
+                                                        decoration: BoxDecoration(
+                                                        borderRadius: BorderRadius.circular(10),
+                                                        color: Theme.of(context).colorScheme.primary.withOpacity(0.3),
+                                                        
+                                                      ),
                                                         child: Center(
                                                           child: Column(
                                                             mainAxisAlignment: MainAxisAlignment.center,
                                                             crossAxisAlignment: CrossAxisAlignment.center,
                                                             children: [
-                                                              const Icon(
-                                                                Icons.history,
-                                                                size: 60,
-                                                                color: Colors.blue,
+                                                               Container(
+
+                                                                decoration: BoxDecoration(
+                                                                  color: Theme.of(context).scaffoldBackgroundColor,
+                                                                  borderRadius: BorderRadius.circular(20),
+                                                                ),
+                                                                padding: const EdgeInsets.all(8.0),
+                                                                child: Image.asset("assets/images/${interests[index].toLowerCase()}.png", color: Theme.of(context).colorScheme.primary, width: 48, height: 48)
                                                               ),
                                                               const SizedBox(height: 10),
                                                               Text(
                                                                 interests[index],
-                                                                style: const TextStyle(fontSize: 16),
+                                                                style:  GoogleFonts.nunito(fontSize: 18,  fontWeight: FontWeight.bold),
                                                                 textAlign: TextAlign.center,
                                                               ),
                                                             ],
@@ -423,9 +343,36 @@ class _LandingPageState extends State<LandingPage> {
                                     },
                                   ),
                                   const SizedBox(height: 20),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    children: [
+                                      const SizedBox(), // Empty space on the left
+                                      Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          Text(
+                                            'Other Topics',
+                                            style: GoogleFonts.nunito(fontSize: 28, fontWeight: FontWeight.bold),
+                                          ),
+                                        ],
+                                      ),
+                                      // IconButton(
+                                      //   icon: const Icon(Icons.add),
+                                      //   onPressed: () {
+                                      //     // Navigate to DisplayUser page
+                                      //     Navigator.push(
+                                      //       context,
+                                      //       MaterialPageRoute(
+                                      //         builder: (context) => DisplayUser(),
+                                      //       ),
+                                      //     );
+                                      //   },
+                                      // ),
+                                    ],
+                                  ),
                                   Text(
-                                    'Other Topics',
-                                    style: GoogleFonts.nunito(color: Colors.black, fontSize: 28),
+                                    'Other topics you can take quiz on that didn\'t interest you as much!',
+                                    style: GoogleFonts.nunito(fontSize: 18),
                                   ),
                                   const SizedBox(height: 20),
                                   FutureBuilder<List<String>>(
@@ -456,46 +403,43 @@ class _LandingPageState extends State<LandingPage> {
                                                 Flexible(
                                                   child: Padding(
                                                     padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 10),
-                                                    child: Container(
-                                                      height: 200,
-                                                      decoration: BoxDecoration(
-                                                        borderRadius: BorderRadius.circular(10),
-                                                        color: Colors.white,
-                                                        boxShadow: [
-                                                          BoxShadow(
-                                                            color: Colors.black.withOpacity(0.2),
-                                                            spreadRadius: 1,
-                                                            blurRadius: 2,
-                                                            offset: const Offset(0, 1),
-                                                          ),
-                                                        ],
-                                                      ),
-                                                      child: InkWell(
-                                                        onTap: () async {
-                                                          print('${remainingTopics[index]} pressed');
-                                                          // Add functionality here if needed
+                                                    child: InkWell(
+                                                      onTap: () async {
+                                                          print('Interest ${index + 1}: ${remainingTopics[index]} pressed');
 
                                                           // Generate a new quiz
-                                                          String id = await quizManager.generateQuiz([ remainingTopics[index] ], 30, 20, 5);
+                                                          String id = await quizManager.generateQuiz([ remainingTopics[index] ], xpLevel, 20, 5);
                                                           
                                                           Navigator.push(context, MaterialPageRoute(builder:(context) {
                                                             return QuizPage(quizId: id);
                                                           },));
                                                         },
+                                                      
+                                                      child: Ink(
+                                                        height: 200,
+                                                        decoration: BoxDecoration(
+                                                        borderRadius: BorderRadius.circular(10),
+                                                        color: Theme.of(context).colorScheme.primary.withOpacity(0.3),
+                                                        
+                                                      ),
                                                         child: Center(
                                                           child: Column(
                                                             mainAxisAlignment: MainAxisAlignment.center,
                                                             crossAxisAlignment: CrossAxisAlignment.center,
                                                             children: [
-                                                              const Icon(
-                                                                Icons.topic, // Replace with appropriate icon
-                                                                size: 60,
-                                                                color: Colors.blue,
+                                                               Container(
+
+                                                                decoration: BoxDecoration(
+                                                                  color: Theme.of(context).scaffoldBackgroundColor,
+                                                                  borderRadius: BorderRadius.circular(20),
+                                                                ),
+                                                                padding: const EdgeInsets.all(8.0),
+                                                                child: Image.asset("assets/images/${remainingTopics[index].toLowerCase()}.png", color: Theme.of(context).colorScheme.primary, width: 48, height: 48)
                                                               ),
                                                               const SizedBox(height: 10),
                                                               Text(
-                                                                remainingTopics[index], // Use remainingTopics instead of topics
-                                                                style: const TextStyle(fontSize: 16),
+                                                                remainingTopics[index],
+                                                                style:  GoogleFonts.nunito(fontSize: 18,  fontWeight: FontWeight.bold),
                                                                 textAlign: TextAlign.center,
                                                               ),
                                                             ],
@@ -503,8 +447,8 @@ class _LandingPageState extends State<LandingPage> {
                                                         ),
                                                       ),
                                                     ),
+                                                    ),
                                                   ),
-                                                ),
                                               );
                                             } else {
                                               rowChildren.add(Flexible(child: SizedBox())); // Add an empty Flexible widget for even distribution
@@ -522,210 +466,16 @@ class _LandingPageState extends State<LandingPage> {
                                     },
                                   ),
                                 ],
-                              ),
+                              ))),
                             ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
+                          
+                        
+                
                 Expanded(
                   flex: 1,
-                  child: Container(
-                    height: MediaQuery.of(context).size.height,
-                    width: MediaQuery.of(context).size.width * 1 / 3,
-                    margin: const EdgeInsets.fromLTRB(0, 30, 30, 30),
-                    child: Column(
-                      children: [
-                        Container(
-                          height: 125,
-                          padding: EdgeInsets.all(16.0),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(12),
-                            color: const Color(0xFFf3edf6).withOpacity(1),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.2),
-                                spreadRadius: 5,
-                                blurRadius: 10,
-                                offset: const Offset(0, 3),
-                              ),
-                            ],
-                          ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(
-                                'XP Level',
-                                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                              ),
-                              SizedBox(height: 10),
-                              Container(
-    width: double.infinity,
-    height: 40,
-    decoration: BoxDecoration(
-        border: Border.all(color: Colors.black),
-        borderRadius: BorderRadius.circular(20),
-    ),
-    child: Stack(
-        children: [
-            // Inner Container with FractionallySizedBox
-            FractionallySizedBox(
-                widthFactor: xpLevel / 100,
-                child: Container(
-                    decoration: BoxDecoration(
-                        color: Colors.blue,
-                        borderRadius: BorderRadius.circular(20),
-                    ),
-                ),
-            ),
-            // Text widget aligned in the center
-            Center(
-                child: Text(
-                    '$xpLevel XP - ${_getXPLevelDescription(xpLevel)}',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                ),
-            ),
-        ],
-    ),
-),
-
-                              SizedBox(height: 10),
-                            ],
-                          ),
-                        ),
-                        SizedBox(height: 30),
-                        Expanded(
-                          flex: 7,
-                          child: Container(
-                            width: MediaQuery.of(context).size.width * 1 / 3,
-                            padding: EdgeInsets.all(16.0),
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(12),
-                              color: const Color(0xFFf3edf6).withOpacity(1),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withOpacity(0.2),
-                                  spreadRadius: 5,
-                                  blurRadius: 10,
-                                  offset: const Offset(0, 3),
-                                ),
-                              ],
-                            ),
-                            child: SingleChildScrollView(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  const SizedBox(height: 20),
-                                  Row(
-                                    children: [
-                                      Spacer(),
-                                      Text(
-                                        'Quiz History',
-                                        style: GoogleFonts.nunito(color: Colors.black, fontSize: 28),
-                                      ),
-                                      SizedBox(width: MediaQuery.of(context).size.width * 1/12), // Adjust the width as needed
-                                      ElevatedButton(
-                                        onPressed: () {
-                                          Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                              builder: (context) => QuizHistoryPage(),
-                                            ),
-                                          );
-                                        },
-                                        child: const Text(
-                                          'View All',
-                                          style: TextStyle(color: Colors.black),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  const SizedBox(height: 20),
-                                  FutureBuilder<List<String>>(
-                                    future: getQuizNames(recentQuizzes),
-                                    builder: (context, snapshot) {
-                                      if (snapshot.connectionState == ConnectionState.waiting) {
-                                        return Center(child: CircularProgressIndicator());
-                                      } else if (snapshot.hasError) {
-                                        return Center(child: Text('Error loading quiz names'));
-                                      } else {
-                                        List<String> quizNames = snapshot.data ?? [];
-                                        int numRecentQuizzes = quizNames.length;
-                                        int numQuizzesPerRow = 2;
-                                        int numRows = (numRecentQuizzes / numQuizzesPerRow).ceil();
-                                        List<Widget> rows = List.generate(numRows, (rowIndex) {
-                                          List<Widget> rowChildren = [];
-                                          for (int i = 0; i < numQuizzesPerRow; i++) {
-                                            int index = rowIndex * numQuizzesPerRow + i;
-                                            const SizedBox(height: 10);
-                                            if (index < numRecentQuizzes) {
-                                              rowChildren.add(
-                                                Flexible(
-                                                  child: Padding(
-                                                    padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 10),
-                                                    child: Container(
-                                                      height: 200,
-                                                      decoration: BoxDecoration(
-                                                        borderRadius: BorderRadius.circular(10),
-                                                        color: Colors.white,
-                                                        boxShadow: [
-                                                          BoxShadow(
-                                                            color: Colors.black.withOpacity(0.2),
-                                                            spreadRadius: 1,
-                                                            blurRadius: 2,
-                                                            offset: const Offset(0, 1),
-                                                          ),
-                                                        ],
-                                                      ),
-                                                      child: InkWell(
-                                                        onTap: () async {
-                                                          await _getloadedQuestions(recentQuizzes[index]);
-                                                          await _loadQuizAttemptData(recentQuizzes[index]);
-                                                          _quizSummaryButton(loadedQuestions, quizAttemptData);
-                                                        },
-                                                        child: Center(
-                                                          child: Column(
-                                                            mainAxisAlignment: MainAxisAlignment.center,
-                                                            crossAxisAlignment: CrossAxisAlignment.center,
-                                                            children: [
-                                                              const Icon(
-                                                                Icons.history,
-                                                                size: 60,
-                                                                color: Colors.blue,
-                                                              ),
-                                                              const SizedBox(height: 10),
-                                                            ],
-                                                          ),
-                                                        ),
-                                                      ),
-                                                    ),
-                                                  ),
-                                                ),
-                                              );
-                                            }
-                                          }
-                                          return Row(
-                                            children: rowChildren,
-                                          );
-                                        });
-                                        return Column(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                          children: rows,
-                                        );
-                                      }
-                                    },
-                                  ),
-                                  const SizedBox(height: 20),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(0.0, 30.0, 30.0, 30.0),
+                    child: UserInfoWidget(userId: _user!.uid)
                   ),
                 ),
               ],
@@ -739,20 +489,5 @@ class _LandingPageState extends State<LandingPage> {
               ),
             ),
     );
-  }
-
-
-  String _getXPLevelDescription(int xp) {
-    if (xp >= 0 && xp <= 20) {
-      return 'Beginner';
-    } else if (xp >= 21 && xp <= 40) {
-      return 'Intermediate';
-    } else if (xp >= 41 && xp <= 60) {
-      return 'Advanced';
-    } else if (xp >= 61 && xp <= 80) {
-      return 'Expert';
-    } else {
-      return 'Master';
-    }
   }
 }

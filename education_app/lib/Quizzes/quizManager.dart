@@ -1,7 +1,18 @@
 import 'dart:math';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:education_app/Pages/LandingPage.dart';
 import 'package:education_app/Quizzes/quiz.dart';
+
+// Stores info required about recent quiz
+class RecentQuiz
+{
+  String id = "";
+  String name = "";
+  Timestamp timestamp = Timestamp.now(); 
+  int xpEarned = 0;
+}
+
 
 // Quizzes are stored under the quizzes collection in the database
 
@@ -141,7 +152,7 @@ class QuizManager {
 
   
 
-   Future<String> generateQuiz(List<String> tags, int userLevel, int range, int questionCount) async {
+   Future<String> generateQuiz(List<String> tags, int userLevel, int range, int questionCount, { String name = "" }) async {
 
     print("Quiz Generating...");
 
@@ -210,11 +221,87 @@ class QuizManager {
 
     //print(l.map((e) => e.debugPrint()));
 
-    outputQuizId = await addQuizToDatabase(tags.toString(), "System", questionIds);
+    String quizName = tags.toString();
+
+    // Remove the brackets from the quiz name due to List.toString()
+    quizName = quizName.substring(1, quizName.length - 1);
+
+    // If the quiz name is provided then use that
+    if (name.isNotEmpty) {
+      quizName = name; 
+    }
+
+    outputQuizId = await addQuizToDatabase(quizName, "System", questionIds);
 
     print(outputQuizId);
 
     return outputQuizId;
+  }
+
+  Future<List<RecentQuiz>> getRecentQuizzesForUser(String userId) async {
+    List<RecentQuiz> recent = [];
+
+    var db = FirebaseFirestore.instance; 
+
+    var userRef = db.collection("users").doc(userId);
+
+    var quizzes = await userRef.collection("quizHistory").get();
+
+    for (var i in quizzes.docs) {
+      Map<String, dynamic> data = i.data(); 
+
+      String id = i.id;
+
+      Quiz? q = await getQuizWithId(id);
+      
+      if (q != null) {
+
+        // We have a quiz
+
+        RecentQuiz recentQuiz = RecentQuiz(); 
+        recentQuiz.id = id; 
+        recentQuiz.name = q.name;
+        recentQuiz.timestamp = data["timestamp"];
+        recentQuiz.xpEarned = data.containsKey("xpGain") ? data["xpGain"] : 0;
+        
+        recent.add(recentQuiz);
+
+      }
+
+    }
+
+    recent.sort(((a, b) {
+      return b.timestamp.compareTo(a.timestamp);
+    }));
+
+    return recent; 
+  }
+
+  Future<bool> hasUserDoneDiagnostic(String userId) async {
+
+    print("Testing if user $userId has done diagnostic");
+    var db = FirebaseFirestore.instance;
+
+    var user = await db.collection("users").doc(userId).get();
+
+    if (!user.exists) {
+      print("User not found");
+    }
+
+    var data = user.data();
+
+    if (data == null) {
+      print("user Data was null");
+      return false; 
+    }
+
+    print(data);
+
+    if (data.containsKey("doneDiagnostic")) {
+      print("doneDiagnostics exists");
+    }
+
+    return false; 
   }
 
 }

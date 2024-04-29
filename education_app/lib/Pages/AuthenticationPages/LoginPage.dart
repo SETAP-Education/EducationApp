@@ -1,17 +1,18 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:education_app/Pages/AuthenticationPages/AuthPageForm.dart';
 import 'package:education_app/Pages/AuthenticationPages/ErrorDisplayer.dart';
 import 'package:education_app/Pages/LandingPage.dart';
+import 'package:education_app/Theme/ThemeNotifier.dart';
 import 'package:education_app/Widgets/Button.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:education_app/Pages/AuthenticationPages/RegistrationPage.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'dart:async';
+import 'package:provider/provider.dart';
 import '../SplashPage.dart';
 import 'package:education_app/Pages/AuthenticationPages/DisplayNamePage.dart';
-
-// basic colour scheme - will come up with one on friday with max
-Color secondaryColour = Colors.black;
+import 'package:education_app/Theme/AppTheme.dart';
 
 class LoginPage extends StatefulWidget {
   @override
@@ -24,7 +25,7 @@ class _LoginPageState extends State<LoginPage> {
   final TextEditingController _passwordController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
   bool _showPassword = false;
-
+  
   void _checkAuthState() async {
 
     User? firebaseUser = await FirebaseAuth.instance.authStateChanges().first;
@@ -49,10 +50,10 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
-
     return PopScope(
       canPop: false, //When false, blocks the current route from being popped
       child: Scaffold(
+        appBar: AppTheme.buildAppBar(context, 'Quiz App', false, false, "Welcome to our quiz app", Text('')),
         body: AuthPageForm(child: _buildLoginForm())
       ),
     );
@@ -60,6 +61,9 @@ class _LoginPageState extends State<LoginPage> {
 
 
   Widget _buildLoginForm() {
+
+    Color? textColour = Theme.of(context).textTheme.bodyMedium!.color;
+
     return Form( 
       key: _formKey,
       child: SizedBox(
@@ -73,7 +77,6 @@ class _LoginPageState extends State<LoginPage> {
                 style: GoogleFonts.nunito(
                   fontSize: 30.0,
                   fontWeight: FontWeight.bold,
-                  color: secondaryColour,
                 ),
               ),
             ),
@@ -86,19 +89,19 @@ class _LoginPageState extends State<LoginPage> {
                   labelText: 'Email',
                   contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
                   focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: secondaryColour),
+                    borderSide: BorderSide(color: textColour!),
                     borderRadius: BorderRadius.circular(30.0),
                   ),
                   enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: secondaryColour),
+                    borderSide: BorderSide(color: textColour),
                     borderRadius: BorderRadius.circular(30.0),
                   ),
-                  labelStyle: TextStyle(color: secondaryColour),
+                  labelStyle: TextStyle(color: textColour),
                 ),
                 style: GoogleFonts.nunito(
                   fontSize: 20.0,
                 ),
-                cursorColor: secondaryColour,
+                cursorColor: textColour,
                 onEditingComplete: () {
                   _validateEmail(_emailController.text);
                 },
@@ -115,11 +118,11 @@ class _LoginPageState extends State<LoginPage> {
                   labelText: 'Password',
                   contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
                   focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: secondaryColour),
+                    borderSide: BorderSide(color: textColour),
                     borderRadius: BorderRadius.circular(30.0),
                   ),
                   enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: secondaryColour),
+                    borderSide: BorderSide(color: textColour),
                     borderRadius: BorderRadius.circular(30.0),
                   ),
                   suffixIcon: Padding(
@@ -128,7 +131,7 @@ class _LoginPageState extends State<LoginPage> {
                       icon: Icon(
                         _showPassword ? Icons.visibility_off : Icons.visibility,
                       ),
-                      color: secondaryColour,
+                      color: textColour,
                       onPressed: () {
                         setState(() {
                           _showPassword = !_showPassword;
@@ -136,12 +139,12 @@ class _LoginPageState extends State<LoginPage> {
                       },
                     ),
                   ),
-                  labelStyle: TextStyle(color: secondaryColour),
+                  labelStyle: TextStyle(color: textColour),
                 ),
                 style: GoogleFonts.nunito(
                   fontSize: 20.0,
                 ),
-                cursorColor: secondaryColour,
+                cursorColor: textColour,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     globalErrorManager.pushError("Please enter your password");
@@ -187,7 +190,7 @@ class _LoginPageState extends State<LoginPage> {
                   child: Text(
                     'Forgot Password?',
                     style: TextStyle(
-                      color: Color(0xFF19c37d),
+                      color: Theme.of(context).colorScheme.primary,
                     ),
                   ),
                 ),
@@ -202,22 +205,22 @@ class _LoginPageState extends State<LoginPage> {
                 _login();
               },
              
-              child: Text('Log in', style: GoogleFonts.nunito(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
+              child: Text('Log in', style: GoogleFonts.nunito(color: Theme.of(context).colorScheme.secondary, fontSize: 18, fontWeight: FontWeight.bold)),
             ),
-            // ElevatedButton(
-            //   onPressed: () {
-            //     Navigator.push(
-            //       context,
-            //       MaterialPageRoute(
-            //         builder: (context) => DisplayUser(),
-            //       ),
-            //     );
-            //   },
-            //   child: Text('Bypass', style: TextStyle(color: Colors.white)),
-            //   style: ElevatedButton.styleFrom(
-            //     backgroundColor: Color(0xFF19c37d),
-            //   ),
-            // ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => DisplayUser(),
+                  ),
+                );
+              },
+              child: Text('Bypass', style: TextStyle(color: Colors.white)),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Color(0xFF19c37d),
+              ),
+            ),
             const SizedBox(height: 20.0),
             // sign up text and button
             Row(
@@ -225,7 +228,7 @@ class _LoginPageState extends State<LoginPage> {
               children: [
                 Text(
                   'Don\'t have an account? ',
-                  style: GoogleFonts.nunito(color: Colors.black, fontSize: 17.0),
+                  style: GoogleFonts.nunito(fontSize: 17.0),
                 ),
                 // when user hovers over the sign up text, cursor changes
                 MouseRegion(
@@ -240,7 +243,7 @@ class _LoginPageState extends State<LoginPage> {
                     child: Text(
                       'Sign up',
                       style: GoogleFonts.nunito(
-                        color: Color(0xFF19c37d),
+                        color: Theme.of(context).colorScheme.primary,
                         fontSize: 17.0,
                       ),
                     ),
@@ -272,6 +275,10 @@ class _LoginPageState extends State<LoginPage> {
           password: _passwordController.text,
         );
         if (userCredential.user != null) {
+          bool isDarkMode = await _fetchThemePreference(userCredential.user!.uid);
+          print("Dark Mode: $isDarkMode");
+          _setTheme(isDarkMode, context);
+
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(builder: (context) => LandingPage()),
@@ -282,6 +289,32 @@ class _LoginPageState extends State<LoginPage> {
       }
     }
   }
+
+  Future<bool> _fetchThemePreference(String userId) async {
+    try {
+      // Retrieve theme preference from Firestore
+      DocumentSnapshot documentSnapshot = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(userId)
+          .get();
+
+      if (documentSnapshot.exists) {
+        return documentSnapshot['darkMode'] ?? false;
+      }
+
+      // Default to light mode if not specified
+      return false;
+    } catch (e) {
+      print('Error fetching theme preference: $e');
+      // Default to light mode in case of error
+      return false;
+    }
+  }
+
+  void _setTheme(bool isDarkMode, BuildContext context) {
+    context.read<ThemeNotifier>().setTheme(isDarkMode);
+  }
+
 }
 
 Route _createRoute(Widget page) {

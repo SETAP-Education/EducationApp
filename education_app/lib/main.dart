@@ -6,6 +6,9 @@ import 'Pages/SplashPage.dart';
 import 'package:education_app/Firebase/firebase_options.dart';
 import 'package:education_app/Pages/AuthenticationPages/LoginPage.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
+import 'package:education_app/Theme/AppTheme.dart';
+import 'package:education_app/Theme/ThemeNotifier.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -13,7 +16,12 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  runApp(const MyApp());
+  runApp(
+    ChangeNotifierProvider(
+      create: (context) => ThemeNotifier(), // Add this line
+      child: const MyApp(),
+    ),
+  );
 } 
 
 class MyApp extends StatelessWidget {
@@ -24,10 +32,9 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'SETaP Education Project',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        scaffoldBackgroundColor: const Color.fromARGB(255, 241, 247, 252),
-        useMaterial3: true,
-      ),
+      theme: context.watch<ThemeNotifier>().isDarkMode
+          ? AppTheme.darkTheme
+          : AppTheme.lightTheme,
       home: OpeningPage(),
     );
   }
