@@ -9,6 +9,7 @@ import 'package:flutter/widgets.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:education_app/Theme/AppTheme.dart';
 import 'package:education_app/Pages/AuthenticationPages/ErrorDisplayer.dart';
+import 'dart:async';
 
 class DisplayUser extends StatefulWidget {
   @override
@@ -22,6 +23,10 @@ class _DisplayUserState extends State<DisplayUser> {
   List<String> _interestsList = [];
   String _displayName = '';
   QuizManager quizManager = QuizManager(); 
+
+  bool _showError = false;
+  Timer? _timer;
+  bool _errorMessageVisible = false;
 
   @override
   void initState() {
@@ -111,6 +116,7 @@ class _DisplayUserState extends State<DisplayUser> {
                                 style: TextStyle(fontSize: 38),
                               )
                             ],
+
                           ),
                           Text("What should we call you?",
                               style: GoogleFonts.nunito(
@@ -139,6 +145,7 @@ class _DisplayUserState extends State<DisplayUser> {
                           borderRadius: BorderRadius.circular(30.0),
                         ),
                       ),
+
                       style: GoogleFonts.nunito(fontSize: 20.0),
                       cursorColor: Theme.of(context).textTheme.bodyMedium!.color!,
                       onChanged: (value) {
@@ -242,6 +249,7 @@ class _DisplayUserState extends State<DisplayUser> {
                               // Add an error message to the error manager
                               print("No interests");
                               globalErrorManager.pushError('You must select at least one interest');
+                              
                           } else {
                               // If there are no errors, proceed with setting the display name and interests
                               _setDisplayName(_user!.uid, displayName);
@@ -290,6 +298,8 @@ class _DisplayUserState extends State<DisplayUser> {
     // Saving the interests for the user
     users.doc(userId).set({
       'interests': interests,
+      'darkMode': true,
+      // 'xpLvl': _findXpLvl(userId),
     }, SetOptions(merge: true)).then((_) {
       print('Interests saved successfully!');
     }).catchError((error) {
@@ -326,3 +336,4 @@ class _DisplayUserState extends State<DisplayUser> {
    
   }
 }
+

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 // xp needs to be taken from users account - but don't know how to access that db rn
-int xp = 10;
+int xp = 0;
 int level = 0;
 String rank = '';
 // max level is 10
