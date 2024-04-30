@@ -1,49 +1,30 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:education_app/Quizzes/xpLogic.dart';
 
-void setXp(int currentXp, int quizXp) {
-  xp = currentXp + quizXp;
-}
-
-
 void main() {
-  group('Test setXp function', () {
-    test('Test setXp with positive quiz XP', () {
-      // Arrange
-      int initialXp = 100; // Initial XP
-      int quizXp = 50; // XP gained from the quiz
-
-      // Act
-      setXp(initialXp, quizXp);
-
-      // Assert
-      expect(xp, equals(initialXp + quizXp)); // Assert XP is updated correctly
+  group('Rank function tests', () {
+    test('getRank returns Bronze', () {
+      expect(XpInterface.getRank(10), equals('Bronze')); // xp < 20
     });
 
-    test('Test setXp with negative quiz XP', () {
-      // Arrange
-      int initialXp = 100; // Initial XP
-      int quizXp = -30; // XP lost from the quiz
-
-      // Act
-      setXp(initialXp, quizXp);
-
-      // Assert
-      expect(xp, equals(initialXp + quizXp)); // Assert XP is updated correctly
+    test('getRank returns Silver', () {
+      expect(XpInterface.getRank(30), equals('Silver')); // 20 <= xp < 40
     });
 
-    test('Test setXp with zero quiz XP', () {
-      // Arrange
-      int initialXp = 100; // Initial XP
-      int quizXp = 0; // No change in XP from the quiz
-
-      // Act
-      setXp(initialXp, quizXp);
-
-      // Assert
-      expect(xp, equals(initialXp + quizXp)); // Assert XP is updated correctly
+    test('getRank returns Gold', () {
+      expect(XpInterface.getRank(50), equals('Gold'));   // 40 <= xp < 60
     });
 
-    // Add more test cases as needed to cover different scenarios
+    test('getRank returns Platinum', () {
+      expect(XpInterface.getRank(70), equals('Platinum')); // 60 <= xp < 80
+    });
+
+    test('getRank returns Emerald', () {
+      expect(XpInterface.getRank(90), equals('Emerald'));  // 80 <= xp < 100
+    });
+
+    test('getRank returns Bronze for xp >= 100', () {
+      expect(XpInterface.getRank(110), equals('Bronze')); // xp >= 100
+    });
   });
 }
