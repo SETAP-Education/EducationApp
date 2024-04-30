@@ -20,20 +20,14 @@ String questionTypeToString(QuestionType type) {
 // Base class for questions
 // Question answers inherit from this
 class QuestionAnswer {
-
   void debugPrint() {}
-
   Map<String, dynamic> toFirestore() { return {}; }
 }
 
 // Question specific values for Multiple Choice
 class QuestionMultipleChoice extends QuestionAnswer {
-
   QuestionMultipleChoice({ required this.options, required this.correctAnswers });
 
-  // Multiple choice have multiple options
-  // and also a list of correct answers in case 1 or more is correct
-  // Probably should detect if there is 1 or more and display UI accordingly
   List<String> options;
   List<int> correctAnswers;
   List<int> selectedOptions = [];
@@ -99,7 +93,6 @@ class QuestionFillInTheBlank extends QuestionAnswer {
     );
   }
 }
-
 
 class DragAndDropQuestion extends QuestionAnswer {
   List<String> options;
@@ -213,7 +206,6 @@ Map<String, dynamic> checkMultipleChoiceAnswer(
       'correctAnswers': correctAnswers,
     };
   }
-
   print("THIS IS THE USER SUMMARY IN checkMultipleChoiceAnswer: $userSummary");
   return userSummary;
 }
@@ -238,7 +230,6 @@ Map<String, dynamic> checkFillInTheBlankAnswer(
     'userResponse': userResponse,
     'correctAnswer': correctAnswer,
   };
-
   print("THIS IS THE USER SUMMARY IN checkFillInTheBlankAnswer: $userSummary");
   return userSummary;
 }
@@ -253,7 +244,6 @@ bool areListsEqual(List<dynamic> list1, List<dynamic> list2) {
       return false;
     }
   }
-
   return true;
 }
 
@@ -274,11 +264,8 @@ class QuizQuestion {
 
   // List of tags/topics for sorting
   List<String> tags = List.empty(growable: true);
-
   QuestionAnswer answer = QuestionAnswer();
-
   GlobalKey key = GlobalKey();
-
 
   Map<String, dynamic> toFirestore() {
     return {
@@ -336,11 +323,9 @@ class Quiz {
   String name = ""; 
 
   // Quiz creator if any
-  // Can be null
   String? creator;
 
   // The share code 
-  // Can be null
   String? shareCode;
 
   // Quizzes can be tagged for specific topics
@@ -350,18 +335,13 @@ class Quiz {
   // These questions will be stored outside of the quiz
   List<String> questionIds = List.empty(growable: true); 
 
-
   // This is not stored in the database and is loaded later when the quiz starts 
   List<QuizQuestion> loadedQuestions = List.empty(growable: true);
-
-  // Functions
-  // I recommend using the getters instead of accessing the variables directly
 
   // Get the difficulty
   int getQuizDifficulty() {
 
     // Returns the average difficulty of all questions as a quiz difficulty
-
     if (loadedQuestions.isEmpty) {
       return 0;
     }
@@ -372,7 +352,6 @@ class Quiz {
     }
 
     totalDifficulty = totalDifficulty ~/ loadedQuestions.length;
-
     return totalDifficulty;
   }
 
@@ -421,7 +400,6 @@ class Quiz {
     }
 
     quiz.name = data["name"];
-    
     quiz.creator = data["creator"];
     quiz.shareCode = data["sharecode"];
 
@@ -432,7 +410,6 @@ class Quiz {
     if (data.containsKey("questionIds"))  {
       quiz.questionIds = List.from(data["questionIds"]);
     }
-
     return quiz; 
   }
 }

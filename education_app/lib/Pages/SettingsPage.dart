@@ -1,15 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:education_app/Pages/AuthenticationPages/LoginPage.dart';
 import 'package:education_app/Theme/AppTheme.dart';
-import 'package:education_app/Pages/SplashPage.dart';
 import 'package:flutter/material.dart';
 import 'package:education_app/Widgets/Button.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/widgets.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:education_app/Pages/AuthenticationPages/DisplayNamePage.dart';
-import 'package:education_app/Theme/AppTheme.dart';
 import 'package:education_app/Pages/QuizPages/QuizPage.dart';
 import 'package:education_app/Quizzes/quizManager.dart';
 import 'package:education_app/Pages/LandingPage.dart';
@@ -46,7 +43,7 @@ class SettingsPageState extends State<SettingsPage> {
                 },
                 child: Text('Change display name/ interests', style: GoogleFonts.nunito(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               Button(
                 important: true,
                 width: 450,
@@ -66,7 +63,6 @@ class SettingsPageState extends State<SettingsPage> {
         )
     );
   }
-
 }
 
 class SettingsDisplayUser extends StatefulWidget {
@@ -140,14 +136,14 @@ class _SettingsDisplayUserState extends State<SettingsDisplayUser> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppTheme.buildAppBar(context, 'Display name settings page', false, true, "Settings", Text('')),
+      appBar: AppTheme.buildAppBar(context, 'Display name settings page', false, true, "Settings", const Text('')),
       body: Stack(
         children: [
           SingleChildScrollView(
               child: Center(
                   child: Container(
                     width: 600,
-                    padding: EdgeInsets.all(8),
+                    padding: const EdgeInsets.all(8),
                     child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         crossAxisAlignment: CrossAxisAlignment.center,
@@ -165,7 +161,7 @@ class _SettingsDisplayUserState extends State<SettingsDisplayUser> {
                                             fontSize: 38,
                                             fontWeight: FontWeight.bold,
                                             fontStyle: FontStyle.italic)),
-                                    Text(
+                                    const Text(
                                       "👋",
                                       style: TextStyle(fontSize: 38),
                                     )
@@ -177,7 +173,7 @@ class _SettingsDisplayUserState extends State<SettingsDisplayUser> {
                               ],
                             ),
                           ),
-                          SizedBox(height: 20),
+                          const SizedBox(height: 20),
                           Center(
                             child: Container(
                               width: 600,
@@ -186,7 +182,7 @@ class _SettingsDisplayUserState extends State<SettingsDisplayUser> {
                                 decoration: InputDecoration(
                                   labelText: 'Display Name',
                                   contentPadding:
-                                  EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+                                  const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
                                   focusedBorder: OutlineInputBorder(
                                     borderSide: BorderSide(
                                         color: Theme.of(context).textTheme.bodyMedium!.color!),
@@ -206,7 +202,7 @@ class _SettingsDisplayUserState extends State<SettingsDisplayUser> {
                               ),
                             ),
                           ),
-                          SizedBox(height: 30),
+                          const SizedBox(height: 30),
                           Text(
                             'What do you wanna learn?',
                             style: GoogleFonts.nunito(
@@ -214,15 +210,7 @@ class _SettingsDisplayUserState extends State<SettingsDisplayUser> {
                               fontWeight: FontWeight.w600,
                             ),
                           ),
-                          // Text(
-                          //   'psst. Don\'t worry you can still access the others later!',
-                          //   style: GoogleFonts.nunito(
-                          //     fontSize: 16.0,
-                          //     fontWeight: FontWeight.w600,
-                          //     fontStyle: FontStyle.italic,
-                          //   ),
-                          // ),
-                          SizedBox(height: 16),
+                          const SizedBox(height: 16),
                           SizedBox(
                             width: 400,
                             child: GridView.builder(
@@ -237,7 +225,7 @@ class _SettingsDisplayUserState extends State<SettingsDisplayUser> {
                                     padding: const EdgeInsets.all(8.0),
                                     child: InkWell(
                                         splashColor: !_selectedInterests.contains(interest)
-                                            ? Color(0xFF19c37d)
+                                            ? const Color(0xFF19c37d)
                                             : Colors.white,
                                         borderRadius: BorderRadius.circular(24),
                                         onTap: () {
@@ -250,7 +238,7 @@ class _SettingsDisplayUserState extends State<SettingsDisplayUser> {
                                           });
                                         },
                                         child: Ink(
-                                          padding: EdgeInsets.all(8),
+                                          padding: const EdgeInsets.all(8),
                                           decoration: BoxDecoration(
                                             color: _selectedInterests.contains(interest) ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.primary.withOpacity(0.2),
                                             borderRadius: BorderRadius.circular(32),
@@ -259,9 +247,7 @@ class _SettingsDisplayUserState extends State<SettingsDisplayUser> {
                                               crossAxisAlignment: CrossAxisAlignment.center,
                                               mainAxisAlignment: MainAxisAlignment.center,
                                               children: [
-
                                                 Container(
-
                                                     decoration: BoxDecoration(
                                                       color: Theme.of(context).scaffoldBackgroundColor,
                                                       borderRadius: BorderRadius.circular(20),
@@ -270,7 +256,7 @@ class _SettingsDisplayUserState extends State<SettingsDisplayUser> {
                                                     child: Image.asset("assets/images/${interest.toLowerCase()}.png", color: Theme.of(context).colorScheme.primary, width: 48, height: 48)
                                                 ),
 
-                                                SizedBox(height: 8.0),
+                                                const SizedBox(height: 8.0),
                                                 Text(
                                                   interest,
                                                   style: GoogleFonts.nunito(
@@ -285,7 +271,7 @@ class _SettingsDisplayUserState extends State<SettingsDisplayUser> {
                               },
                             ),
                           ),
-                          SizedBox(height: 20),
+                          const SizedBox(height: 20),
                           Center(
                             child: Button(
                               width: 400,
@@ -294,17 +280,13 @@ class _SettingsDisplayUserState extends State<SettingsDisplayUser> {
                                 // Get the entered display name
                                 String displayName = _nameController.text.trim();
 
-                                // Check if display name or interests are empty
                                 if (displayName.isEmpty) {
-                                  // Add an error message to the error manager
                                   print("No display name");
                                   globalErrorManager.pushError('Display name cannot be empty');
                                 } else if (_selectedInterests.isEmpty) {
-                                  // Add an error message to the error manager
                                   print("No interests");
                                   globalErrorManager.pushError('You must select at least one interest');
                                 } else {
-                                  // If there are no errors, proceed with setting the display name and interests
                                   _setDisplayName(_user!.uid, displayName);
                                   _saveInterests(_user!.uid, _selectedInterests);
                                   // Navigate to the landing page
@@ -318,10 +300,8 @@ class _SettingsDisplayUserState extends State<SettingsDisplayUser> {
                                       fontWeight: FontWeight.bold)),
                             ),
                           ),
-                          SizedBox(height: 20),
-
+                          const SizedBox(height: 20),
                         ]),
-
                   ))),
           ErrorDisplayer(),
         ],
@@ -356,19 +336,10 @@ class _SettingsDisplayUserState extends State<SettingsDisplayUser> {
   }
 
   void pushDiagnostic(List<String> interests) async {
-
-    // TODO: This does nothing...
     if (await quizManager.hasUserDoneDiagnostic(_user!.uid)) {
-
       print("User has done diagnostic");
-
       // If the user has done the diagnostic push them to home
-      // I think we should make a settings page
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => LandingPage()),
-      );
-
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => LandingPage()));
       return;
     }
 
@@ -380,7 +351,5 @@ class _SettingsDisplayUserState extends State<SettingsDisplayUser> {
       context,
       MaterialPageRoute(builder: (context) => QuizPage(quizId: quizId, multiplier: 1.0)),
     );
-
-
   }
 }

@@ -5,7 +5,6 @@ import 'package:provider/provider.dart';
 import 'package:education_app/Theme/ThemeNotifier.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:education_app/Pages/AuthenticationPages/LoginPage.dart';
-import 'package:education_app/Pages/AuthenticationPages/DisplayNamePage.dart';
 
 class AppTheme {
 
@@ -19,7 +18,7 @@ class AppTheme {
       error: Colors.orange,
     ),
 
-     scaffoldBackgroundColor: Color.fromARGB(255, 230, 231, 236),
+     scaffoldBackgroundColor: const Color.fromARGB(255, 230, 231, 236),
     textTheme: const TextTheme(
       bodyMedium: TextStyle(color: Color(0xFF333333)),
     ),
@@ -38,7 +37,7 @@ class AppTheme {
       secondaryContainer: Color.fromARGB(255, 65, 68, 74),
       error: Colors.orange,
     ),
-    scaffoldBackgroundColor: Color(0xFF131517),
+    scaffoldBackgroundColor: const Color(0xFF131517),
     textTheme: const TextTheme(
       bodyMedium: TextStyle(color: Color(0xFFE7E7E7)),
     ),
@@ -47,19 +46,6 @@ class AppTheme {
       selectionColor: Colors.blue.withOpacity(0.5),
     ),
   );
-
-//   In order to implement colour scheme properly, each instance of color needs to be replaced with the following:
-//
-//       Dark Shade of Grey
-//       current: 'Color(0xff343541)'
-//       replace with: 'Theme.of(context).colorScheme.background'
-//       
-//       current: 'Colors.white'
-//       replace with: 'Theme.of(context).colorScheme.secondary'
-//       
-//       Lighter shade of Grey
-//       current: 'Color(0xFF40414f)'
-//       replace with: 'Theme.of(context).colorScheme.primary'
 
   static TextStyle defaultTitleText(BuildContext context) {
     return GoogleFonts.openSans(
@@ -77,23 +63,7 @@ class AppTheme {
       letterSpacing: -0.5,
       color: Theme.of(context).colorScheme.secondary,
     );
-    // return TextStyle(
-    //   fontSize: 20,
-    //   fontWeight: FontWeight.w300,
-    //   letterSpacing: -0.5,
-    //   color: Theme.of(context).colorScheme.secondary,
-    // );
   }
-
-//   In order to implement colour scheme properly, each instance of color needs to be replaced with the following:
-//
-//       Title Text Style
-//       current: 'Not too sure'
-//       replace with: 'AppTheme.defaultTitleText(context)'
-//       
-//       Body Text Style 1
-//       current: 'Not too sure'
-//       replace with: 'AppTheme.defaultBodyText(context)'
 
   static AppBar buildAppBar(BuildContext context, String title, bool includeTitleAndIcons, bool autoImply, String dialogTitle, Text contentText) {//, bool automaticallyImplyLeading) {
     // Get the current theme
@@ -133,38 +103,15 @@ class AppTheme {
                 Text(
                   title,
                   style: TextStyle(fontSize: 20, color: Theme.of(context).colorScheme.secondary),
-                ),
-                // IconButton(
-                //   icon: Icon(Icons.help_outline, color: Theme.of(context).colorScheme.secondary,),
-                //   onPressed: () {
-                //     showDialog(
-                //       context: context,
-                //       builder: (BuildContext context) {
-                //         return AlertDialog(
-                //           title: Text(dialogTitle, style: TextStyle(color: Theme.of(context).colorScheme.secondary)),
-                //           content: contentText,
-                //           backgroundColor: Color(0xFF40414f),
-                //           actions: [
-                //             TextButton(
-                //               onPressed: () {
-                //                 Navigator.of(context).pop();
-                //               },
-                //               child: Text('Close', style: TextStyle(color: Theme.of(context).colorScheme.secondary)),
-                //             ),
-                //           ],
-                //         );
-                //       },
-                //     );
-                //   },
-                // ),
+                )
               ],
             ),
             Padding(
-              padding: const EdgeInsets.all(8.0), // Adjust the right padding as needed
+              padding: const EdgeInsets.all(8.0),
               child: Row(
                 children: [
                   IconButton(
-                    icon: Icon(Icons.settings),
+                    icon: const Icon(Icons.settings),
                     tooltip: 'Settings',
                     onPressed: () {
                       Navigator.push(
@@ -203,12 +150,11 @@ class AppTheme {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Padding(
-              padding: const EdgeInsets.fromLTRB(8, 8, 8, 8), // Adjust the left padding as needed
+              padding: const EdgeInsets.fromLTRB(8, 8, 8, 8),
               child: IconButton(
                 icon: currentIcon,
                 tooltip: 'Theme button',
                 onPressed: () {
-                  // Toggle between light and dark mode
                   themeNotifier.toggleTheme();
                 },
               ),
@@ -220,29 +166,6 @@ class AppTheme {
                   title,
                   style: TextStyle(fontSize: 20, color: Theme.of(context).colorScheme.secondary),
                 ),
-                // IconButton(
-                //   icon: Icon(Icons.help_outline, color: Theme.of(context).colorScheme.secondary,),
-                //   onPressed: () {
-                //     showDialog(
-                //       context: context,
-                //       builder: (BuildContext context) {
-                //         return AlertDialog(
-                //           title: Text(dialogTitle, style: TextStyle(color: Theme.of(context).colorScheme.secondary)),
-                //           content: contentText,
-                //           backgroundColor: Color(0xFF40414f),
-                //           actions: [
-                //             TextButton(
-                //               onPressed: () {
-                //                 Navigator.of(context).pop();
-                //               },
-                //               child: Text('Close', style: TextStyle(color: Theme.of(context).colorScheme.secondary)),
-                //             ),
-                //           ],
-                //         );
-                //       },
-                //     );
-                //   },
-                // ),
               ],
             ),
             Padding(
@@ -250,7 +173,7 @@ class AppTheme {
               child: Row(
                 children: [
                   IconButton(
-                    icon: Icon(Icons.settings),
+                    icon: const Icon(Icons.settings),
                     tooltip: 'Settings',
                     onPressed: () {
                       Navigator.push(
@@ -286,12 +209,11 @@ class AppTheme {
         backgroundColor: Colors.transparent,
         centerTitle: true,
         flexibleSpace: Row(
-          // mainAxisAlignment: MainAxisAlignment.centre,
           children: [
             Padding(
-              padding: const EdgeInsets.only(left: 5, top: 5), // Adjust the left padding as needed
+              padding: const EdgeInsets.only(left: 5, top: 5),
               child: IconButton(
-                icon: Icon(Icons.arrow_back),
+                icon: const Icon(Icons.arrow_back),
                 tooltip: 'Return to previous page',
                 onPressed: () {
                   Navigator.pop(context);
@@ -299,12 +221,11 @@ class AppTheme {
               ),
             ),
             Padding(
-              padding: const EdgeInsets.only(left: 5, top: 5), // Adjust the left padding as needed
+              padding: const EdgeInsets.only(left: 5, top: 5),
               child: IconButton(
                 icon: currentIcon,
                 tooltip: 'Theme button',
                 onPressed: () {
-                  // Toggle between light and dark mode
                   themeNotifier.toggleTheme();
                 },
               ),
@@ -314,10 +235,9 @@ class AppTheme {
       );
     } else {
       return AppBar(
-        // title: Text(title),
         titleTextStyle: TextStyle(
           color: Theme.of(context).colorScheme.secondary,
-          fontSize: 20.0, // Set the desired font size
+          fontSize: 20.0,
         ),
         backgroundColor: Colors.transparent,
         centerTitle: true,
@@ -325,7 +245,6 @@ class AppTheme {
           icon: currentIcon,
           tooltip: 'Theme button',
           onPressed: () {
-            // Toggle between light and dark mode
             themeNotifier.toggleTheme();
           },
         ),
@@ -359,11 +278,10 @@ class AppTheme {
         borderSide: BorderSide(color: Theme.of(context).colorScheme.secondary),
       ),
       hintText: hintTextText,
-      contentPadding: EdgeInsets.symmetric(horizontal: 12.0),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 12.0),
       suffixIcon: suffixIconWidget,
     );
   }
-
 
   static ElevatedButton buildElevatedButton({
     required VoidCallback onPressed,
@@ -373,11 +291,10 @@ class AppTheme {
     return ElevatedButton(
       onPressed: onPressed,
       style: ElevatedButton.styleFrom(
-        backgroundColor: Color(0xFF19c37d),
+        backgroundColor: const Color(0xFF19c37d),
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(15.0), // 15 for rounded edges, 5 for curved corners
+          borderRadius: BorderRadius.circular(15.0),
         ),
-        // Add other button style configurations as needed
       ),
       child: Text(
         buttonText,
@@ -385,6 +302,4 @@ class AppTheme {
       ),
     );
   }
-
-
 }

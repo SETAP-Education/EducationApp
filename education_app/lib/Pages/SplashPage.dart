@@ -15,7 +15,6 @@ class SplashPage extends StatefulWidget {
 class _SplashPageState extends State<SplashPage> {
 
   void _checkAuthState() async {
-
     User? firebaseUser = await FirebaseAuth.instance.authStateChanges().first;
     
     if (firebaseUser != null) {
@@ -32,7 +31,6 @@ class _SplashPageState extends State<SplashPage> {
   @override 
   void initState() {
     super.initState();
-
     _checkAuthState();
   }
 
@@ -42,7 +40,7 @@ class _SplashPageState extends State<SplashPage> {
     Color secondaryColour = Theme.of(context).colorScheme.secondary;
 
     return Scaffold(
-      appBar: AppTheme.buildAppBar(context, 'Quiz App', false, false, "Welcome to our quiz app", Text(
+      appBar: AppTheme.buildAppBar(context, 'Quiz App', false, false, "Welcome to our quiz app", const Text(
         'Hi there! This is the landing page for AMT. '
         )),
       body: Center(
@@ -56,13 +54,13 @@ class _SplashPageState extends State<SplashPage> {
                 height: 400,
                 child: Center(
                   child: Image.asset(
-                    'images/quiz_app_logo_2.png', // Change to your image asset path
+                    'images/quiz_app_logo_2.png',
                     width: 400, // Adjust as needed
                     height: 400, // Adjust as needed
                   ),
                 ),
               ),
-              SizedBox(width: 40),
+              const SizedBox(width: 40),
               Column (
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -73,7 +71,6 @@ class _SplashPageState extends State<SplashPage> {
                         fontStyle: FontStyle.italic,
                         color: secondaryColour
                       )),
-
                   Text(
                     'Quizzical 🎓!',
                     style: GoogleFonts.nunito(
@@ -82,8 +79,7 @@ class _SplashPageState extends State<SplashPage> {
                       color: secondaryColour
                     ),
                   ),
-                  SizedBox(height: 10),
-
+                  const SizedBox(height: 10),
                    Text(
                     'Learning doesn\'t have to be boring!',
                     style: GoogleFonts.nunito(
@@ -92,18 +88,12 @@ class _SplashPageState extends State<SplashPage> {
                       fontStyle: FontStyle.italic
                     ),
                   ),
-                 
-                  SizedBox(height: 25),
+                  const SizedBox(height: 25),
                   Center(
                     child: SizedBox(
                       width: 400, // Constant width
                       child: Button(
-                        onClick: () {
-                          Navigator.push(
-                            context,
-                            _createRoute(RegistrationPage()),
-                          );
-                        },
+                        onClick: () { Navigator.push(context, _createRoute(RegistrationPage())); },
                         important: true,
                         child: Text(
                           'New here?',
@@ -116,17 +106,13 @@ class _SplashPageState extends State<SplashPage> {
                       ),
                     ),
                   ),
-                  SizedBox(height: 17),
+                  const SizedBox(height: 17),
                   Center(
                     child: SizedBox(
-                      width: 400, // Constant width
+                      width: 400,
                       child: Button(
                         onClick: () {
-                          Navigator.push(
-                            context,
-                            _createRoute(LoginPage()),
-                          );
-                        },
+                          Navigator.push( context, _createRoute(LoginPage())); },
                         important: true,
                         child: Text(
                           'Already have an account',

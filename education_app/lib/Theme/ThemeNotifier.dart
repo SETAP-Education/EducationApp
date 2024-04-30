@@ -6,9 +6,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class ThemeNotifier extends ChangeNotifier {
   bool _isDarkMode = true;
   ThemeData _currentTheme = AppTheme.lightTheme;
-
   ThemeData get currentTheme => _currentTheme;
-
   bool get isDarkMode => _isDarkMode;
 
   void setTheme(bool isDarkMode) {

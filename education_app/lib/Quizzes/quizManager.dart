@@ -11,18 +11,13 @@ class RecentQuiz
   int xpEarned = 0;
 }
 
-
-// Quizzes are stored under the quizzes collection in the database
-
 class QuizManager {
-  // Searches for quizzes with the specified tags
-  // Returns an empty list if none exist
+  // Searches for quizzes with the specified tags, returns an empty list if none exist
   Future<List<Quiz>> getQuizzesWithTags(List<String> tags) {
     return Future(() => List.empty());
   }
 
-  // Returns the quiz with the specified ID
-  // Returns null if the quiz is not found
+  // Returns the quiz with the specified ID, returns null if the quiz is not found
   Future<Quiz?> getQuizWithId(String id) async {
     var db = FirebaseFirestore.instance;
 
@@ -35,17 +30,14 @@ class QuizManager {
             toFirestore: (Quiz quiz, _) => quiz.toFirestore())
         .get();
 
-    // Test if the quiz exists
-    // If it doesn't return null
+    // Test if the quiz exists, if it doesn't return null
     if (!quizRef.exists) {
       return Future(() => null);
     }
-
     return Future(() => quizRef.data());
   }
 
-  // Returns the quiz from the sharecode.
-  // Returns null if the quiz does not exist
+  // Returns the quiz from the sharecode, returns null if the quiz does not exist
   Future<Quiz?> getQuizFromShareCode(String shareCode) async {
     var db = FirebaseFirestore.instance;
 
@@ -60,17 +52,12 @@ class QuizManager {
 
     if (quiz.docs.isNotEmpty) {
       // We found a quiz with this sharecode
-
-      // It should only get 1 so return the first in the array
       return quiz.docs[0].data();
     }
-
-    // If we reach this point just return null
     return Future(() => null);
   }
 
   // Returns the question with a specific ID
-  // Returns null if the question doesn't exist
   Future<QuizQuestion?> getQuizQuestionById(String id) async {
     var db = FirebaseFirestore.instance;
 
@@ -85,7 +72,6 @@ class QuizManager {
     if (!questionRef.exists) {
       return null;
     }
-
     return questionRef.data();
   }
 
@@ -108,8 +94,6 @@ class QuizManager {
 
   // Returns an empty list if no questions that match are found
   // Warning: Don't use this unless you absolutely must
-  // This returns all quiz questions in the database
-  // AND IS SLOW
   Future<List<QuizQuestion>> getQuizQuestions() async {
     var db = FirebaseFirestore.instance;
 
@@ -126,7 +110,6 @@ class QuizManager {
 
   static void addQuizQuestionToDatabase(QuizQuestion question) {
     var db = FirebaseFirestore.instance;
-
     db.collection("questions").doc().set(question.toFirestore());
   }
 
@@ -143,12 +126,8 @@ class QuizManager {
     quiz.shareCode = doc.path;
 
     await doc.set(quiz.toFirestore());
-
     return doc.id;
-
   }
-
-  
 
    Future<String> generateQuiz(List<String> tags, int userLevel, int range, int questionCount, { String name = "" }) async {
 
@@ -169,23 +148,19 @@ class QuizManager {
             toFirestore: (QuizQuestion q, _) => q.toFirestore())
         .get();
 
-    // TODO: make this more efficient
     var questions = List.generate(
         questionRef.docs.length, (index) => questionRef.docs[index].data());
 
-   
-
     print("Number of questions found: ${questions.length}");
 
-    // we have a list of questions that match the parameters 
+    // We have a list of questions that match the parameters
     // We want to get a random questions from this list
 
     List<int> questionNumbers = List.empty(growable: true);
 
     if (questions.length < questionCount) {
       // If the questions that match are less than the questionCount we just want to return 
-      // all the questions from the query 
-
+      // all the questions from the query
       print("Not enough questions found, just adding the ones we have");
 
       for (int i = 0; i < questions.length; i++) {
@@ -194,10 +169,8 @@ class QuizManager {
 
       // Shuffle the questions 
       questionNumbers.shuffle();
-
     }
     else {
-
       print("Randomly picking Questions");
       
       var rng = Random();
@@ -217,11 +190,7 @@ class QuizManager {
       return questions[questionNumbers[index]].questionId;
     });
 
-    //print(l.map((e) => e.debugPrint()));
-
     String quizName = tags.toString();
-
-    // Remove the brackets from the quiz name due to List.toString()
     quizName = quizName.substring(1, quizName.length - 1);
 
     // If the quiz name is provided then use that
@@ -230,9 +199,7 @@ class QuizManager {
     }
 
     outputQuizId = await addQuizToDatabase(quizName, "System", questionIds);
-
     print(outputQuizId);
-
     return outputQuizId;
   }
 
@@ -246,40 +213,30 @@ class QuizManager {
     var quizzes = await userRef.collection("quizHistory").get();
 
     for (var i in quizzes.docs) {
-      Map<String, dynamic> data = i.data(); 
-
+      Map<String, dynamic> data = i.data();
       String id = i.id;
-
       Quiz? q = await getQuizWithId(id);
       
       if (q != null) {
-
         // We have a quiz
-
         RecentQuiz recentQuiz = RecentQuiz(); 
         recentQuiz.id = id; 
         recentQuiz.name = q.name;
         recentQuiz.timestamp = data["timestamp"];
         recentQuiz.xpEarned = data.containsKey("xpGain") ? data["xpGain"] : 0;
-        
         recent.add(recentQuiz);
-
       }
-
     }
 
     recent.sort(((a, b) {
       return b.timestamp.compareTo(a.timestamp);
     }));
-
     return recent; 
   }
 
   Future<bool> hasUserDoneDiagnostic(String userId) async {
-
     print("Testing if user $userId has done diagnostic");
     var db = FirebaseFirestore.instance;
-
     var user = await db.collection("users").doc(userId).get();
 
     if (!user.exists) {
@@ -298,8 +255,6 @@ class QuizManager {
     if (data.containsKey("doneDiagnostic")) {
       print("doneDiagnostics exists");
     }
-
     return false; 
   }
-
 }

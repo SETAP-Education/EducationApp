@@ -9,7 +9,6 @@ import 'package:education_app/Theme/AppTheme.dart';
 import 'package:education_app/Pages/LandingPage.dart';
 
 class QuizPage extends StatefulWidget {
-
   QuizPage({ required this.quizId, this.multiplier = 0.5 });
 
   String quizId = ""; 
@@ -29,7 +28,6 @@ class _QuizPageState extends State<QuizPage> {
   Map<String, dynamic> userSummary = {};
   bool quizSubmitted = false;
   int earnedXp = 0; 
-  // Replace the quizId being passed in, it is static for testing purposes.
   Map<String, dynamic> quizAttemptData = {};
 
   @override
@@ -48,13 +46,10 @@ class _QuizPageState extends State<QuizPage> {
 
   Future<void> loadQuiz(String quizId) async {
     print("Loading quiz with ID: $quizId");
-
     Quiz? loadedQuiz = await quizManager.getQuizWithId(quizId);
 
     if (loadedQuiz != null) {
-      setState(() {
-        quiz = loadedQuiz;
-      });
+      setState(() { quiz = loadedQuiz; });
 
       // Print quiz details
       print("Loaded quiz: ${quiz.name}");
@@ -65,24 +60,19 @@ class _QuizPageState extends State<QuizPage> {
         print(
             "1 Fetching Question: $questionId, list length: ${questions.length}");
 
-        // Fetch the question document directly from Firestore using QuizManager instead
         QuizQuestion? question =
             await QuizManager().getQuizQuestionById(questionId);
 
         if (question != null) {
           questions.add(question);
 
-          // Print question type
           print("Question Text: ${question.questionText}");
           print("Question Type: ${question.type}");
 
           print("Added question, list length: ${questions.length}");
-        } else {
-          // Handle case where question doesn't exist
-        }
+        } else {}
 
-        print(
-            "2 Fetching Question: $questionId, list length: ${questions.length}");
+        print("2 Fetching Question: $questionId, list length: ${questions.length}");
       }
 
       setState(() {
@@ -102,8 +92,6 @@ class _QuizPageState extends State<QuizPage> {
 
       displayQuestion(currentQuestionIndex, quiz.questionIds);
     } else {
-      // Handle the case where the quiz is not found
-      // may want to show an error message or navigate back
       print("Quiz not found with ID: $quizId");
     }
   }
@@ -115,7 +103,7 @@ class _QuizPageState extends State<QuizPage> {
     }
 
     QuizQuestion currentQuestion = loadedQuestions[currentQuestionIndex];
-    String questionId = quiz.questionIds[currentQuestionIndex]; // Get the correct questionId
+    String questionId = quiz.questionIds[currentQuestionIndex];
 
     Map<String, dynamic> questionSummary;
 
@@ -143,20 +131,12 @@ class _QuizPageState extends State<QuizPage> {
         print("Error: Incorrect question type for fill-in-the-blank question.");
         return;
       }
-    } else {
-      // Add other question types if needed
-      return;
-    }
+    } else { return; }
 
-
-    // Update userSummary with the new summary
     userSummary = {
       ...userSummary,
       ...questionSummary,
     };
-
-    // Print the current question summary (you can remove this in the final version)
-    print("User Summary: $userSummary");
 
     // Move to the next question or submit the quiz
     if (currentQuestionIndex < loadedQuestions.length - 1) {
@@ -189,9 +169,6 @@ class _QuizPageState extends State<QuizPage> {
         ),
       );
     }
-
-    // Print the current question index (you can remove this in the final version)
-    print("Question Index: $currentQuestionIndex");
   }
 
   Map<String, dynamic> createQuizAttemptData(Map<String, dynamic> userSummary) {
@@ -200,7 +177,7 @@ class _QuizPageState extends State<QuizPage> {
     return {
       'timestamp': FieldValue.serverTimestamp(),
       'userResults': {
-        'quizTotal': quizTotal,  // Update this with the actual maximum points
+        'quizTotal': quizTotal,
         'userTotal': calculateUserTotal(userSummary),
       },
       'userSummary': userSummary,
@@ -217,7 +194,7 @@ class _QuizPageState extends State<QuizPage> {
 
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.primaryContainer,
-      appBar: AppTheme.buildAppBar(context, 'Quiz App', false, false, "Welcome to our quiz app", Text('')),
+      appBar: AppTheme.buildAppBar(context, 'Quiz App', false, false, "Welcome to our quiz app", const Text('')),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -234,7 +211,7 @@ class _QuizPageState extends State<QuizPage> {
                       color: Colors.black.withOpacity(0.2),
                       spreadRadius: 5,
                       blurRadius: 10,
-                      offset: Offset(0, 3),
+                      offset: const Offset(0, 3),
                     ),
                   ],
                 ),
@@ -258,8 +235,6 @@ class _QuizPageState extends State<QuizPage> {
                       Padding(
                         padding: const EdgeInsets.only(left: 550),
                         child: IconButton(
-                          // color: tertiary,
-                          // hoverColor: secondary,
                           icon: Icon(Icons.arrow_left, color: Theme.of(context).colorScheme.primary,),
                           tooltip: 'Previous question',
                           onPressed: () {
@@ -275,12 +250,10 @@ class _QuizPageState extends State<QuizPage> {
                         ),
                       )
                     else
-                      SizedBox(width: 48), // Add a placeholder SizedBox when the condition is false
+                      const SizedBox(width: 48),
                     Padding(
                       padding: const EdgeInsets.only(right: 550),
                       child: IconButton(
-                        // color: tertiary,
-                        // hoverColor: secondary,
                         icon: Icon(Icons.arrow_right, color: Theme.of(context).colorScheme.primary),
                         tooltip: currentQuestionIndex < loadedQuestions.length - 1
                             ? 'Next Question'
@@ -289,7 +262,6 @@ class _QuizPageState extends State<QuizPage> {
                           if (currentQuestionIndex == loadedQuestions.length) {
                             // If there are more questions, store user answers in Firebase
                             print("Just before storing the userSummary: $userSummary");
-                            // await storeUserAnswersInFirebase2(userSummary);
                           }
                           moveToNextOrSubmit();
                         },
@@ -344,7 +316,7 @@ class _QuizPageState extends State<QuizPage> {
                                     child: Text(
                                       'Yes',
                                       style: TextStyle(
-                                        color: secondaryColour, // Secondary color
+                                        color: secondaryColour,
                                       ),
                                     ),
                                   ),
@@ -352,7 +324,6 @@ class _QuizPageState extends State<QuizPage> {
                               );
                             },
                           );
-                          // If the user confirmed the action, navigate to the LandingPage
                           if (userConfirmed == true) {
                             Navigator.pushReplacement(
                               context,
@@ -361,19 +332,19 @@ class _QuizPageState extends State<QuizPage> {
                           }
                         },
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: primaryColour, // Set the desired color for the button
+                          backgroundColor: primaryColour,
                         ),
                         child: Text(
                           'Quit',
                           style: TextStyle(
-                            color: secondaryColour, // Set the desired text color for the button
+                            color: secondaryColour,
                           ),
                         ),
                       ),
                     ),
                   ],
                 ),
-                SizedBox(height: 16),
+                const SizedBox(height: 16),
                 Padding(
                   padding: const EdgeInsets.only(bottom: 50, right: 0),
                   child: Row(
@@ -381,7 +352,7 @@ class _QuizPageState extends State<QuizPage> {
                     children: loadedQuestions.map((id) {
                       int index = loadedQuestions.indexOf(id);
                       return Container(
-                        margin: EdgeInsets.symmetric(horizontal: 5),
+                        margin: const EdgeInsets.symmetric(horizontal: 5),
                         width: 10,
                         height: 10,
                         decoration: BoxDecoration(
@@ -406,22 +377,19 @@ class _QuizPageState extends State<QuizPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        SizedBox(height: 20),
+        const SizedBox(height: 20),
         Text(
           question.questionText,
-          style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
+          style: const TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
           textAlign: TextAlign.center,
         ),
-        SizedBox(height: 45),
+        const SizedBox(height: 45),
         //This is where the question will be asked / written to the page. The question format for posing the question is universal for all question types thus doesn't need to be type specific.
 
         if (question.type == QuestionType.multipleChoice)
           buildMultipleChoiceQuestion(question.answer as QuestionMultipleChoice),
         if (question.type == QuestionType.fillInTheBlank)
           buildFillInTheBlankQuestion(question.answer as QuestionFillInTheBlank, question.key),
-        // if (question.type == QuestionType.dragAndDrop) 
-          // buildDragAndDropQuestion(question.answer as DragAndDropQuestion, context),
-          // buildDragAndDropQuestion(question.answer as DragAndDropQuestion, context),
       ],
     );
   }
@@ -429,7 +397,7 @@ class _QuizPageState extends State<QuizPage> {
   Widget buildMultipleChoiceQuestion(QuestionMultipleChoice question) {
     return ListView.builder(
       shrinkWrap: true,
-      physics: NeverScrollableScrollPhysics(),
+      physics: const NeverScrollableScrollPhysics(),
       itemCount: question.options.length,
       itemBuilder: (context, index) {
         String option = question.options[index];
@@ -446,8 +414,8 @@ class _QuizPageState extends State<QuizPage> {
             });
           },
           child: Container(
-            padding: EdgeInsets.all(10),
-            margin: EdgeInsets.symmetric(vertical: 8, horizontal: 100),
+            padding: const EdgeInsets.all(10),
+            margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 100),
             decoration: BoxDecoration(
               color: isSelected ? Colors.blue : Colors.white,
               borderRadius: BorderRadius.circular(20),
@@ -488,146 +456,16 @@ class _QuizPageState extends State<QuizPage> {
           ),
           filled: true,
           fillColor: primaryColour,
-          hintStyle: TextStyle(
-            color: Colors.black, // Set the hint text color to secondary
+          hintStyle: const TextStyle(
+            color: Colors.black,
           ),
         ),
-        style: TextStyle(
-          color: Colors.black, // Set the text color to secondary
+        style: const TextStyle(
+          color: Colors.black,
         ),
       )
     );
   }
-
-// Widget buildDragAndDropQuestion(DragAndDropQuestion question, BuildContext context) {
-//   List<Widget> droppedItems = [];
-
-//   return Column(
-//     crossAxisAlignment: CrossAxisAlignment.start,
-//     children: [
-//       Text(
-//         question.optionsText.join('\n'),
-//         style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-//       ),
-//       SizedBox(height: 20),
-//       Row(
-//         mainAxisAlignment: MainAxisAlignment.spaceAround,
-//         children: [
-//           // Drag Targets
-//           for (int i = 0; i < question.options.length; i++)
-//             Draggable<Widget>(
-//               child: Container(
-//                 width: 50,
-//                 height: 50,
-//                 color: Colors.blue,
-//                 child: const Center(child: Text('Item 1'))
-//               ),
-//               feedback: Container(
-//                 width: 100,
-//                 height: 100,
-//                 color: Colors.blue,
-//                 child: const Center(child: Text('Item 1'))
-//               ),
-//               data: Container(
-//                 width: 100,
-//                 height: 100,
-//                 color: Colors.blue,
-//                 child: const Center(child: Text('Item 1'))
-//               )
-//             ),
-//           for (int i = 0; i < question.options.length; i++)
-//             DragTarget<Widget>(
-//               builder: (context, accepted, rejected) {
-//                 return Container(
-//                   width: 300,
-//                   height: 200,
-//                   color: Colors.grey,
-//                   child: Column(
-//                     mainAxisAlignment: MainAxisAlignment.center,
-//                     children: droppedItems.isEmpty
-//                       ? [const Text('Drop Items Here')]
-//                       : droppedItems
-//                   ),
-//                 );
-//               },
-//               onWillAccept: (Widget? data) {
-//                 return true;
-//               },
-//               onAccept: (Widget data) {
-//                 setState(() {
-//                   droppedItems.add(data);
-//                 });
-//               },
-//             ),
-//         ],
-//       ),
-//     ],
-//   );
-// }
-
-
-// Widget buildTarget(
-//   BuildContext context, {
-//   required String text,
-//   required List<String> options,
-//   required DragTargetAccept<String> onAccept,
-// }) =>
-//     CircleAvatar(
-//       radius: 50,
-//       child: DragTarget<String>(
-//         builder: (context, candidateData, rejectedData) => Stack(
-//           children: [
-//             // Draggable Options
-//             for (int i = 0; i < options.length; i++)
-//               Draggable<String>(
-//               data: options[i],
-//               feedback: Card(
-//                 elevation: 5,
-//                 child: Container(
-//                   width: 100,
-//                   height: 50,
-//                   alignment: Alignment.center,
-//                   child: Text(options[i]),
-//                 ),
-//               ),
-//               child: Card(
-//                 elevation: 3,
-//                 child: Container(
-//                   width: 100,
-//                   height: 50,
-//                   alignment: Alignment.center,
-//                   child: Text(options[i]),
-//                 ),
-//               ),
-//             ),
-//             // IgnorePointer(child: Center(child: buildText(text))),
-//           ],
-//         ),
-//         onWillAcceptWithDetails: (data) => true,
-//         onAcceptWithDetails: (DragTargetDetails<String> details) {
-//           String data = details.data;
-//           onAccept(data);
-//         },
-//       ),
-//     );
-
-
-//     Widget buildText(String text) => Container(
-//       decoration: BoxDecoration(boxShadow: [
-//         BoxShadow(
-//           color: Colors.black.withOpacity(0.8),
-//           blurRadius: 12,
-//         )
-//       ]),
-//       child: Text(
-//         text,
-//         style: TextStyle(
-//           color: Colors.white,
-//           fontSize: 16,
-//           fontWeight: FontWeight.bold,
-//         ),
-//       ),
-//     );
 
   Future<void> displayQuestion(int index, List<String> questionIds) async {
     if (loadedQuestions.isNotEmpty && index < loadedQuestions.length) {
@@ -678,7 +516,6 @@ class _QuizPageState extends State<QuizPage> {
   Future<void> storeUserAnswersInFirebase(Map<String, dynamic> userSummary) async {
     try {
       User? user = FirebaseAuth.instance.currentUser;
-      // int quizTotal = quizAttemptData['userResults']['quizTotal'];
 
       if (user == null) {
         print("User not logged in.");
@@ -702,24 +539,17 @@ class _QuizPageState extends State<QuizPage> {
 
       int quizTotal = loadedQuestions.length;
 
-      // Include the timestamp field in the userSummary
       Map<String, dynamic> quizAttemptData = {
         'timestamp': FieldValue.serverTimestamp(),
         'userResults': {
-          'quizTotal': quizTotal, // Update this with the actual number of questions
+          'quizTotal': quizTotal,
           'userTotal': calculateUserTotal(userSummary),
         },
         'userSummary': userSummary,
       };
 
-      // Store data in Firebase
       await quizAttemptDocument.set(quizAttemptData);
-
-      // Calculate the User XP to add
-
-
       int xpGain = calculateXpGain(userSummary, widget.multiplier);
-
       earnedXp = xpGain; 
 
       // Now, update the timestamp field in the quizId2 document
@@ -729,7 +559,6 @@ class _QuizPageState extends State<QuizPage> {
         'name': quiz.name,
       }, SetOptions(merge: true));
 
-      // We want to add xp to user now
       var userDoc = await FirebaseFirestore.instance.collection("users").doc(userId).get();
       int currentXp = 0; 
 
@@ -740,11 +569,8 @@ class _QuizPageState extends State<QuizPage> {
       }
 
       currentXp += xpGain;
-
       FirebaseFirestore.instance.collection("users").doc(userId).update({ "xpLvl": currentXp }, );
 
-
-      // Print success message
       print("User answers and summary stored successfully!");
     } catch (error) {
       print("Error storing user answers: $error");
@@ -761,25 +587,19 @@ class _QuizPageState extends State<QuizPage> {
       } else if (question.type == QuestionType.fillInTheBlank) {
         QuestionFillInTheBlank fitbQuestion = question.answer as QuestionFillInTheBlank;
         correctAnswers[question.questionText] = fitbQuestion.correctAnswer;
-      } else {
-        // Handle other question types if needed
-      }
+      } else {}
     });
     return correctAnswers;
   }
 
-  // Calculate user total based on the summary
   int calculateUserTotal(Map<String, dynamic> userSummary) {
     int userTotal = 0;
 
     userSummary.forEach((questionId, details) {
       if (details['correctIncorrect'] == 'Correct') {
-        // Assign points based on your scoring logic
-        // For example, you might have different point values for different question difficulties
         userTotal += 1;
       }
     });
-
     return userTotal;
   }
 
@@ -792,11 +612,8 @@ class _QuizPageState extends State<QuizPage> {
         xp +=  q.first.difficulty;
       }
     });
-
     xp = xp ~/ loadedQuestions.length;
-
     xp = (xp.toDouble() * multiplier).toInt();
-
     return xp;
   }
 }

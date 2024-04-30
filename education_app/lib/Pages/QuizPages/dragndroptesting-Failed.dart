@@ -13,19 +13,19 @@ class _DraggableExampleState extends State<DraggableExample> {
       width: 100,
       height: 100,
       color: Colors.blue,
-      child: Center(child: Text('Item 1')),
+      child: const Center(child: Text('Item 1')),
     ),
     'Item 2': Container(
       width: 100,
       height: 100,
       color: Colors.green,
-      child: Center(child: Text('Item 2')),
+      child: const Center(child: Text('Item 2')),
     ),
     'Item 3': Container(
       width: 100,
       height: 100,
       color: Colors.red,
-      child: Center(child: Text('Item 3')),
+      child: const Center(child: Text('Item 3')),
     ),
   };
 
@@ -43,7 +43,7 @@ class _DraggableExampleState extends State<DraggableExample> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Draggable Example'),
+        title: const Text('Draggable Example'),
       ),
       body: Column(
         children: [
@@ -66,7 +66,7 @@ class _DraggableExampleState extends State<DraggableExample> {
                 ),
             ],
           ),
-          SizedBox(height: 20),
+          const SizedBox(height: 20),
           DragTarget<String>(
             key: targetKey,
             builder: (context, accepted, rejected) {
@@ -88,10 +88,7 @@ class _DraggableExampleState extends State<DraggableExample> {
                         child: currentAcceptedItem!,
                         onDragEnd: (details) {
                           if (!details.wasAccepted) {
-                            // If not accepted in the target, snap back
-                            setState(() {
-                              currentAcceptedItem = null;
-                            });
+                            setState(() { currentAcceptedItem = null; });
                           }
                         },
                       )

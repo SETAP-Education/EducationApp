@@ -4,11 +4,8 @@ import 'package:flutter/material.dart';
 
 
 class AuthPageForm extends StatefulWidget {
-
   AuthPageForm({ required this.child });
-
   final Widget child;
-
   @override
   State<AuthPageForm> createState() => _AuthPageFormState(); 
 }
@@ -17,16 +14,15 @@ class _AuthPageFormState extends State<AuthPageForm> {
 
   bool _error = false;
 
-
   @override
   Widget build(BuildContext context) {
     return Stack(
           children: [
             Container(
 
-              child: Center( // Center widget added here
+              child: Center(
                 child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center, // Align the column content vertically centered
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     LayoutBuilder(
                       builder: (BuildContext context, BoxConstraints constraints) {
@@ -61,15 +57,15 @@ class _AuthPageFormState extends State<AuthPageForm> {
                 height: 400,
                 child: Center(
                   child: Image.asset(
-                    'images/quiz_app_logo_2.png', // Change to your image asset path
-                    width: 400, // Adjust as needed
-                    height: 400, // Adjust as needed
+                    'images/quiz_app_logo_2.png',
+                    width: 400,
+                    height: 400,
                   ),
                 ),
               ),
             ),
             Padding(
-              padding: EdgeInsets.only(left: 50, top: 50),
+              padding: const EdgeInsets.only(left: 50, top: 50),
               child: widget.child
             )
           ]

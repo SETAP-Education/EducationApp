@@ -1,5 +1,3 @@
-
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:education_app/Quizzes/xpLogic.dart';
 import 'package:education_app/Widgets/RecentQuizzes.dart';
@@ -10,7 +8,6 @@ import 'package:google_fonts/google_fonts.dart';
 class UserInfoWidget extends StatefulWidget {
 
   UserInfoWidget({ super.key, required this.userId });
-
   final String userId; 
 
    @override
@@ -18,7 +15,6 @@ class UserInfoWidget extends StatefulWidget {
 }
 
 class UserInfoWidgetState extends State<UserInfoWidget> {
-
   int currentXpOverall = 0; 
   int currentLevel = 0;
   int currentLevelProgress = 10;
@@ -33,11 +29,8 @@ class UserInfoWidgetState extends State<UserInfoWidget> {
   }
 
   void getUserData() async {
-
     var db = FirebaseFirestore.instance;
-
     var collection = await db.collection("users").doc(widget.userId).get();
-
     var data = collection.data();
 
     if (data == null ) {
@@ -46,7 +39,6 @@ class UserInfoWidgetState extends State<UserInfoWidget> {
 
     if (data.containsKey("xpLvl")) {
       setState(() {
-       
         currentXpOverall = data["xpLvl"];
         print(currentXpOverall);
         currentLevel = XpInterface.getLevel(currentXpOverall);
@@ -62,18 +54,14 @@ class UserInfoWidgetState extends State<UserInfoWidget> {
           else {
             prevLevelMax = 0;
           }
-          
           currentLevelProgress = currentXpOverall - prevLevelMax;
         }
       });
-     
     }
-    
   }
 
   @override
   Widget build(BuildContext context) {
-    //getUserData();
     return Container(
       width: MediaQuery.of(context).size.width * 1 / 3,
       height: MediaQuery.of(context).size.height,
@@ -86,18 +74,14 @@ class UserInfoWidgetState extends State<UserInfoWidget> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-
             Container(
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(16.0),
                 color: Theme.of(context).colorScheme.primary,
               ),
-              padding: EdgeInsets.all(32.0),
-
+              padding: const EdgeInsets.all(32.0),
             child: Column(
               children: [
-            
-
             Image.asset("assets/images/${XpInterface.getRank(currentXpOverall).toLowerCase()}.png", width: 128, height: 128),
             
             const SizedBox(height: 16.0),
@@ -134,7 +118,6 @@ class UserInfoWidgetState extends State<UserInfoWidget> {
                           fontStyle: FontStyle.italic
                         )
                       ),
-                      
                     ]
                   )
                 ),
@@ -161,14 +144,10 @@ class UserInfoWidgetState extends State<UserInfoWidget> {
                         )
                       ),
                       ]
-                      
-                      
                     )
                   ),
                 ),
-
             const SizedBox(height: 6.0),
-           
 
             Container(
               width: double.infinity,
@@ -194,11 +173,8 @@ class UserInfoWidgetState extends State<UserInfoWidget> {
             // End of XP box and rank box
 
             const SizedBox(height: 16),
-
             TabBarCustom(options: const ["Recent" /*, "Milestones" */],),
-
             const SizedBox(height: 16),
-
             const Expanded(
               child: SizedBox(
                 child: SingleChildScrollView(
@@ -206,9 +182,6 @@ class UserInfoWidgetState extends State<UserInfoWidget> {
                 )
               )
             )
-
-          
-
           ],
         )
       )

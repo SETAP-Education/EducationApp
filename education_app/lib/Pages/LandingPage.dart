@@ -5,7 +5,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:education_app/Quizzes/quiz.dart';
 import 'package:education_app/Quizzes/quizManager.dart';
-import 'package:flutter/widgets.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:education_app/Theme/AppTheme.dart';
 
@@ -45,7 +44,7 @@ class _LandingPageState extends State<LandingPage> {
           _fetchOtherTopics();
           _getUserInterests(user.uid);
           _getUserXPLevel(user.uid);
-          _getUserDisplayName(user.uid); // Call to get user display name
+          _getUserDisplayName(user.uid);
         }
       }
     });
@@ -133,16 +132,12 @@ class _LandingPageState extends State<LandingPage> {
         Quiz? loadedQuiz = await quizManager.getQuizWithId(quizId);
         quizNames.add(loadedQuiz?.name ?? 'Unnamed Quiz');
       }
-
       return quizNames;
     } catch (e) {
       print('Error fetching quiz names: $e');
       return [];
     }
   }
-
-
-
 
   Map<String, dynamic> createQuizAttemptData(Map<String, dynamic> userSummary) {
     int quizTotal = loadedQuestions.length;
@@ -161,7 +156,7 @@ class _LandingPageState extends State<LandingPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppTheme.buildAppBar(context, '', true, false, "Welcome to our quiz app", Text(
+      appBar: AppTheme.buildAppBar(context, '', true, false, "Welcome to our quiz app", const Text(
           'Hi there! This is the landing page for quizzical. '
       )),
       body: _user != null
@@ -183,8 +178,6 @@ class _LandingPageState extends State<LandingPage> {
                         InkWell(
                             borderRadius: BorderRadius.circular(24),
                             onTap: () async {
-                              // We want to run a review quiz
-
                               // Since we use all questions from all difficulties just fluke user stuff
                               String quizId = await quizManager.generateQuiz(userInterests, 50, 100, 8, name: "Review");
                               // Reviews grant even less xp
@@ -196,7 +189,7 @@ class _LandingPageState extends State<LandingPage> {
                                   color: Theme.of(context).colorScheme.primary.withOpacity(0.3),
                                   borderRadius: BorderRadius.circular(24),
                                 ),
-                                padding: EdgeInsets.all(24.0),
+                                padding: const EdgeInsets.all(24.0),
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
@@ -205,12 +198,12 @@ class _LandingPageState extends State<LandingPage> {
                                             borderRadius: BorderRadius.circular(12),
                                             color: Theme.of(context).colorScheme.primary
                                         ),
-                                        padding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 6.0),
+                                        padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 6.0),
                                         child: Text("Review", style: GoogleFonts.nunito(fontSize: 20, fontWeight: FontWeight.w800))
                                     ),
-                                    SizedBox(height: 12.0),
+                                    const SizedBox(height: 12.0),
                                     Text("Take a review of all topics and difficulties to see how much you've improved!", style: GoogleFonts.nunito(fontSize: 18, fontWeight: FontWeight.bold)),
-                                    SizedBox(height: 6.0),
+                                    const SizedBox(height: 6.0),
                                     Text("8 Questions • ${userInterests.toString().substring(1, userInterests.toString().length - 1)}", style: GoogleFonts.nunito(fontSize: 14, fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.primary))
                                   ],
                                 )
@@ -230,18 +223,6 @@ class _LandingPageState extends State<LandingPage> {
                                 ),
                               ],
                             ),
-                            // IconButton(
-                            //   icon: const Icon(Icons.remove),
-                            //   onPressed: () {
-                            //     // Navigate to DisplayUser page
-                            //     Navigator.push(
-                            //       context,
-                            //       MaterialPageRoute(
-                            //         builder: (context) => DisplayUser(),
-                            //       ),
-                            //     );
-                            //   },
-                            // ),
                           ],
                         ),
 
@@ -255,9 +236,9 @@ class _LandingPageState extends State<LandingPage> {
                           future: Future.value(userInterests),
                           builder: (context, snapshot) {
                             if (snapshot.connectionState == ConnectionState.waiting) {
-                              return Center(child: CircularProgressIndicator());
+                              return const Center(child: CircularProgressIndicator());
                             } else if (snapshot.hasError) {
-                              return Center(child: Text('Error loading interests'));
+                              return const Center(child: Text('Error loading interests'));
                             } else {
                               List<String> interests = snapshot.data ?? [];
                               int numInterests = interests.length;
@@ -321,7 +302,7 @@ class _LandingPageState extends State<LandingPage> {
                                       ),
                                     );
                                   } else {
-                                    rowChildren.add(Flexible(child: SizedBox())); // Add an empty Flexible widget for even distribution
+                                    rowChildren.add(const Flexible(child: SizedBox())); // Add an empty Flexible widget for even distribution
                                   }
                                 }
                                 return Row(
@@ -339,7 +320,7 @@ class _LandingPageState extends State<LandingPage> {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: [
-                            const SizedBox(), // Empty space on the left
+                            const SizedBox(),
                             Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
@@ -349,18 +330,6 @@ class _LandingPageState extends State<LandingPage> {
                                 ),
                               ],
                             ),
-                            // IconButton(
-                            //   icon: const Icon(Icons.add),
-                            //   onPressed: () {
-                            //     // Navigate to DisplayUser page
-                            //     Navigator.push(
-                            //       context,
-                            //       MaterialPageRoute(
-                            //         builder: (context) => DisplayUser(),
-                            //       ),
-                            //     );
-                            //   },
-                            // ),
                           ],
                         ),
                         Text(
@@ -372,9 +341,9 @@ class _LandingPageState extends State<LandingPage> {
                           future: Future.value(otherTopics), // Assuming otherTopics is a list of other topics
                           builder: (context, snapshot) {
                             if (snapshot.connectionState == ConnectionState.waiting) {
-                              return Center(child: CircularProgressIndicator());
+                              return const Center(child: CircularProgressIndicator());
                             } else if (snapshot.hasError) {
-                              return Center(child: Text('Error loading topics'));
+                              return const Center(child: Text('Error loading topics'));
                             } else {
 
                               List<String> topics = snapshot.data ?? [];
@@ -384,7 +353,7 @@ class _LandingPageState extends State<LandingPage> {
                               print("Remaining topics: $remainingTopics");
 
                               int numTopics = remainingTopics.length;
-                              int numTopicsPerRow = 4; // Adjust the number of topics per row as needed
+                              int numTopicsPerRow = 4;
                               int numRows = (numTopics / numTopicsPerRow).ceil();
                               List<Widget> rows = List.generate(numRows, (rowIndex) {
                                 List<Widget> rowChildren = [];
@@ -402,7 +371,6 @@ class _LandingPageState extends State<LandingPage> {
 
                                               // Generate a new quiz
                                               String id = await quizManager.generateQuiz([ remainingTopics[index] ], xpLevel, 20, 5);
-
                                               Navigator.push(context, MaterialPageRoute(builder:(context) {
                                                 return QuizPage(quizId: id);
                                               },));
@@ -444,7 +412,7 @@ class _LandingPageState extends State<LandingPage> {
                                       ),
                                     );
                                   } else {
-                                    rowChildren.add(Flexible(child: SizedBox())); // Add an empty Flexible widget for even distribution
+                                    rowChildren.add(const Flexible(child: SizedBox())); // Add an empty Flexible widget for even distribution
                                   }
                                 }
                                 return Row(
@@ -461,9 +429,6 @@ class _LandingPageState extends State<LandingPage> {
                       ],
                     ))),
           ),
-
-
-
           Expanded(
             flex: 1,
             child: Padding(
@@ -478,7 +443,7 @@ class _LandingPageState extends State<LandingPage> {
           onPressed: () {
             // Navigate to login page
           },
-          child: Text('Login'),
+          child: const Text('Login'),
         ),
       ),
     );

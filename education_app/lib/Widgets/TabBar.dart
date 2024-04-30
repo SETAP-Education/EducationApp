@@ -1,6 +1,3 @@
-
-
-
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -16,7 +13,6 @@ class TabBarCustom extends StatefulWidget {
 }
 
 class TabBarCustomState extends State<TabBarCustom> {
-
   String selected = "";
 
   @override void initState() {
@@ -48,9 +44,7 @@ class TabBarCustomState extends State<TabBarCustom> {
                       color: selected == widget.options[idx] ? Theme.of(context).colorScheme.primary : Theme.of(context).textTheme.bodyMedium!.color,
                       fontWeight: selected == widget.options[idx] ? FontWeight.bold : FontWeight.normal
                     )),
-
                     const SizedBox(height: 6.0),
-
                     Container(
                       width: 8,
                       height: 8,
@@ -59,7 +53,6 @@ class TabBarCustomState extends State<TabBarCustom> {
                         color: selected == widget.options[idx] ? Theme.of(context).colorScheme.primary : Colors.transparent
                       ),
                     )
-                    
                   ]
                 )
               )

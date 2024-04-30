@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-// xp needs to be taken from users account - but don't know how to access that db rn
 int xp = 0;
 int level = 0;
 String rank = '';
@@ -13,7 +12,6 @@ void setUpLevelAndRank(){
 }
 
 class XpInterface {
-
   static List<String> rankList = ['Bronze', 'Silver', 'Gold', 'Platinum', 'Emerald'];
   static List<int> rankThesholds = [ 20, 40, 60, 80, 100 ];
 
@@ -23,7 +21,6 @@ class XpInterface {
         return i;
       }
     }
-
     return 0;
   }
 
@@ -34,7 +31,6 @@ class XpInterface {
         return rankList[i];
       }
     }
-
     return rankList[0];
   }
 }
@@ -45,9 +41,7 @@ void setXp(BuildContext context, int quizXp){
 
   // check if level has changed
   if(checkIfLeveledUp() == true){
-    // only need to set level and rank if user has leveled up, otherwise just wasting time
     level = getLevel();
-    //rank = getRank();
     if(reachedMaxLevel == true){
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -63,8 +57,6 @@ void setXp(BuildContext context, int quizXp){
       );
     }
   }
-
-  // need to add a function that updates xp to users db - needs to happen everytime the user completes a quiz
 }
 
 // sets the level variable based on users xp
@@ -102,7 +94,7 @@ bool checkIfLeveledUp(){
 String getRank(int xp){
   List<String> rankList = ['Bronze', 'Silver', 'Gold', 'Platinum', 'Emerald'];
   String rank = '';
-  for(int i=0;i<=9;i++){
+  for(int i = 0; i <= 9; i++){
     if(xp == i){
       rank = rankList[i];
     }
@@ -113,10 +105,8 @@ String getRank(int xp){
 // function to calculate xp gained from completing a quiz
 void xpGained(BuildContext context){
   int xpGained = 0;
-
   // get total number of questions answered correctly
   // add up difficulty for each question answered correctly
   // divide this by the average difficulty of the quiz - xpGained = this value
-
   setXp(context, xpGained);
 }

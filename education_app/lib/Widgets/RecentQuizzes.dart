@@ -1,5 +1,3 @@
-
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:education_app/Pages/QuizPages/HistoryPages/QuizSummaryPage.dart';
 import 'package:education_app/Quizzes/quiz.dart';
@@ -9,7 +7,6 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class RecentQuizzes extends StatefulWidget {
-
   const RecentQuizzes({ super.key });
 
   @override 
@@ -35,30 +32,23 @@ class RecentQuizzesState extends State<RecentQuizzes> {
   void _checkAuthState() async {
     User? user = await FirebaseAuth.instance.authStateChanges().first;
     if (user != null) {
-      setState(() {
-        _user = user; 
-      });
-    }
-  }
+      setState(() { _user = user;});} }
 
   @override 
   Widget build(BuildContext context) {
 
-    if (_user == null)
-    {
-      return Container();
-    }
+    if (_user == null) { return Container(); }
 
     return FutureBuilder<List<RecentQuiz>>(
         future: quizManager.getRecentQuizzesForUser(_user!.uid),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
+            return const Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
-            return Center(child: Text('Error loading quiz names'));
+            return const Center(child: Text('Error loading quiz names'));
           } else {
             if (snapshot.data == null) {
-              return Center(child: CircularProgressIndicator());
+              return const Center(child: CircularProgressIndicator());
             }
             List<RecentQuiz> quizzes = snapshot.data! ?? [];
             int numRecentQuizzes = quizzes.length;
@@ -104,8 +94,7 @@ class RecentQuizzesState extends State<RecentQuizzes> {
                                       )
                                     ],
                                   ),
-                                  Spacer(), 
-
+                                  const Spacer(),
                                   Text("+ ${quizzes[index].xpEarned}xp",
                                     style: GoogleFonts.nunito(color: Theme.of(context).colorScheme.primary, fontSize: 18, fontWeight: FontWeight.w600, fontStyle: FontStyle.italic),
                                   ),
@@ -133,11 +122,7 @@ class RecentQuizzesState extends State<RecentQuizzes> {
   } 
 
   Future<void> _getloadedQuestions(String quizId) async {
-    // int currentQuestionIndex = 0;
-
     if (mounted) {
-      // print("Loading quiz with ID: $quizId");
-
       Quiz? loadedQuiz = await quizManager.getQuizWithId(quizId);
 
       if (loadedQuiz != null) {
@@ -151,20 +136,13 @@ class RecentQuizzesState extends State<RecentQuizzes> {
 
           if (question != null) {
             questions.add(question);
-          } else {
-            // Handle case where question doesn't exist
-          }
+          } else {}
         }
 
-        if (mounted) {
-          setState(() {
-            loadedQuestions = questions;
-          });
-        }
+        if (mounted) { setState(() { loadedQuestions = questions; }); }
       }
     } else {
       // Handle the case where the quiz is not found
-      // may want to show an error message or navigate back
       print("Quiz not found with ID: $quizId");
     }
   }
@@ -174,9 +152,7 @@ class RecentQuizzesState extends State<RecentQuizzes> {
       try {
         final CollectionReference userCollection = FirebaseFirestore.instance.collection('users');
         final DocumentReference userDoc = userCollection.doc(_user!.uid);
-
         final CollectionReference quizHistoryCollection = userDoc.collection('quizHistory').doc(quizId).collection('attempts');
-
         final QuerySnapshot attemptsSnapshot = await quizHistoryCollection.orderBy('timestamp', descending: true).limit(1).get();
 
         if (attemptsSnapshot.docs.isNotEmpty && mounted) {
@@ -238,8 +214,6 @@ class RecentQuizzesState extends State<RecentQuizzes> {
     ];
 
   String _nicifyDateTime(DateTime dateTime) {
-
     return "${dateTime.day} ${months[dateTime.month - 1]}";
-
   }
 } 

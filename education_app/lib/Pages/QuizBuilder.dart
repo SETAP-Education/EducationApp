@@ -55,7 +55,6 @@ class Tuple<T1, T2> {
   Tuple(this.item1, this.item2);
 }
 
-
 class QuestionBuilderState extends State<QuestionBuilder> {
 
   TextEditingController questionController = TextEditingController();
@@ -96,7 +95,7 @@ class QuestionBuilderState extends State<QuestionBuilder> {
             height: 50,
             child:  TextField(
               controller: questionController,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 hintText: "Question",
               ),
             ),
@@ -111,7 +110,7 @@ class QuestionBuilderState extends State<QuestionBuilder> {
                 height: 50,
                 child: TextField(
                   controller: tagController,
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     hintText: "Tag"
                   ),
                 )
@@ -122,7 +121,7 @@ class QuestionBuilderState extends State<QuestionBuilder> {
                   tags.add(tagController.text);
                   tagController.text = "";
                 });
-              }, child: Text("Add Tag"))
+              }, child: const Text("Add Tag"))
             ],
           ),
 
@@ -139,7 +138,7 @@ class QuestionBuilderState extends State<QuestionBuilder> {
                   child: Row(
                     children: [ 
                       Text(tags[index]),
-                      IconButton(onPressed: () { tags.removeAt(index); }, icon: Icon(Icons.close, size: 14), iconSize: 14,)
+                      IconButton(onPressed: () { tags.removeAt(index); }, icon: const Icon(Icons.close, size: 14), iconSize: 14,)
                     ]
                 ))
               )
@@ -167,15 +166,14 @@ class QuestionBuilderState extends State<QuestionBuilder> {
               ),
 
               const SizedBox(width: 16),
-
-              Text("Difficulty: "), 
+              const Text("Difficulty: "),
 
               SizedBox(
                 width: 50,
                 height: 50,
                 child: TextField(
                   controller: difficulty,
-                  keyboardType: TextInputType.numberWithOptions(decimal: true),
+                  keyboardType: const TextInputType.numberWithOptions(decimal: true),
                   inputFormatters: <TextInputFormatter>[
                     FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
                   ]
@@ -194,7 +192,7 @@ class QuestionBuilderState extends State<QuestionBuilder> {
                   multipleChoiceAnswers.add(Tuple<TextEditingController, bool>(TextEditingController(), false));
                 }
               });
-            }, child: Text("Add Answer")),
+            }, child: const Text("Add Answer")),
 
           if (selectedItem == QuestionType.multipleChoice)
             ...buildMultipleChoiceAnswers(),
@@ -205,20 +203,18 @@ class QuestionBuilderState extends State<QuestionBuilder> {
               height: 50,
               child: TextField(
                 controller: fillInTheBlank,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   hintText: "Answer"
                 ),
               )
 
             ),
-
            const SizedBox(height: 16),
 
           TextButton(
             onPressed: () {
 
               // Add to the database
-
               QuizQuestion question = QuizQuestion(); 
               question.questionText = questionController.text;
               question.tags = tags;
@@ -243,44 +239,34 @@ class QuestionBuilderState extends State<QuestionBuilder> {
                }
 
               question.debugPrint();
-
-              // Upload to firestore
-              QuizManager.addQuizQuestionToDatabase(question);
+               QuizManager.addQuizQuestionToDatabase(question);
 
             }, 
-            child: Text("Add to database"))
+            child: const Text("Add to database"))
         ],
       ) 
     );
   }
 }
- 
 
 class QuizBuilder extends StatefulWidget {
-
   const QuizBuilder({ super.key });
-
   @override 
-  State<QuizBuilder> createState() => QuizBuilderState(); 
-
+  State<QuizBuilder> createState() => QuizBuilderState();
 }
 
 class QuizBuilderState extends State<QuizBuilder> {
-
   QuizManager quizManager = QuizManager();
-
   Quiz currentQuiz = Quiz(); 
   List<QuizQuestion> questionsInQuiz = List.empty(growable: true); 
 
   @override
   void initState() {
     super.initState();
-
     loadQuestionCards("");
   }
 
   void loadQuestionCards(String tags) {
-    
     quizManager.getQuizQuestions().then((value) {
       questionWidgets = List.generate(value.length, (index) {
         print("Loaded Question: ${value[index].questionText}");
@@ -291,10 +277,7 @@ class QuizBuilderState extends State<QuizBuilder> {
           });
         },);
       });
-
-      setState(() {
-        
-      });
+      setState(() {});
     });
   }
 
@@ -341,8 +324,6 @@ class QuizBuilderState extends State<QuizBuilder> {
     );
   }
 
-
-
   List<Widget> questionWidgets = List.empty(growable: true);
 
   @override
@@ -352,7 +333,7 @@ class QuizBuilderState extends State<QuizBuilder> {
         padding: const EdgeInsets.all(16.0),
         child: Container(
           decoration: BoxDecoration(
-            color: Color.fromARGB(255, 243, 242, 242),
+            color: const Color.fromARGB(255, 243, 242, 242),
             borderRadius: BorderRadius.circular(15)
           ),
           width: double.infinity,
@@ -365,9 +346,7 @@ class QuizBuilderState extends State<QuizBuilder> {
                 child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  
                   const SizedBox(height: 8.0),
-                  
                    Tooltip(
                     verticalOffset: 10,
                     message: "Back",
@@ -375,7 +354,7 @@ class QuizBuilderState extends State<QuizBuilder> {
                       onPressed: (){
                         Navigator.pop(context);
                       },
-                      icon: Icon(Icons.arrow_back),
+                      icon: const Icon(Icons.arrow_back),
                     )
                   ),
 
@@ -386,7 +365,7 @@ class QuizBuilderState extends State<QuizBuilder> {
                     message: "Create a new Quiz",
                     child: IconButton(
                       onPressed: (){},
-                      icon: Icon(Icons.quiz),
+                      icon: const Icon(Icons.quiz),
                     )
                   ),
 
@@ -397,7 +376,7 @@ class QuizBuilderState extends State<QuizBuilder> {
                     message: "Add a new question",
                     child: IconButton(
                       onPressed: (){},
-                      icon: Icon(Icons.add),
+                      icon: const Icon(Icons.add),
                     )
                   )
                 ],

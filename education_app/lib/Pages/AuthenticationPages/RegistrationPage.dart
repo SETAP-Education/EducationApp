@@ -1,11 +1,9 @@
 import 'package:education_app/Pages/AuthenticationPages/AuthPageForm.dart';
 import 'package:education_app/Pages/AuthenticationPages/ErrorDisplayer.dart';
 import 'package:education_app/Widgets/Button.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:education_app/Pages/AuthenticationPages/LoginPage.dart';
-import 'package:flutter/widgets.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:education_app/Pages/AuthenticationPages/DisplayNamePage.dart';
 import 'package:education_app/Theme/AppTheme.dart';
@@ -49,7 +47,6 @@ class _RegistrationPageState extends State<RegistrationPage> {
   @override 
   void initState() {
     super.initState();
-
     _checkAuthState();
   }
 
@@ -58,14 +55,13 @@ class _RegistrationPageState extends State<RegistrationPage> {
     return PopScope(
       canPop: false, //When false, blocks the current route from being popped
       child: Scaffold(
-        appBar: AppTheme.buildAppBar(context, 'Quiz App', false, false, "Welcome to our quiz app", Text('')),
+        appBar: AppTheme.buildAppBar(context, 'Quiz App', false, false, "Welcome to our quiz app", const Text('')),
         body: AuthPageForm(child: _buildRegistrationForm())
       )
     );
   }
 
   Widget _buildRegistrationForm() {
-
     Color? textColour = Theme.of(context).textTheme.bodyMedium!.color;
 
     return Form(
@@ -82,15 +78,13 @@ class _RegistrationPageState extends State<RegistrationPage> {
                   color: textColour,
                 ),
               ),
-            
             const SizedBox(height: 10.0),
             SizedBox(
               width: 450,
               child: TextField(
-                
                 controller: _emailController,
                 decoration: InputDecoration(labelText: 'Email',
-                      contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
                       focusedBorder: OutlineInputBorder(
                         borderSide: BorderSide(color: textColour!),
                         borderRadius: BorderRadius.circular(30.0),
@@ -107,15 +101,14 @@ class _RegistrationPageState extends State<RegistrationPage> {
                 ),
               ),
             ),
-            SizedBox(height: 20.0),
-            // Password text field
+            const SizedBox(height: 20.0),
             SizedBox(
               width: 450,
               child: TextField(
                 controller: _passwordController,
                 obscureText: !_showPassword,
                 decoration: InputDecoration(labelText: 'Password',
-                  contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
                   focusedBorder: OutlineInputBorder(
                     borderSide: BorderSide(color: textColour),
                     borderRadius: BorderRadius.circular(30.0),
@@ -126,7 +119,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
                   ),
                   labelStyle: TextStyle(color: textColour),
                   suffixIcon: Padding(
-                    padding: EdgeInsets.only(right: 8.0), // Adjust the padding as needed
+                    padding: const EdgeInsets.only(right: 8.0),
                     child: IconButton(
                       icon: Icon(
                         _showPassword ? Icons.visibility_off : Icons.visibility,
@@ -143,30 +136,23 @@ class _RegistrationPageState extends State<RegistrationPage> {
                 style: GoogleFonts.nunito(
                   fontSize: 20.0,
                 ),
-
                 onChanged: (value) {
-                  // This is hacky...
                   // Set the state so it recalcs the password requirements
-                  setState(() {
-                    
-                  });
+                  setState(() {});
                 },
               ),
             ),
 
-            SizedBox(height: 10.0),
-
+            const SizedBox(height: 10.0),
             _passwordRequirements(_passwordController.text),
-
-            SizedBox(height: 10.0),
-
+            const SizedBox(height: 10.0),
             SizedBox(
               width: 450,
               child: TextField(
                 controller: _confirmPasswordController,
                 obscureText: !_showConfirmPassword,
                 decoration: InputDecoration(labelText: 'Confirm Password',
-                  contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
                   focusedBorder: OutlineInputBorder(
                     borderSide: BorderSide(color: textColour),
                     borderRadius: BorderRadius.circular(30.0),
@@ -177,7 +163,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
                   ),
                   labelStyle: TextStyle(color: textColour),
                   suffixIcon: Padding(
-                    padding: EdgeInsets.only(right: 8.0), // Adjust the padding as needed
+                    padding: const EdgeInsets.only(right: 8.0),
                     child: IconButton(
                       icon: Icon(
                         _showConfirmPassword ? Icons.visibility_off : Icons.visibility,
@@ -194,25 +180,20 @@ class _RegistrationPageState extends State<RegistrationPage> {
                 style: GoogleFonts.nunito(
                   fontSize: 20.0,
                 ),
-
-                onChanged: (value) {
-                  
-                },
+                onChanged: (value) {},
               ),
             ),
 
-            SizedBox(height: 20.0),
-            // Register button
+            const SizedBox(height: 20.0),
             Button(
               important: true,
               width: 450,
               onClick: () {
                 _register();
               },
-           
               child: Text('Register', style: GoogleFonts.nunito(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
             ),
-            SizedBox(height: 20.0),
+            const SizedBox(height: 20.0),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -229,7 +210,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
                       _createRoute(LoginPage()),
                       );
                     },
-                    child: Text(
+                    child: const Text(
                       'Log in',
                       style: TextStyle(
                         color: Color(0xFF19c37d),
@@ -245,30 +226,22 @@ class _RegistrationPageState extends State<RegistrationPage> {
       );
   }
 
-
   Future<void> _register() async {
     try {
 
-      bool noEmail = _emailController.text.length == 0;
+      bool noEmail = _emailController.text.isEmpty;
       bool satisfysMinCharacters = _passwordController.text.length >= minCharacters;
       bool hasOneNumber = _passwordController.text.contains(RegExp(r'[0-9]'));
 
       if (noEmail) {
-        // Password does not satisfy constraints 
-
+        // Password does not satisfy constraints
         globalErrorManager.pushError("You must enter a valid email");
-
-        // Break out
-        return; 
+        return;
       }
 
       if (!satisfysMinCharacters || !hasOneNumber) {
-        // Password does not satisfy constraints 
-
         globalErrorManager.pushError("Password does not satisfy requirements");
-
-        // Break out
-        return; 
+        return;
       }
 
       if (_passwordController.text != _confirmPasswordController.text) {
@@ -312,7 +285,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
   Widget _buildPasswordRequirement(String text, bool satisfied) {
     return Row(
       children: [
-        satisfied ? Icon(Icons.done, color: Colors.green,) : Icon(Icons.close, color: Colors.red),
+        satisfied ? const Icon(Icons.done, color: Colors.green,) : Icon(Icons.close, color: Colors.red),
         const SizedBox(width: 8.0),
         Text(text, style: GoogleFonts.nunito(color: satisfied ? Colors.grey : Theme.of(context).textTheme.bodyMedium!.color!, fontSize: 18, decoration: satisfied ?  TextDecoration.lineThrough : TextDecoration.none),)
       ]
@@ -320,7 +293,6 @@ class _RegistrationPageState extends State<RegistrationPage> {
   }
 
   Widget _passwordRequirements(String currentPassword) {
-
     bool satisfysMinCharacters = currentPassword.length >= minCharacters;
     bool hasOneNumber = currentPassword.contains(RegExp(r'[0-9]'));
     
@@ -338,7 +310,6 @@ class _RegistrationPageState extends State<RegistrationPage> {
           _buildPasswordRequirement("Contains a number", hasOneNumber)
         ],
       )
-
     );
   }
 }

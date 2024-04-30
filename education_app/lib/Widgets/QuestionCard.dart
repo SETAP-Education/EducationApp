@@ -1,13 +1,9 @@
-
-
 import 'package:flutter/material.dart';
-
 import 'package:education_app/Quizzes/quiz.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 
 class QuestionCard extends StatelessWidget {
-
   const QuestionCard({ super.key, required this.question, this.onRightArrow, this.onLeftArrow });
 
   final QuizQuestion question;
@@ -24,7 +20,6 @@ class QuestionCard extends StatelessWidget {
       child: Text(questionTypeToString(question.type))
     );
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -47,7 +42,7 @@ class QuestionCard extends StatelessWidget {
                 Text(
                 question.questionText, 
                 style: GoogleFonts.nunito(
-                  textStyle: TextStyle(fontWeight: FontWeight.w600, fontSize: 16)
+                  textStyle: const TextStyle(fontWeight: FontWeight.w600, fontSize: 16)
                 )
                 ,
                 ),

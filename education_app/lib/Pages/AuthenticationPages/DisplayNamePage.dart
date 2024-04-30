@@ -5,7 +5,6 @@ import 'package:education_app/Quizzes/quizManager.dart';
 import 'package:education_app/Widgets/Button.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:education_app/Pages/LandingPage.dart';
-import 'package:flutter/widgets.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:education_app/Theme/AppTheme.dart';
 import 'package:education_app/Pages/AuthenticationPages/ErrorDisplayer.dart';
@@ -74,7 +73,7 @@ class _DisplayUserState extends State<DisplayUser> {
           setState(() {
             _displayName = userDoc.get('displayName') ?? '';
             _selectedInterests = List<String>.from(userDoc.get('interests') ?? []);
-            _nameController.text = _displayName; // Set the display name in the text field
+            _nameController.text = _displayName;
           });
         }
       } catch (error) {
@@ -86,14 +85,14 @@ class _DisplayUserState extends State<DisplayUser> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppTheme.buildAppBar(context, 'Quiz App', false, false, "Welcome to our quiz app", Text('')),
+      appBar: AppTheme.buildAppBar(context, 'Quiz App', false, false, "Welcome to our quiz app", const Text('')),
       body: Stack(
         children: [
           SingleChildScrollView(
             child: Center(
               child: Container(
                 width: 600,
-                padding: EdgeInsets.all(8),
+                padding: const EdgeInsets.all(8),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.center,
@@ -111,7 +110,7 @@ class _DisplayUserState extends State<DisplayUser> {
                                       fontSize: 38,
                                       fontWeight: FontWeight.bold,
                                       fontStyle: FontStyle.italic)),
-                              Text(
+                              const Text(
                                 "👋",
                                 style: TextStyle(fontSize: 38),
                               )
@@ -124,7 +123,7 @@ class _DisplayUserState extends State<DisplayUser> {
                         ],
                       ),
                   ),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 Center(
                   child: Container(
                     width: 600,
@@ -133,7 +132,7 @@ class _DisplayUserState extends State<DisplayUser> {
                       decoration: InputDecoration(
                         labelText: 'Display Name',
                         contentPadding:
-                            EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+                            const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
                         focusedBorder: OutlineInputBorder(
                           borderSide: BorderSide(
                               color: Theme.of(context).textTheme.bodyMedium!.color!),
@@ -154,7 +153,7 @@ class _DisplayUserState extends State<DisplayUser> {
                     ),
                   ),
                 ),
-                SizedBox(height: 30),
+                const SizedBox(height: 30),
                 Text(
                   'What do you wanna learn?',
                   style: GoogleFonts.nunito(
@@ -170,7 +169,7 @@ class _DisplayUserState extends State<DisplayUser> {
                     fontStyle: FontStyle.italic,
                   ),
                 ),
-                SizedBox(height: 16),
+                const SizedBox(height: 16),
                 SizedBox(
                   width: 400,
                   child: GridView.builder(
@@ -196,7 +195,7 @@ class _DisplayUserState extends State<DisplayUser> {
                             });
                           },
                           child: Ink(
-                            padding: EdgeInsets.all(8),
+                            padding: const EdgeInsets.all(8),
                             decoration: BoxDecoration(
                               color: _selectedInterests.contains(interest) ? Theme.of(context).colorScheme.primary.withOpacity(1) : Theme.of(context).colorScheme.primary.withOpacity(0.2),
                               borderRadius: BorderRadius.circular(32),
@@ -216,7 +215,7 @@ class _DisplayUserState extends State<DisplayUser> {
                                   child: Image.asset("assets/images/${interest.toLowerCase()}.png", color: Theme.of(context).colorScheme.primary, width: 48, height: 48)
                                 ),
 
-                                SizedBox(height: 8.0), 
+                                const SizedBox(height: 8.0),
                                  Text(
                                 interest,
                                 style: GoogleFonts.nunito(
@@ -231,7 +230,7 @@ class _DisplayUserState extends State<DisplayUser> {
                         },
                       ),
                     ),
-                    SizedBox(height: 20),
+                    const SizedBox(height: 20),
                     Center(
                       child: Button(
                         width: 400,
@@ -242,20 +241,15 @@ class _DisplayUserState extends State<DisplayUser> {
 
                           // Check if display name or interests are empty
                           if (displayName.isEmpty) {
-                              // Add an error message to the error manager
                               print("No display name");
                               globalErrorManager.pushError('Display name cannot be empty');
                           } else if (_selectedInterests.isEmpty) {
-                              // Add an error message to the error manager
                               print("No interests");
                               globalErrorManager.pushError('You must select at least one interest');
-                              
                           } else {
                               // If there are no errors, proceed with setting the display name and interests
                               _setDisplayName(_user!.uid, displayName);
                               _saveInterests(_user!.uid, _selectedInterests);
-                              // Navigate to the landing page
-                               // Let's do a diagnostic test
                               pushDiagnostic(_selectedInterests);
                           }
                         },
@@ -266,12 +260,9 @@ class _DisplayUserState extends State<DisplayUser> {
                                 fontWeight: FontWeight.bold)),
                       ),
                     ),
-                    SizedBox(height: 20),
+                    const SizedBox(height: 20),
                   
         ]),
-
-          // Add ErrorDisplayer widget to display error messages
-         
       ))),
        ErrorDisplayer(),
       ],
@@ -299,7 +290,6 @@ class _DisplayUserState extends State<DisplayUser> {
     users.doc(userId).set({
       'interests': interests,
       'darkMode': true,
-      // 'xpLvl': _findXpLvl(userId),
     }, SetOptions(merge: true)).then((_) {
       print('Interests saved successfully!');
     }).catchError((error) {
@@ -308,19 +298,15 @@ class _DisplayUserState extends State<DisplayUser> {
   }
 
   void pushDiagnostic(List<String> interests) async {
-
     // TODO: This does nothing...
     if (await quizManager.hasUserDoneDiagnostic(_user!.uid)) {
 
       print("User has done diagnostic");
 
-      // If the user has done the diagnostic push them to home
-      // I think we should make a settings page 
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => LandingPage()),
       );
-
       return; 
     }
 

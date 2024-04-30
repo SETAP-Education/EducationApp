@@ -43,7 +43,6 @@ class _LoginPageState extends State<LoginPage> {
   @override 
   void initState() {
     super.initState();
-
     _checkAuthState();
   }
 
@@ -52,15 +51,13 @@ class _LoginPageState extends State<LoginPage> {
     return PopScope(
       canPop: false, //When false, blocks the current route from being popped
       child: Scaffold(
-        appBar: AppTheme.buildAppBar(context, 'Quiz App', false, false, "Welcome to our quiz app", Text('')),
+        appBar: AppTheme.buildAppBar(context, 'Quiz App', false, false, "Welcome to our quiz app", const Text('')),
         body: AuthPageForm(child: _buildLoginForm())
       ),
     );
   }
 
-
   Widget _buildLoginForm() {
-
     Color? textColour = Theme.of(context).textTheme.bodyMedium!.color;
 
     return Form( 
@@ -86,7 +83,7 @@ class _LoginPageState extends State<LoginPage> {
                 controller: _emailController,
                 decoration: InputDecoration(
                   labelText: 'Email',
-                  contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
                   focusedBorder: OutlineInputBorder(
                     borderSide: BorderSide(color: textColour!),
                     borderRadius: BorderRadius.circular(30.0),
@@ -107,7 +104,6 @@ class _LoginPageState extends State<LoginPage> {
               ),
             ),
             const SizedBox(height: 20.0),
-            // password textfield
             SizedBox(
               width: 450,
               child: TextFormField(
@@ -115,7 +111,7 @@ class _LoginPageState extends State<LoginPage> {
                 obscureText: !_showPassword, // Correct placement of obscureText
                 decoration: InputDecoration(
                   labelText: 'Password',
-                  contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
                   focusedBorder: OutlineInputBorder(
                     borderSide: BorderSide(color: textColour),
                     borderRadius: BorderRadius.circular(30.0),
@@ -125,7 +121,7 @@ class _LoginPageState extends State<LoginPage> {
                     borderRadius: BorderRadius.circular(30.0),
                   ),
                   suffixIcon: Padding(
-                    padding: EdgeInsets.only(right: 8.0), // Adjust the padding as needed
+                    padding: const EdgeInsets.only(right: 8.0),
                     child: IconButton(
                       icon: Icon(
                         _showPassword ? Icons.visibility_off : Icons.visibility,
@@ -157,7 +153,6 @@ class _LoginPageState extends State<LoginPage> {
             ),
             const SizedBox(height: 10.0),
 
-            
             Align(
               alignment: Alignment.centerRight,
               child: MouseRegion(

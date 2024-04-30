@@ -25,7 +25,7 @@ class _ErrorDisplayerState extends State<ErrorDisplayer> {
 
   @override
   void dispose() {
-    _timer?.cancel(); // Cancel the timer if it's not null
+    _timer?.cancel();
     super.dispose();
   }
 
@@ -36,35 +36,32 @@ class _ErrorDisplayerState extends State<ErrorDisplayer> {
 
     return ListenableBuilder(listenable: globalErrorManager, builder: (context, child) {
 
-      if (globalErrorManager.errors.isEmpty) {
-        return Container(); 
-      }
+      if (globalErrorManager.errors.isEmpty) { return Container(); }
 
       return Positioned(
         top: screenHeight * 0.01,
         left: screenWidth * 0.15,
         right: screenWidth * 0.15,
         child: Container(
-          decoration: BoxDecoration(
+          decoration: const BoxDecoration(
             color: Colors.transparent, // Set background color to transparent
           ),
           child: ListView.separated(
-            physics: NeverScrollableScrollPhysics(), // Disable scrolling of the ListView
+            physics: const NeverScrollableScrollPhysics(),
             shrinkWrap: true,
             itemCount: globalErrorManager.errors.length,
             separatorBuilder: (BuildContext context, int index) {
-              return SizedBox(height: 8); // Add a gap of 8 between error messages
+              return const SizedBox(height: 8);
             },
             itemBuilder: (context, index) {
               if (index >= globalErrorManager.errors.length) {
                 return Container(); // Return an empty container if index is out of range
               }
 
-              _timer = Timer(Duration(seconds: 4), () {
+              _timer = Timer(const Duration(seconds: 4), () {
                 setState(() {
                   if (globalErrorManager.errors.length > index) {
                     globalErrorManager.errors.removeAt(index);
-
                   }
                 });
               });
@@ -73,11 +70,11 @@ class _ErrorDisplayerState extends State<ErrorDisplayer> {
 
               // Check for different types of error messages and assign colors accordingly
               if (globalErrorManager.errors[index].contains('Password reset email sent to')) {
-                messageColor = Color(0xFF19c37d); // Change color for successful message
+                messageColor = const Color(0xFF19c37d); // Change color for successful message
               }
 
               return Container(
-                padding: EdgeInsets.symmetric(vertical: 8.0),
+                padding: const EdgeInsets.symmetric(vertical: 8.0),
                 decoration: BoxDecoration(
                   color: messageColor, // Assign color based on message type
                   borderRadius: BorderRadius.circular(10.0),
@@ -88,7 +85,7 @@ class _ErrorDisplayerState extends State<ErrorDisplayer> {
                       child: Center(
                         child: Text(
                           globalErrorManager.errors[index],
-                          style: TextStyle(color: Colors.white),
+                          style: const TextStyle(color: Colors.white),
                         ),
                       ),
                     ),
@@ -98,11 +95,10 @@ class _ErrorDisplayerState extends State<ErrorDisplayer> {
                         onTap: () {
                           setState(() {
                             globalErrorManager.errors.removeAt(index);
-                            
                           });
                         },
-                        child: Padding(
-                          padding: const EdgeInsets.all(4.0),
+                        child: const Padding(
+                          padding: EdgeInsets.all(4.0),
                           child: Icon(
                             Icons.close,
                             color: Colors.white,
@@ -119,6 +115,5 @@ class _ErrorDisplayerState extends State<ErrorDisplayer> {
         ),
       );
     });
-   
   }
 }

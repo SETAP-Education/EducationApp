@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:education_app/Pages/AuthenticationPages/LoginPage.dart';
-import 'package:education_app/Quizzes/quiz.dart';
 import 'package:education_app/Quizzes/quizManager.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:education_app/Theme/AppTheme.dart';
 
 class QuizHistoryPage extends StatefulWidget {
@@ -85,7 +82,7 @@ class _QuizHistoryPageState extends State<QuizHistoryPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppTheme.buildAppBar(context, 'All Previous Quizzes', true, true, "All Previous Quizzes", Text('- Here you can view all previous quizzes you have attempted including different version of each quiz...')),
+      appBar: AppTheme.buildAppBar(context, 'All Previous Quizzes', true, true, "All Previous Quizzes", const Text('- Here you can view all previous quizzes you have attempted including different version of each quiz...')),
       body: ListView.builder(
         itemCount: completedQuizIds.length,
         itemBuilder: (context, index) {
@@ -105,9 +102,7 @@ class _QuizHistoryPageState extends State<QuizHistoryPage> {
                       subtitle: Text(
                         'Quiz Results: ${attempt['userResults'].toString()}',
                       ),
-                      onTap: () {
-                        // Handle onTap if needed
-                      },
+                      onTap: () {},
                     ),
                 ],
               ),
