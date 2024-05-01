@@ -30,7 +30,6 @@ class _LoginPageState extends State<LoginPage> {
     User? firebaseUser = await FirebaseAuth.instance.authStateChanges().first;
     
     if (firebaseUser != null) {
-      print("User signed in");
       Navigator.pushReplacement(context, MaterialPageRoute(builder:(context) {
         return LandingPage();
       },));
