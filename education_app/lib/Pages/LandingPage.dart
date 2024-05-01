@@ -163,7 +163,6 @@ class _LandingPageState extends State<LandingPage> {
           ? Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-
           Expanded(
             flex: 2,
             child: Container(
