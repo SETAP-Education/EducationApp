@@ -1,11 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
-// import 'package:cloud_firestore/cloud_firestore.dart';
-// import 'package:firebase_auth/firebase_auth.dart';
 import 'Pages/SplashPage.dart';
 import 'package:education_app/Firebase/firebase_options.dart';
-import 'package:education_app/Pages/AuthenticationPages/LoginPage.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:education_app/Theme/AppTheme.dart';
 import 'package:education_app/Theme/ThemeNotifier.dart';
@@ -35,7 +31,7 @@ class MyApp extends StatelessWidget {
       theme: context.watch<ThemeNotifier>().isDarkMode
           ? AppTheme.darkTheme
           : AppTheme.lightTheme,
-      home: OpeningPage(),
+      home: SplashPage(),
     );
   }
 }
