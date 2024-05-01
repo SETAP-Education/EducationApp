@@ -44,7 +44,7 @@ void main() {
       expect(result, true);
     });
   });
-
+  group('areListsEqual', () {
     test('Test questionTypeToString make sure they return the correct values', () {
       expect(questionTypeToString(QuestionType.multipleChoice), 'Multiple Choice');
       expect(questionTypeToString(QuestionType.fillInTheBlank), 'Fill in the Blank');
@@ -74,5 +74,5 @@ void main() {
     expect(question.correctAnswer, ""); // correctAnswer should default to empty string
     expect(question.userResponse, ""); // userResponse should default to empty string
   });
-
+  });
 }

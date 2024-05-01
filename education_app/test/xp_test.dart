@@ -26,6 +26,7 @@ void main() {
     test('getRank returns Bronze for xp >= 100', () {
       expect(XpInterface.getRank(110), equals('Bronze')); // xp >= 100
     });
+    group('Level function tests', () {
     test('get level returns 0 for level 0', () {
       expect(XpInterface.getLevel(0), equals(0));
     });
@@ -47,6 +48,8 @@ void main() {
     test('get level returns 40 for 20', () {
       expect(XpInterface.getLevel(110), equals(0));
     });
+    });
+    group('rank list function tests', () {
     test('rank list 0', () {
       expect(XpInterface.rankList[0], equals('Bronze'));
     });
@@ -63,5 +66,5 @@ void main() {
       expect(XpInterface.rankList[4], equals('Emerald'));
     });
   });
-
+  });
 }
