@@ -345,7 +345,6 @@ class _LandingPageState extends State<LandingPage> {
                             } else if (snapshot.hasError) {
                               return const Center(child: Text('Error loading topics'));
                             } else {
-
                               List<String> topics = snapshot.data ?? [];
                               // Filter out user's interests from the list of other topics
                               List<String> remainingTopics = topics.where((topic) => !userInterests.contains(topic)).toList();
