@@ -162,6 +162,7 @@ class _LandingPageState extends State<LandingPage> {
       body: _user != null
           ? Row(
         crossAxisAlignment: CrossAxisAlignment.start,
+
         children: [
           Expanded(
             flex: 2,
