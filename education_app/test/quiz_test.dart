@@ -45,14 +45,13 @@ void main() {
     });
   });
 
-    test('Test questionTypeToString', () {
+    test('Test questionTypeToString make sure they return the correct values', () {
       expect(questionTypeToString(QuestionType.multipleChoice), 'Multiple Choice');
       expect(questionTypeToString(QuestionType.fillInTheBlank), 'Fill in the Blank');
       expect(questionTypeToString(QuestionType.dragAndDrop), 'Drag & Drop');
       expect(questionTypeToString(QuestionType.none), '');
     });
-  test('Test QuestionFillInTheBlank.fromMap', () {
-    // Test case 1: Valid map with values for correctAnswer and userResponse
+  test('Test QuestionFillInTheBlank.fromMap with a valid answer', () {
     Map<String, dynamic> validMap = {
       "correctAnswer": "true",
       "userResponse": "true",
@@ -61,17 +60,15 @@ void main() {
     expect(question.correctAnswer, "true");
     expect(question.userResponse, "true");
   });
-    test('Test QuestionFillInTheBlank.fromMap', () {
+    test('Test QuestionFillInTheBlank.fromMap with no user answer', () {
       Map<String, dynamic> mapWithCorrectAnswerOnly = {
         "correctAnswer": "true",
       };
       var question = QuestionFillInTheBlank.fromMap(mapWithCorrectAnswerOnly);
       expect(question.correctAnswer, "true");
-      expect(question.userResponse,
-          ""); // userResponse should default to empty string
+      expect(question.userResponse, "");
     });
-    // Test case 4: Map with neither correctAnswer nor userResponse
-    test('Test QuestionFillInTheBlank.fromMap', () {
+    test('Test QuestionFillInTheBlank.fromMap with neither correctAnswer nor userResponse', () {
     Map<String, dynamic> mapWithNeither = {};
     var question = QuestionFillInTheBlank.fromMap(mapWithNeither);
     expect(question.correctAnswer, ""); // correctAnswer should default to empty string
