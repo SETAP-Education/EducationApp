@@ -28,6 +28,7 @@ class _QuizPageState extends State<QuizPage> {
   bool quizCompleted = false;
   Map<String, dynamic> userSummary = {};
   bool quizSubmitted = false;
+  int earnedXp = 0; 
   // Replace the quizId being passed in, it is static for testing purposes.
   Map<String, dynamic> quizAttemptData = {};
 
@@ -183,6 +184,7 @@ class _QuizPageState extends State<QuizPage> {
           builder: (context) => QuizSummaryPage(
             loadedQuestions: loadedQuestions,
             quizAttemptData: quizAttemptData,
+            earnedXp: earnedXp,
           ),
         ),
       );
@@ -214,7 +216,7 @@ class _QuizPageState extends State<QuizPage> {
     Color secondaryColour = Theme.of(context).colorScheme.secondary;
 
     return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.background,
+      backgroundColor: Theme.of(context).colorScheme.primaryContainer,
       appBar: AppTheme.buildAppBar(context, 'Quiz App', false, false, "Welcome to our quiz app", Text('')),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -308,6 +310,7 @@ class _QuizPageState extends State<QuizPage> {
                             context: context,
                             builder: (context) {
                               return AlertDialog(
+                                backgroundColor: Theme.of(context).colorScheme.secondaryContainer,
                                 title: Text(
                                   'Are you sure?',
                                   style: TextStyle(
@@ -485,6 +488,12 @@ class _QuizPageState extends State<QuizPage> {
           ),
           filled: true,
           fillColor: primaryColour,
+          hintStyle: TextStyle(
+            color: Colors.black, // Set the hint text color to secondary
+          ),
+        ),
+        style: TextStyle(
+          color: Colors.black, // Set the text color to secondary
         ),
       )
     );
@@ -710,6 +719,8 @@ class _QuizPageState extends State<QuizPage> {
 
 
       int xpGain = calculateXpGain(userSummary, widget.multiplier);
+
+      earnedXp = xpGain; 
 
       // Now, update the timestamp field in the quizId2 document
       await FirebaseFirestore.instance.collection('users').doc(userId).collection('quizHistory').doc(widget.quizId).set({

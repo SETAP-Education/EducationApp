@@ -14,11 +14,12 @@ class AppTheme {
       background: Colors.transparent,
       primary: Color(0xFF19c37d),
       secondary: Color(0xFF333333),
-      primaryContainer: Colors.white,
-      secondaryContainer: Color.fromARGB(255, 208, 208, 208),
+      primaryContainer: Color.fromARGB(255, 255, 255, 255),
+      secondaryContainer: Color.fromARGB(255, 231, 231, 231),
       error: Colors.orange,
     ),
-     scaffoldBackgroundColor: Color(0xFFF9FAFE),
+
+     scaffoldBackgroundColor: Color.fromARGB(255, 230, 231, 236),
     textTheme: const TextTheme(
       bodyMedium: TextStyle(color: Color(0xFF333333)),
     ),
@@ -37,7 +38,7 @@ class AppTheme {
       secondaryContainer: Color.fromARGB(255, 65, 68, 74),
       error: Colors.orange,
     ),
-     scaffoldBackgroundColor: Color(0xFF131517),
+    scaffoldBackgroundColor: Color(0xFF131517),
     textTheme: const TextTheme(
       bodyMedium: TextStyle(color: Color(0xFFE7E7E7)),
     ),
@@ -107,6 +108,7 @@ class AppTheme {
 
     if (includeTitleAndIcons && autoImply) {
       return AppBar(
+        clipBehavior: Clip.none,
         automaticallyImplyLeading: true,
         iconTheme: IconThemeData(color: Theme.of(context).colorScheme.secondary),
         backgroundColor: Colors.transparent,
@@ -118,6 +120,7 @@ class AppTheme {
               padding: const EdgeInsets.fromLTRB(56.0, 8, 8, 8), // Adjust the left padding as needed
               child: IconButton(
                 icon: currentIcon,
+                tooltip: 'Theme button',
                 onPressed: () {
                   // Toggle between light and dark mode
                   themeNotifier.toggleTheme();
@@ -162,11 +165,12 @@ class AppTheme {
                 children: [
                   IconButton(
                     icon: Icon(Icons.settings),
+                    tooltip: 'Settings',
                     onPressed: () {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => DisplayUser(),
+                          builder: (context) => SettingsPage(),
                         ),
                       );
                     },
@@ -202,6 +206,7 @@ class AppTheme {
               padding: const EdgeInsets.fromLTRB(8, 8, 8, 8), // Adjust the left padding as needed
               child: IconButton(
                 icon: currentIcon,
+                tooltip: 'Theme button',
                 onPressed: () {
                   // Toggle between light and dark mode
                   themeNotifier.toggleTheme();
@@ -241,16 +246,16 @@ class AppTheme {
               ],
             ),
             Padding(
-              padding: const EdgeInsets.all(8.0), // Adjust the right padding as needed
+              padding: const EdgeInsets.all(8.0),
               child: Row(
                 children: [
                   IconButton(
                     icon: Icon(Icons.settings),
+                    tooltip: 'Settings',
                     onPressed: () {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          // builder: (context) => DisplayUser(),
                           builder: (context) => SettingsPage()
                         ),
                       );
@@ -274,6 +279,39 @@ class AppTheme {
           ],
         ),
       );
+    } else if (!includeTitleAndIcons && autoImply) {
+      return AppBar(
+        automaticallyImplyLeading: false,
+        iconTheme: IconThemeData(color: Theme.of(context).colorScheme.secondary),
+        backgroundColor: Colors.transparent,
+        centerTitle: true,
+        flexibleSpace: Row(
+          // mainAxisAlignment: MainAxisAlignment.centre,
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(left: 5, top: 5), // Adjust the left padding as needed
+              child: IconButton(
+                icon: Icon(Icons.arrow_back),
+                tooltip: 'Return to previous page',
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(left: 5, top: 5), // Adjust the left padding as needed
+              child: IconButton(
+                icon: currentIcon,
+                tooltip: 'Theme button',
+                onPressed: () {
+                  // Toggle between light and dark mode
+                  themeNotifier.toggleTheme();
+                },
+              ),
+            )
+          ],
+        ),
+      );
     } else {
       return AppBar(
         // title: Text(title),
@@ -285,6 +323,7 @@ class AppTheme {
         centerTitle: true,
         leading: IconButton(
           icon: currentIcon,
+          tooltip: 'Theme button',
           onPressed: () {
             // Toggle between light and dark mode
             themeNotifier.toggleTheme();

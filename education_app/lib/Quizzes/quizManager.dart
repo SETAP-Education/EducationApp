@@ -1,7 +1,5 @@
 import 'dart:math';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:education_app/Pages/LandingPage.dart';
 import 'package:education_app/Quizzes/quiz.dart';
 
 // Stores info required about recent quiz
@@ -231,7 +229,7 @@ class QuizManager {
       quizName = name; 
     }
 
-    outputQuizId = await addQuizToDatabase(name, "System", questionIds);
+    outputQuizId = await addQuizToDatabase(quizName, "System", questionIds);
 
     print(outputQuizId);
 
