@@ -44,14 +44,16 @@ void main() {
       expect(result, true);
     });
   });
-  group('areListsEqual', () {
+  group('question types', () {
     test('Test questionTypeToString make sure they return the correct values', () {
       expect(questionTypeToString(QuestionType.multipleChoice), 'Multiple Choice');
       expect(questionTypeToString(QuestionType.fillInTheBlank), 'Fill in the Blank');
       expect(questionTypeToString(QuestionType.dragAndDrop), 'Drag & Drop');
       expect(questionTypeToString(QuestionType.none), '');
     });
-  test('Test QuestionFillInTheBlank.fromMap with a valid answer', () {
+  });
+    group('fill in the blank tests', () {
+    test('Test QuestionFillInTheBlank.fromMap with a valid answer', () {
     Map<String, dynamic> validMap = {
       "correctAnswer": "true",
       "userResponse": "true",

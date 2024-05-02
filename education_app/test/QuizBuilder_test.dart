@@ -6,7 +6,6 @@ import 'package:education_app/Pages/QuizBuilder.dart';
 void main() {
   group('QuizBuilderState', () {
     test('Initialization', () {
-      // Arrange
       final quizBuilderState = QuizBuilderState();
 
       expect(quizBuilderState.quizManager, isA<QuizManager>());
@@ -20,7 +19,6 @@ void main() {
       final question = QuizQuestion();
 
       quizBuilderState.questionsInQuiz.add(question);
-
       expect(quizBuilderState.questionsInQuiz.length, 1);
       expect(quizBuilderState.questionsInQuiz[0].questionText, '');
     });
