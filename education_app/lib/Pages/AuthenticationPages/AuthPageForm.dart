@@ -61,7 +61,7 @@ class _AuthPageFormState extends State<AuthPageForm> {
                 height: 400,
                 child: Center(
                   child: Image.asset(
-                    'images/quiz_app_logo_2.png', // Change to your image asset path
+                    'images/quiz_app_logo_2.png',
                     width: 400, // Adjust as needed
                     height: 400, // Adjust as needed
                   ),
