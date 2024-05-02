@@ -56,9 +56,9 @@ class _SplashPageState extends State<SplashPage> {
                 height: 400,
                 child: Center(
                   child: Image.asset(
-                    'images/quiz_app_logo_2.png', // Change to your image asset path
-                    width: 400, // Adjust as needed
-                    height: 400, // Adjust as needed
+                    'assets/images/quiz_app_logo_2.png',
+                    width: 400,
+                    height: 400,
                   ),
                 ),
               ),

@@ -5,7 +5,6 @@ import 'package:provider/provider.dart';
 import 'package:education_app/Theme/ThemeNotifier.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:education_app/Pages/AuthenticationPages/LoginPage.dart';
-import 'package:education_app/Pages/AuthenticationPages/DisplayNamePage.dart';
 
 class AppTheme {
 
@@ -34,11 +33,11 @@ class AppTheme {
       background: Colors.transparent,
       primary: Color(0xFF19c37d),
       secondary: Color(0xFFE7E7E7),
-      primaryContainer: Color(0xFF202226),
+      primaryContainer: Color(0xFF3b3b3b),
       secondaryContainer: Color.fromARGB(255, 65, 68, 74),
       error: Colors.orange,
     ),
-    scaffoldBackgroundColor: Color(0xFF131517),
+    scaffoldBackgroundColor: Color(0xFF202226),
     textTheme: const TextTheme(
       bodyMedium: TextStyle(color: Color(0xFFE7E7E7)),
     ),
@@ -47,19 +46,6 @@ class AppTheme {
       selectionColor: Colors.blue.withOpacity(0.5),
     ),
   );
-
-//   In order to implement colour scheme properly, each instance of color needs to be replaced with the following:
-//
-//       Dark Shade of Grey
-//       current: 'Color(0xff343541)'
-//       replace with: 'Theme.of(context).colorScheme.background'
-//       
-//       current: 'Colors.white'
-//       replace with: 'Theme.of(context).colorScheme.secondary'
-//       
-//       Lighter shade of Grey
-//       current: 'Color(0xFF40414f)'
-//       replace with: 'Theme.of(context).colorScheme.primary'
 
   static TextStyle defaultTitleText(BuildContext context) {
     return GoogleFonts.openSans(

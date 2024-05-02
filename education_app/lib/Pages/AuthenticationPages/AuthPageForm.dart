@@ -24,9 +24,9 @@ class _AuthPageFormState extends State<AuthPageForm> {
           children: [
             Container(
 
-              child: Center( // Center widget added here
+              child: Center(
                 child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center, // Align the column content vertically centered
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     LayoutBuilder(
                       builder: (BuildContext context, BoxConstraints constraints) {
@@ -61,9 +61,9 @@ class _AuthPageFormState extends State<AuthPageForm> {
                 height: 400,
                 child: Center(
                   child: Image.asset(
-                    'images/quiz_app_logo_2.png', // Change to your image asset path
-                    width: 400, // Adjust as needed
-                    height: 400, // Adjust as needed
+                    'assets/images/quiz_app_logo_2.png',
+                    width: 400,
+                    height: 400,
                   ),
                 ),
               ),
