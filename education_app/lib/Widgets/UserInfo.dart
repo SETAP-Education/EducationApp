@@ -169,25 +169,25 @@ class UserInfoWidgetState extends State<UserInfoWidget> {
 
             const SizedBox(height: 6.0),
            
-
-            Container(
-              width: double.infinity,
-              height: 10,
-              decoration: BoxDecoration(
-                color: Colors.black.withOpacity(0.2),
-                 borderRadius: BorderRadius.circular(20)
+            if (XpInterface.getRank(currentXpOverall) != "Emerald")
+              Container(
+                width: double.infinity,
+                height: 10,
+                decoration: BoxDecoration(
+                  color: Colors.black.withOpacity(0.2),
+                  borderRadius: BorderRadius.circular(20)
+                ),
+                child: FractionallySizedBox(
+                  alignment: Alignment.centerLeft,
+                    widthFactor: currentLevelProgress / currentLevelMax,
+                    child: Container(
+                        decoration: BoxDecoration(
+                            color:Colors.yellow,
+                            borderRadius: BorderRadius.circular(20),
+                        ),
+                    ),
+                ),
               ),
-              child: FractionallySizedBox(
-                alignment: Alignment.centerLeft,
-                  widthFactor: currentLevelProgress / currentLevelMax,
-                  child: Container(
-                      decoration: BoxDecoration(
-                          color:Colors.yellow,
-                          borderRadius: BorderRadius.circular(20),
-                      ),
-                  ),
-              ),
-            ),
 
             ])),
 
