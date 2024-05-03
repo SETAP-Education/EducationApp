@@ -3,6 +3,14 @@ import 'package:education_app/Quizzes/quizManager.dart';
 
 void main() {
   group('RecentQuiz', () {
+    test('Initialization', () {
+      RecentQuiz quiz = RecentQuiz();
+      expect(quiz.id, '');
+      expect(quiz.name, '');
+      expect(quiz.xpEarned, 0);
+    });
+  });
+  group('RecentQuiz', () {
     test('Constructor initializes properties correctly', () {
       RecentQuiz recentQuiz = RecentQuiz();
 
