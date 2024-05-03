@@ -44,7 +44,7 @@ class SettingsPageState extends State<SettingsPage> {
                     ),
                   );
                 },
-                child: Text('Change display name/ interests', style: GoogleFonts.nunito(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
+                child: Text('Change display name/ interests', style: GoogleFonts.nunito(color: Theme.of(context).colorScheme.secondary, fontSize: 18, fontWeight: FontWeight.bold)),
               ),
               SizedBox(height: 20),
               Button(
